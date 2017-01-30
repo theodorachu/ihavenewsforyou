@@ -130,7 +130,7 @@ def main():
 
 	newsArticles = scrapeNewsArticles(rssFeedsPolitics)
 	print len(newsArticles)
-	with open('newsArticles.txt', 'w') as f:
+	with open('newsArticles.json', 'w') as f:
 		json.dump([article.__dict__ for article in newsArticles], f)
 
 
