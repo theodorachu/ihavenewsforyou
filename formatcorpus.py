@@ -18,14 +18,11 @@ def extract_json(article_file):
     corp_title = []
     corp_text = []
     for article in arr:
-        if 'title' in article.keys():
+        if 'title' in article.keys() and 'text' in article.keys():
             corp_title.append(article['title'])
-        else:
-            corp_title.append(' ')
-        if 'text' in article.keys(): # to ensure indices match up
             corp_text.append(article['text'])
         else:
-            corp_text.append(' ')   # to ensure indices match up
+            continue
     return corp_title, corp_text
 
 # function written with help of https://www.analyticsvidhya.com/blog/2016/08/beginners-guide-to-topic-modeling-in-python/
