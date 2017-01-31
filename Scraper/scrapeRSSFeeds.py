@@ -4,6 +4,7 @@ from goose import Goose
 from BeautifulSoup import BeautifulSoup
 from collections import defaultdict
 import json
+import urllib2
 
 """
 Scrapers:
@@ -79,8 +80,13 @@ class NewsArticle:
 		try:
 			article = extractor.extract(url=url)
 		except:
-			return ""
-		return article.cleaned_text
+			article = None
+		if article == None or len(article.cleaned_text) == 0:
+			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+			raw_html = opener.open(url).read()
+			article = extractor.extract(raw_html)
+
+		return article.cleaned_text if article else ""
 
 
 
@@ -104,7 +110,7 @@ def scrapeNewsArticles(rssFeeds):
 			article = NewsArticle(entry, newsSource)
 			updateErrorCount(article, parsingErrors)
 			articles.append(article)
-		print newsSource, 'Errors'
+		print newsSource, 'Missing Fields'
 		print parsingErrors
 		print 'Num. Articles:', len(feed['entries'])
 	return articles
@@ -122,10 +128,11 @@ def updateErrorCount(article, parsingErrors):
 def main():
 	rssFeedsPolitics = {
 		'New York Times': 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml', # goose cannot scrape from NYT
-		# 'Washington Post': 'http://www.washingtonpost.com/news-politics-sitemap.xml', # doesn't work
-		'Fox News': 'http://feeds.foxnews.com/foxnews/politics?format=xml',
-		'CNN': 'http://rss.cnn.com/rss/cnn_allpolitics.rss?ftm=xml',
-		'WSJ': 'http://www.wsj.com/xml/rss/3_7087.xml',
+		# # 'Washington Post': 'http://www.washingtonpost.com/news-politics-sitemap.xml', # doesn't work
+		# 'Fox News': 'http://feeds.foxnews.com/foxnews/politics?format=xml',
+		# 'CNN': 'http://rss.cnn.com/rss/cnn_allpolitics.rss?ftm=xml',
+		# 'WSJ': 'http://www.wsj.com/xml/rss/3_7087.xml',
+		# 'Reuters': 'http://feeds.reuters.com/Reuters/PoliticsNews?ftm=xml'
 	}
 
 	newsArticles = scrapeNewsArticles(rssFeedsPolitics)
