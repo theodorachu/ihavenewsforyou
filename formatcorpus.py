@@ -9,7 +9,6 @@ import numpy as np
 import random
 
 ARTICLE_FILE = 'newsArticles.json'
-#ARTICLE_FILE = 'test.json'
 STOP = set(stopwords.words('english'))
 EXCLUDE = set(string.punctuation)
 lemma = WordNetLemmatizer()
@@ -106,7 +105,7 @@ def main():
     
     print title_lda.show_topics(-1, 5)
     apply_lda(title_lda, test_title, title_dict)
-    #apply_lda(text_lda, test_text)
+    apply_lda(text_lda, test_text, text_dict)
 
 if __name__ == '__main__':
     main()
