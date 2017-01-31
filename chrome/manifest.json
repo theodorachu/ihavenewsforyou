@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+
+  "name": "I have news for you",
+  "description": "This extension recommends articles that hold different perspectives from the current one",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "topSites"
+  ]
+}
