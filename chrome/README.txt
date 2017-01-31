@@ -1,4 +1,4 @@
-This is the chrome extension.
+This is the chrome extension. To open it click Load unpacked extensions under chrome://extensions and point it to this folder.
 
 Currently fakes a responce with two articles.
 
