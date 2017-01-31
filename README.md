@@ -9,6 +9,7 @@ git clone https://github.com/grangier/python-goose.git
 cd python-goose
 pip install -r requirements.txt
 python setup.py install
+3. pip install newspaper
 
 # Setup for format corpus
 sudo easy_install -U gensim
