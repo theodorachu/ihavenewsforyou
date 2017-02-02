@@ -1,10 +1,10 @@
 import feedparser as fp
 import re
-from goose import Goose
 from BeautifulSoup import BeautifulSoup
 from collections import defaultdict
 import json
 import newspaper
+import sys
 
 
 # The newspaper package requires that you download(), parse() and nlp() before getting information
@@ -12,40 +12,49 @@ import newspaper
 # the previous two steps have finished.
 def setUpParsedArticle(parsedArticle):
 	articleParsed = False
+	loopCount = 0
 	while not articleParsed:
 		try:
 			parsedArticle.download()
 			parsedArticle.parse()
 			parsedArticle.nlp()
 			articleParsed = True
-		except: 
-			pass
-			# Something went wrong because the newspaper module is a little buggy
-			# Try again!
+		except: # Something went wrong because the newspaper module is a little buggy. Try again!
+			loopCount += 1
+			if loopCount > 5:
+				print 'The parser is looping due to a bug in the newspaper module. Try again'
+				sys.exit()
+
 
 
 class NewsArticle:
-	def __init__(self, rssSummaryDetail, newsSource, articleDictionary=None):
-		# This is a shortcut for quick 'rehydration' of articles from JSON
-		if articleDictionary:
-			self.__dict__ = articleDictionary
-			return
-
+	def __init__(self, rssSummaryDetail, newsSource, url, bias='NONE'):
 		# We will use the information in the article as parsed by the 'newspaper' package
 		# whenever the rss feed does not have all the information we want.
-		parsedArticle = newspaper.Article(rssSummaryDetail['link'])
+		parsedArticle = newspaper.Article(url)
 		setUpParsedArticle(parsedArticle)
-
 		self.source = newsSource
-		self.publishedDate = self._parsePublishDate(rssSummaryDetail)
-		self.authors = self._parseAuthors(rssSummaryDetail, parsedArticle)
-		self.title = rssSummaryDetail['title_detail']['value']
-		self.url = rssSummaryDetail['link']
-		self.summary = self._parseArticleSummary(rssSummaryDetail, parsedArticle)
-		self.tags = self._parseTags(rssSummaryDetail)
-		self.text = self._extractArticleText(self.url, parsedArticle)
 		self.image = parsedArticle.top_image
 		self.keywords = parsedArticle.keywords
+		self.bias = bias
+
+		if rssSummaryDetail:
+			self.publishedDate = self._parsePublishDate(rssSummaryDetail)
+			self.authors = self._parseAuthors(rssSummaryDetail, parsedArticle)
+			self.title = rssSummaryDetail['title_detail']['value']
+			self.url = url
+			self.summary = self._parseArticleSummary(rssSummaryDetail, parsedArticle)
+			self.tags = self._parseTags(rssSummaryDetail)
+			self.text = self._extractArticleText(self.url, parsedArticle)
+		else:
+			self.publishedDate = str(parsedArticle.publish_date)
+			self.authors = parsedArticle.authors
+			self.title = parsedArticle.title
+			self.url = url
+			self.summary = parsedArticle.summary
+			self.tags = []
+			self.text = parsedArticle.text
+
 
 	def prettyPrint(self):
 		print 'Title:', self.title
@@ -112,7 +121,7 @@ def scrapeNewsArticles(rssFeeds):
 		for entry in feed['entries']:
 			if len(articles) % 10 == 0: print len(articles), 'Articles Parsed'
 			if 'link' in entry and entry['link'].endswith('.mp4'): continue
-			article = NewsArticle(entry, newsSource)
+			article = NewsArticle(entry, newsSource, entry['link'])
 			updateErrorCount(article, parsingErrors)
 			updateErrorCount(article, overallParsingErrors)
 			articles.append(article)
