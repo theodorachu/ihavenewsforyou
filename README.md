@@ -13,3 +13,6 @@ python setup.py install
 
 # Setup for format corpus
 sudo easy_install -U gensim
+
+# Push to Heroku
+git subtree push --prefix NewsProcessorServer heroku master
