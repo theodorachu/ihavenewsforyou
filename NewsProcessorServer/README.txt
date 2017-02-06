@@ -4,6 +4,10 @@ I used:
 to learn Flask, PostgresSQL and Heroku.
 
 
+To Run:
+1) source .env (you only need to do this once per opening of the terminal)
+2) ./runFlaskServer.py
+
 To Use the Database:
 1) Download postgresql (I recommend using brew)
 2) Create the database: createdb article_db
@@ -14,24 +18,13 @@ To Use the Database:
 4) Whenever you change the models in models.py, run 3b) and 3c) to complete the migration
 5) Type: psql article_db to examine the contents of the database
 
+Things to learn:
+We are using SQLAlchemy to manage our database. And Alembic to manage migrations. You don't really need to learn Alembic (just follow the migration instructions). See docs: http://www.sqlalchemy.org/ to learn sqlalchemy.
 
-To Run:
-1) source .env (you only need to do this once per opening of the terminal)
-2) ./runFlaskServer.py
+HEROKU! Our app is called across-the-aisle
+Set environment variables: heroku config:set VAR_NAME=VALUE -a across-the-aisle
+Upgrade/migrate database: heroku run python NewsProcessorServer/manage.py db upgrade -a across-the-aisle
 
-
-To Use the Database:
-We are using SQLAlchemy. See docs: http://www.sqlalchemy.org/
-
-Using Virtual Environment:
-I'm using a virtual environment so you don't have to download anything. To start it AND initiate all environment variables, type
-source .env
-
-HEROKU!
-Set environment variables: heroku config:set APP_SETTINGS=config.HerokuConfig --app across-the-aisle
-Upgrade/migrate database: heroku run python NewsProcessorServer/manage.py db upgrade --app across-the-aisle
-
-heroku run python downloadNLTKData.py --app across-the-aisle
 Heroku Files
 1) runtime.txt - specifies python version for heroku
 2) Procfile - also for heroku

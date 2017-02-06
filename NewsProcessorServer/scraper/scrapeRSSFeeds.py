@@ -11,22 +11,19 @@ import sys
 # about the article. Since we are using the Python 2 module, it has a small bug where nlp() will start before
 # the previous two steps have finished.
 def setUpParsedArticle(parsedArticle):
-	parsedArticle.download()
-	parsedArticle.parse()
-	parsedArticle.nlp()
-	# articleParsed = False
-	# loopCount = 0
-	# while not articleParsed:
-	# 	try:
-	# 		parsedArticle.download()
-	# 		parsedArticle.parse()
-	# 		parsedArticle.nlp()
-	# 		articleParsed = True
-	# 	except: # Something went wrong because the newspaper module is a little buggy. Try again!
-	# 		loopCount += 1
-	# 		if loopCount > 5:
-	# 			print 'The parser is looping due to a bug in the newspaper module. Try again'
-	# 			sys.exit()
+	articleParsed = False
+	loopCount = 0
+	while not articleParsed:
+		try:
+			parsedArticle.download()
+			parsedArticle.parse()
+			parsedArticle.nlp()
+			articleParsed = True
+		except: # Something went wrong because the newspaper module is a little buggy. Try again!
+			loopCount += 1
+			if loopCount > 5:
+				print 'The parser is looping due to a bug in the newspaper module. Try again'
+				sys.exit()
 
 
 
@@ -156,28 +153,22 @@ def updateErrorCount(article, parsingErrors):
 
 def scrapeRSSFeeds():
 	rssFeedsPolitics = {
-		# 'New York Times': 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',
+		'New York Times': 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',
 		# 'Washington Post': 'http://feeds.washingtonpost.com/rss/politics', 
 		# 'Fox News': 'http://feeds.foxnews.com/foxnews/politics?format=xml',
 		# 'CNN': 'http://rss.cnn.com/rss/cnn_allpolitics.rss?ftm=xml',
 		# 'WSJ': 'http://www.wsj.com/xml/rss/3_7087.xml',
-		'Reuters': 'http://feeds.reuters.com/Reuters/PoliticsNews?ftm=xml',
-		'ABC News': 'http://feeds.abcnews.com/abcnews/politicsheadlines',
-		'CBS News': 'http://www.cbsnews.com/latest/rss/politics',
-		'PBS': 'http://feeds.feedburner.com/pbs/qMdg',
-		'USA Today': 'http://rssfeeds.usatoday.com/UsatodaycomWashington-TopStories',
-		'The Hill': 'http://thehill.com/rss/syndicator/19109'
+		# 'Reuters': 'http://feeds.reuters.com/Reuters/PoliticsNews?ftm=xml',
+		# 'ABC News': 'http://feeds.abcnews.com/abcnews/politicsheadlines',
+		# 'CBS News': 'http://www.cbsnews.com/latest/rss/politics',
+		# 'PBS': 'http://feeds.feedburner.com/pbs/qMdg',
+		# 'USA Today': 'http://rssfeeds.usatoday.com/UsatodaycomWashington-TopStories',
+		# 'The Hill': 'http://thehill.com/rss/syndicator/19109'
 
 	}
 
 	newsArticles = scrapeNewsArticles(rssFeedsPolitics)
 	return newsArticles
-
-# Combines two arrays of NewsArticles
-def combineArticleSets(oldArticles, newArticles):
-	oldArticleHashes = set([article.hash() for article in oldArticles])
-	newArticles = [article for article in newArticles if article.hash() not in oldArticleHashes]
-	return newArticles + oldArticles
 
 
 if __name__ == '__main__':
