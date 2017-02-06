@@ -27,6 +27,10 @@ Using Virtual Environment:
 I'm using a virtual environment so you don't have to download anything. To start it AND initiate all environment variables, type
 source .env
 
-Weird files, but you have to know about them:
+HEROKU!
+Set environment variables: heroku config:set APP_SETTINGS=config.HerokuConfig --app across-the-aisle
+Upgrade/migrate database: heroku run python NewsProcessorServer/manage.py db upgrade --app across-the-aisle
+
+Heroku Files
 1) runtime.txt - specifies python version for heroku
 2) Procfile - also for heroku
