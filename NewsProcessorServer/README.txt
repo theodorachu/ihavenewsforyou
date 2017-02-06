@@ -31,7 +31,9 @@ HEROKU!
 Set environment variables: heroku config:set APP_SETTINGS=config.HerokuConfig --app across-the-aisle
 Upgrade/migrate database: heroku run python NewsProcessorServer/manage.py db upgrade --app across-the-aisle
 
-heroku run python downloadNLTKData.py
+heroku run python downloadNLTKData.py --app across-the-aisle
 Heroku Files
 1) runtime.txt - specifies python version for heroku
 2) Procfile - also for heroku
+
+
