@@ -1,4 +1,4 @@
-#!/Users/nokun17/Documents/ihavenewsforyou/virtualenv/bin/python
+#!/Users/nokun17/Documents/ihavenewsforyou/NewsProcessorServer/Virtualenv/bin/python
 
 # -*- coding: utf-8 -*-
 import re

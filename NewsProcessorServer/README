@@ -1,3 +1,11 @@
 Hello!
 
 I used https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world to learn Flask.
+
+Use http://stackoverflow.com/questions/21214270/flask-run-function-every-hour for cron job advice.
+
+How to use:
+Run Server: ./runFlaskServer
+
+Virtual Environment:
+I'm using a virtual environment so you don't have to download anything. Just remember to activate it via 'source Virtualenv/bin/activate' and deactivate it by typing 'deactivate'
