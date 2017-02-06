@@ -10,7 +10,7 @@ To Run:
 
 
 To Use the Database:
-We are using SQL-Alchemy. See docs: http://flask-sqlalchemy.pocoo.org/2.1/.
+We are using SQL-Alchemy. See docs: http://www.sqlalchemy.org/
 
 Virtual Environment:
 I'm using a virtual environment so you don't have to download anything. Just remember to activate it via 'source Virtualenv/bin/activate' and deactivate it by typing 'deactivate'
