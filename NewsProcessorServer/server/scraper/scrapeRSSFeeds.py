@@ -11,19 +11,22 @@ import sys
 # about the article. Since we are using the Python 2 module, it has a small bug where nlp() will start before
 # the previous two steps have finished.
 def setUpParsedArticle(parsedArticle):
-	articleParsed = False
-	loopCount = 0
-	while not articleParsed:
-		try:
-			parsedArticle.download()
-			parsedArticle.parse()
-			parsedArticle.nlp()
-			articleParsed = True
-		except: # Something went wrong because the newspaper module is a little buggy. Try again!
-			loopCount += 1
-			if loopCount > 5:
-				print 'The parser is looping due to a bug in the newspaper module. Try again'
-				sys.exit()
+	parsedArticle.download()
+	parsedArticle.parse()
+	parsedArticle.nlp()
+	# articleParsed = False
+	# loopCount = 0
+	# while not articleParsed:
+	# 	try:
+	# 		parsedArticle.download()
+	# 		parsedArticle.parse()
+	# 		parsedArticle.nlp()
+	# 		articleParsed = True
+	# 	except: # Something went wrong because the newspaper module is a little buggy. Try again!
+	# 		loopCount += 1
+	# 		if loopCount > 5:
+	# 			print 'The parser is looping due to a bug in the newspaper module. Try again'
+	# 			sys.exit()
 
 
 
