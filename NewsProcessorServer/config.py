@@ -9,5 +9,5 @@ class Config(object):
 class LocalConfig(Config):
 	DEBUG = True
 
-class HerokuConfig(object):
+class HerokuConfig(Config):
 	DEBUG = False
