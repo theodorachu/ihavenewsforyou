@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from server import app
+import os
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.

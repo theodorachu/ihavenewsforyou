@@ -15,8 +15,7 @@ python setup.py install
 sudo easy_install -U gensim
 
 # Push to Heroku
-Make sure that the virtual env is activated
-cd NewsProcessorServer
-pip freeze > requirements.txt
-cd ..
-git subtree push --prefix NewsProcessorServer heroku master
+1) Make sure that the virtual env is activated!
+2) pip freeze > requirements.txt
+3) git push heroku master
+4) heroku open
