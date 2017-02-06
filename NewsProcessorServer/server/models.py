@@ -11,4 +11,4 @@ class Article(db.Model):
 		self.text = article.text
 
 	def __repr__(self):
-		return '<Article %s>' % (self.title)
+		return '<Article %s>' % (self.title.encode('utf-8'))

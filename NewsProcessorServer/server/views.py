@@ -13,18 +13,17 @@ def scrape_articles():
 	articles = scrapeRSSFeeds()
 	for article in articles:
 		dbArticle = Article(article)
-		print addToDB(article)
+		print addToDB(dbArticle)
 	for article in Article.query.all():
 		print article
 	return "Articles scraped!"
 
 def addToDB(item):
 	try:
-		transaction = db.Session()
-		transaction.add(item)
-		transaction.commit()
-	except:
-		transaction.rollback()
+		db.session.add(item)
+		db.session.commit()
+	except: #An error occurred
+		db.session.rollback()
 		return False
 	return True
 

@@ -55,6 +55,11 @@ class NewsArticle:
 			self.tags = []
 			self.text = parsedArticle.text
 
+		#ENCODE EVERYTHING IN UTF 6
+		for k, v in self.__dict__.iteritems():
+			if isinstance(v, unicode) or isinstance(v, str):
+				self.__dict__[k] = v.encode('utf-8')
+
 
 	def prettyPrint(self):
 		print 'Title:', self.title
@@ -125,7 +130,6 @@ def scrapeNewsArticles(rssFeeds):
 			updateErrorCount(article, parsingErrors)
 			updateErrorCount(article, overallParsingErrors)
 			articles.append(article)
-			return articles
 		print newsSource, 'has the following missing Fields'
 		print parsingErrors
 		print 'Num. Articles:', len(feed['entries'])
@@ -149,17 +153,17 @@ def updateErrorCount(article, parsingErrors):
 
 def scrapeRSSFeeds():
 	rssFeedsPolitics = {
-		'New York Times': 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',
+		# 'New York Times': 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',
 		# 'Washington Post': 'http://feeds.washingtonpost.com/rss/politics', 
 		# 'Fox News': 'http://feeds.foxnews.com/foxnews/politics?format=xml',
 		# 'CNN': 'http://rss.cnn.com/rss/cnn_allpolitics.rss?ftm=xml',
 		# 'WSJ': 'http://www.wsj.com/xml/rss/3_7087.xml',
-		# 'Reuters': 'http://feeds.reuters.com/Reuters/PoliticsNews?ftm=xml',
-		# 'ABC News': 'http://feeds.abcnews.com/abcnews/politicsheadlines',
-		# 'CBS News': 'http://www.cbsnews.com/latest/rss/politics',
-		# 'PBS': 'http://feeds.feedburner.com/pbs/qMdg',
-		# 'USA Today': 'http://rssfeeds.usatoday.com/UsatodaycomWashington-TopStories',
-		# 'The Hill': 'http://thehill.com/rss/syndicator/19109'
+		'Reuters': 'http://feeds.reuters.com/Reuters/PoliticsNews?ftm=xml',
+		'ABC News': 'http://feeds.abcnews.com/abcnews/politicsheadlines',
+		'CBS News': 'http://www.cbsnews.com/latest/rss/politics',
+		'PBS': 'http://feeds.feedburner.com/pbs/qMdg',
+		'USA Today': 'http://rssfeeds.usatoday.com/UsatodaycomWashington-TopStories',
+		'The Hill': 'http://thehill.com/rss/syndicator/19109'
 
 	}
 
