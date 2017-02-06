@@ -19,3 +19,6 @@ sudo easy_install -U gensim
 2) pip freeze > requirements.txt
 3) git push heroku master
 4) heroku open
+
+Random Stuff:
+The migrations folder is a symbolic link.
