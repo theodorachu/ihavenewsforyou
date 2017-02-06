@@ -1,10 +1,14 @@
 from server import db
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+class Article(db.Model):
+	__tablename__ = 'articles'
 
-    # This method tells python how to print the object
-    def __repr__(self):
-        return '<User %r>' % (self.nickname)
+	title = db.Column(db.String(128), primary_key=True)
+	text = db.Column(db.Text)
+
+	def __init__(self, article):
+		self.title = article.title
+		self.text = article.text
+
+	def __repr__(self):
+		return '<Article %s>' % (self.title)
