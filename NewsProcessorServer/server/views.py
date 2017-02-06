@@ -6,8 +6,6 @@ from models import Article
 @app.route('/')
 @app.route('/index')
 def index():
-	article = scrapeRSSFeeds()
-	print article[0].title
 	return "Hello, World!"
 
 @app.route('/scrape', methods=['GET'])
