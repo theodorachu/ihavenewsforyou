@@ -1,1 +1,1 @@
-web: gunicorn NewsProcessorServer:app
+web: python NewsProcessorServer/runFlaskServer.py
