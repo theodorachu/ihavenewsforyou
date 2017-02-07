@@ -12,12 +12,12 @@
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 100%;
       }
-      #status {
+      #suggested_div {
         /* avoid an excessively wide status text */
         white-space: pre;
         text-overflow: ellipsis;
         overflow: hidden;
-        max-width: 400px;
+        min-width: 300px;
       }
     </style>
 
@@ -30,7 +30,6 @@
     <script src="popup.js"></script>
   </head>
   <body>
-    <!--<div id="status"></div>-->
     <h2>Suggested:</h2>
     <div id='suggested_div'></div>
     <script src='popup.js'></script>
