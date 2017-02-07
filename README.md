@@ -3,7 +3,8 @@ Recommend articles that hold different perspectives from the current one
 
 # Virtual Environment
 Using Virtual Environment:
-I'm using a virtual environment so you don't have to download anything. To start it AND initiate all environment variables, type:
+We're using a virtual environment so you don't have to download anything. To start it AND initiate all environment variables, type:
+
 1. source NewsProcessorServer/.env
 
 # Setup for scraping RSS feeds
