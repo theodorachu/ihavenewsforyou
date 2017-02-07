@@ -44,9 +44,7 @@ function getCurrentTabUrl(callback) {
  *   The callback gets a string that describes the failure reason.
  */
 function getImageUrl(searchTerm, callback, errorCallback) {
-  var searchUrl = 'https://across-the-aisle.herokuapp.com/';
-  //TODO include get with comonents
-  //  + '?v=1.0&q=' + encodeURIComponent(searchTerm);
+  var searchUrl = 'https://across-the-aisle.herokuapp.com/' + '?url=' + searchTerm;
   var x = new XMLHttpRequest();
   x.open('GET', searchUrl);
   // The server responds with JSON, so let Chrome parse it.
