@@ -1,5 +1,13 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository') # Don't worry about this until we have to do a migration
+class Config(object):
+	DEBUG = False
+	CSRF_ENABLED = True
+	SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL'] # required by Flask-SQLAlchemy
+
+class LocalConfig(Config):
+	DEBUG = True
+
+class HerokuConfig(Config):
+	DEBUG = False

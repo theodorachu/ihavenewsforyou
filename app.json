@@ -1,0 +1,7 @@
+{
+  "name": "Across the Aisle",
+  "description": "A kickass Python app",
+  "image": "heroku/python",
+  "repository": "https://github.com/theodorachu/ihavenewsforyou",
+  "keywords": ["python", "flask" ]
+}
