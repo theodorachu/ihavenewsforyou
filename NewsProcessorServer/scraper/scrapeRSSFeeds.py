@@ -154,17 +154,16 @@ def updateErrorCount(article, parsingErrors):
 def scrapeRSSFeeds():
 	rssFeedsPolitics = {
 		'New York Times': 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',
-		# 'Washington Post': 'http://feeds.washingtonpost.com/rss/politics', 
-		# 'Fox News': 'http://feeds.foxnews.com/foxnews/politics?format=xml',
-		# 'CNN': 'http://rss.cnn.com/rss/cnn_allpolitics.rss?ftm=xml',
-		# 'WSJ': 'http://www.wsj.com/xml/rss/3_7087.xml',
-		# 'Reuters': 'http://feeds.reuters.com/Reuters/PoliticsNews?ftm=xml',
-		# 'ABC News': 'http://feeds.abcnews.com/abcnews/politicsheadlines',
-		# 'CBS News': 'http://www.cbsnews.com/latest/rss/politics',
-		# 'PBS': 'http://feeds.feedburner.com/pbs/qMdg',
-		# 'USA Today': 'http://rssfeeds.usatoday.com/UsatodaycomWashington-TopStories',
-		# 'The Hill': 'http://thehill.com/rss/syndicator/19109'
-
+		'Washington Post': 'http://feeds.washingtonpost.com/rss/politics', 
+		'Fox News': 'http://feeds.foxnews.com/foxnews/politics?format=xml',
+		'CNN': 'http://rss.cnn.com/rss/cnn_allpolitics.rss?ftm=xml',
+		'WSJ': 'http://www.wsj.com/xml/rss/3_7087.xml',
+		'Reuters': 'http://feeds.reuters.com/Reuters/PoliticsNews?ftm=xml',
+		'ABC News': 'http://feeds.abcnews.com/abcnews/politicsheadlines',
+		'CBS News': 'http://www.cbsnews.com/latest/rss/politics',
+		'PBS': 'http://feeds.feedburner.com/pbs/qMdg',
+		'USA Today': 'http://rssfeeds.usatoday.com/UsatodaycomWashington-TopStories',
+		'The Hill': 'http://thehill.com/rss/syndicator/19109'
 	}
 
 	newsArticles = scrapeNewsArticles(rssFeedsPolitics)
