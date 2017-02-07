@@ -1,6 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// What license?
 
 /**
  * Get the current URL.
@@ -36,38 +34,26 @@ function getCurrentTabUrl(callback) {
 
     callback(url);
   });
-
-  // Most methods of the Chrome extension APIs are asynchronous. This means that
-  // you CANNOT do something like this:
-  //
-  // var url;
-  // chrome.tabs.query(queryInfo, function(tabs) {
-  //   url = tabs[0].url;
-  // });
-  // alert(url); // Shows "undefined", because chrome.tabs.query is async.
 }
 
 /**
- * @param {string} searchTerm - Search term for Google Image search.
- * @param {function(string,number,number)} callback - Called when an image has
- *   been found. The callback gets the URL, width and height of the image.
- * @param {function(string)} errorCallback - Called when the image is not found.
+ * @param {string} searchTerm - the url of the current article
+ * @param {function(string,number,number)} callback - Called when dictionary has
+ *   been recieved.
+ * @param {function(string)} errorCallback - Called when the dictionary is not received properly.
  *   The callback gets a string that describes the failure reason.
  */
 function getImageUrl(searchTerm, callback, errorCallback) {
-  // Google image search - 100 searches per day.
-  // https://developers.google.com/image-search/
   var searchUrl = 'https://across-the-aisle.herokuapp.com/';
-  //do this eventually
-//  + '?v=1.0&q=' + encodeURIComponent(searchTerm);
+  //TODO include get with comonents
+  //  + '?v=1.0&q=' + encodeURIComponent(searchTerm);
   var x = new XMLHttpRequest();
   x.open('GET', searchUrl);
-  // The Google image search API responds with JSON, so let Chrome parse it.
-  //x.responseType = 'json'; //will build this out on backend
+  // The server responds with JSON, so let Chrome parse it.
+  //x.responseType = 'json'; //TODO
   x.responseType = 'text';
   
   x.onload = function() {
-    // Parse and process the response from Google Image Search.
     var response = x.response;
     /*
     if (!response || !response.responseData || !response.responseData.results ||
@@ -84,21 +70,9 @@ function getImageUrl(searchTerm, callback, errorCallback) {
   x.send();
 }
 
-function renderStatus(statusText) {
-  //document.getElementById('status').textContent = statusText;
-}
-
 document.addEventListener('DOMContentLoaded', function() {
   getCurrentTabUrl(function(url) {
-    // Put the image URL in Google search.
-    renderStatus('Performing Google Image search for ' + url);
-
     getImageUrl(url, function(response) {
-
-      renderStatus('Search term: ' + url + '\n' +
-          'Google image search result: ' + response);
-      
-      //build dummy sites
       var dummySites = [
       {url:"http://www.nationalreview.com/article/444370/donald-trump-refugee-executive-order-no-muslim-ban-separating-fact-hysteria",
       title:response}
@@ -113,10 +87,10 @@ document.addEventListener('DOMContentLoaded', function() {
         a.appendChild(document.createTextNode(dummySites[i].title));
         a.addEventListener('click', onAnchorClick);
       }
-      //and ignore them
 
     }, function(errorMessage) {
-      renderStatus('Cannot display image. ' + errorMessage);
+      alert('Error' + errorMessage);
+      //TODO: present better error message
     });
   });
 });
