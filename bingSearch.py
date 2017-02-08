@@ -7,7 +7,7 @@ class BingSearch:
     self.url = "https://api.cognitive.microsoft.com/bing/v5.0/news/search"
     self.key1 = "8175a289e9e143d589269678b9b4603c"
     self.key2 = "37dc1d03772e41fe936e91641d8dcc41"
-    self.numArticles = 20
+    self.numArticles = 100
  
  # Argument: news articles in json format
   def get_suggestions(self, news_article):
@@ -25,7 +25,7 @@ class BingSearch:
     # print r["value"][0]["description"]
 
     suggestions = []
-    for i in xrange(self.numArticles):
+    for i in xrange(min(self.numArticles, len(r["value"]))):
       entry = r["value"][i]
       providers = []
       for j in xrange(len(entry["provider"])):
