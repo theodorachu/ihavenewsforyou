@@ -1,7 +1,7 @@
 import os
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-
+import config
 from server import app, db
 
 """
@@ -15,6 +15,9 @@ Whenever you change the models in models.py, you need to do the following
 """
 
 app.config.from_object(os.environ['APP_SETTINGS']) # Get the config settings, using the local APP_SETTINGS variable
+
+# Uncomment below when you need to create the test db
+# app.config.from_object(os.environ['TEST_SETTINGS']) 
 
 migrate = Migrate(app, db)
 manager = Manager(app)

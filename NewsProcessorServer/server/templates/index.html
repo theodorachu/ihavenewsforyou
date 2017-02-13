@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Across the Aisle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+    <body >
+      <!-- FACEBOOK SET UP -->
+      <script>
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId      : '153629798477210',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v2.8'
+          });
+          FB.AppEvents.logPageView();   
+        };
+
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "//connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+      </script>
+
+      <!-- ACTUAL HTML -->
+      <p> This is the body!! </p>
+
+
+    <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="../static/main.js"></script>
+  </body>
+</html>
