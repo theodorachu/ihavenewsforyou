@@ -36,20 +36,36 @@ function getCurrentTabUrl(callback) {
   });
 }
 
+function isNewsSource(url){
+  //extract url
+  var domain;
+  //find & remove protocol (http, ftp, etc.) and get domain
+  if (url.indexOf("://") > -1) {
+    domain = url.split('.')[1];
+  }
+  else {
+    domain = url.split('/')[0];
+  }
+
+  var news_sites = ["nytimes", "sfchronicle", "nationalreview", "breitbart"];
+  return news_sites.includes(domain);
+}
+
 /**
- * @param {string} searchTerm - the url of the current article
+ * @param {string} article_url = the url of the current article
  * @param {function(string,number,number)} callback - Called when dictionary has
  *   been recieved.
  * @param {function(string)} errorCallback - Called when the dictionary is not received properly.
  *   The callback gets a string that describes the failure reason.
  */
-function getImageUrl(searchTerm, callback, errorCallback) {
-  var searchUrl = 'https://across-the-aisle.herokuapp.com/' + '?url=' + searchTerm;
+function getArticleSuggestions(article_url, callback, errorCallback) {
+  if (!isNewsSource(article_url)) errorCallback('Not an indexed news site');
+  var searchUrl = 'https://across-the-aisle.herokuapp.com/' + '?url=' + article_url;
   var x = new XMLHttpRequest();
   x.open('GET', searchUrl);
   // The server responds with JSON, so let Chrome parse it.
-  //x.responseType = 'json'; //TODO
-  x.responseType = 'text';
+  x.responseType = 'json'; //TODO
+  //x.responseType = 'text';
   
   x.onload = function() {
     var response = x.response;
@@ -70,24 +86,20 @@ function getImageUrl(searchTerm, callback, errorCallback) {
 
 document.addEventListener('DOMContentLoaded', function() {
   getCurrentTabUrl(function(url) {
-    getImageUrl(url, function(response) {
-      var dummySites = [
-      {url:"http://www.nationalreview.com/article/444370/donald-trump-refugee-executive-order-no-muslim-ban-separating-fact-hysteria",
-      title:response}
-      ]
+    getArticleSuggestions(url, function(response) {
       var popupDiv = document.getElementById('suggested_div');
       var ol = popupDiv.appendChild(document.createElement('ol'));
 
-      for (var i = 0; i < dummySites.length; i++) {
+      for (var i = 0; i < response.urls.length; i++) {
         var li = ol.appendChild(document.createElement('li'));
         var a = li.appendChild(document.createElement('a'));
-        a.href = dummySites[i].url;
-        a.appendChild(document.createTextNode(dummySites[i].title));
+        a.href = response.urls[i];
+        a.appendChild(document.createTextNode(response.Titles[i]));
         a.addEventListener('click', onAnchorClick);
       }
 
     }, function(errorMessage) {
-      alert('Error' + errorMessage);
+      alert('Error: ' + errorMessage);
       //TODO: present better error message
     });
   });
