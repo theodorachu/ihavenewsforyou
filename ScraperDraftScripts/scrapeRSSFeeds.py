@@ -148,17 +148,17 @@ def updateErrorCount(article, parsingErrors):
 
 def main():
 	rssFeedsPolitics = {
-		'New York Times': 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',
-		'Washington Post': 'http://feeds.washingtonpost.com/rss/politics', 
-		'Fox News': 'http://feeds.foxnews.com/foxnews/politics?format=xml',
-		'CNN': 'http://rss.cnn.com/rss/cnn_allpolitics.rss?ftm=xml',
-		'WSJ': 'http://www.wsj.com/xml/rss/3_7087.xml',
-		'Reuters': 'http://feeds.reuters.com/Reuters/PoliticsNews?ftm=xml',
-		'ABC News': 'http://feeds.abcnews.com/abcnews/politicsheadlines',
-		'CBS News': 'http://www.cbsnews.com/latest/rss/politics',
-		'PBS': 'http://feeds.feedburner.com/pbs/qMdg',
-		'USA Today': 'http://rssfeeds.usatoday.com/UsatodaycomWashington-TopStories',
-		'The Hill': 'http://thehill.com/rss/syndicator/19109'
+#		'New York Times': 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',
+		'Washington Post': 'http://feeds.washingtonpost.com/rss/politics'
+		# 'Fox News': 'http://feeds.foxnews.com/foxnews/politics?format=xml',
+		# 'CNN': 'http://rss.cnn.com/rss/cnn_allpolitics.rss?ftm=xml',
+		# 'WSJ': 'http://www.wsj.com/xml/rss/3_7087.xml',
+		# 'Reuters': 'http://feeds.reuters.com/Reuters/PoliticsNews?ftm=xml',
+		# 'ABC News': 'http://feeds.abcnews.com/abcnews/politicsheadlines',
+		# 'CBS News': 'http://www.cbsnews.com/latest/rss/politics',
+		# 'PBS': 'http://feeds.feedburner.com/pbs/qMdg',
+		# 'USA Today': 'http://rssfeeds.usatoday.com/UsatodaycomWashington-TopStories',
+		# 'The Hill': 'http://thehill.com/rss/syndicator/19109'
 
 	}
 
@@ -167,11 +167,11 @@ def main():
 		# Commented out code attempts to combine old and new articles. It has a slight bug (redumping JSON), so
 		# is commented out. TODO Nathaniel: Fix the bug.
 
-		# oldArticles = [NewsArticle(None, None, article) for article in oldArticles]
-		# allArticles = combineArticleSets(oldArticles, newsArticles)
-		# print len(oldArticles), "articles currently in file"
-		# print "Adding", len(allArticles) - len(oldArticles), newArticles
-		# print len(oldArticles) + len(newArticles) - len(allArticles), "duplicates"
+		oldArticles = [NewsArticle(None, None, article) for article in oldArticles]
+		allArticles = combineArticleSets(oldArticles, newsArticles)
+		print len(oldArticles), "articles currently in file"
+		print "Adding", len(allArticles) - len(oldArticles), newArticles
+		print len(oldArticles) + len(newArticles) - len(allArticles), "duplicates"
 		f.write(json.dumps([article.__dict__ for article in newsArticles]))
 
 # Combines two arrays of NewsArticles

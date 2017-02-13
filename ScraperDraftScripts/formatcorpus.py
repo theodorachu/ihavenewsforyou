@@ -8,7 +8,7 @@ import lda
 import numpy as np
 import random
 
-ARTICLE_FILE = 'newsArticles.json'
+ARTICLE_FILE = '/Users/theodorachu/Projects/ihavenewsforyou/newsArticles.json'
 STOP = set(stopwords.words('english'))
 EXCLUDE = set(string.punctuation)
 lemma = WordNetLemmatizer()
@@ -62,7 +62,7 @@ def create_docterm_matrix(corp):
     # id2word = dictionary of id mapped to word
     # passes = num of passes LDA algorithm makes on the data
     # num_topics = num of topics LDA algorithm splits data into
-def train_lda(corpus, id2word, passes = 50, num_topics = 10):
+def train_lda(corpus, id2word, passes = 50, num_topics = 3):
     ldaModel = gensim.models.LdaModel
     lda = ldaModel(corpus, num_topics, id2word, False, passes)
     return lda
@@ -105,7 +105,7 @@ def main():
     
     print title_lda.show_topics(-1, 5)
     apply_lda(title_lda, test_title, title_dict)
-    apply_lda(text_lda, test_text, text_dict)
+    #apply_lda(text_lda, test_text, text_dict)
 
 if __name__ == '__main__':
     main()
