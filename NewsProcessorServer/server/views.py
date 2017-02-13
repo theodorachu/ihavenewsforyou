@@ -36,14 +36,12 @@ def recommendArticles():
 		return createJSONResp(error='Failed to parse article')
 	search = BingSearch()
 	suggestions = search.get_suggestions(article)
-
 	return json.dumps(suggestions)
-
-
 
 @app.route('/visit_begun', methods=['POST'])
 def storeVisitBegun():
-	if areFieldsMissing(request, ['url', 'timeIn', 'id']):
+	fields = ['url', 'timeIn', 'id']
+	if areFieldsMissing(request, fields):
 		return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
 	visit = Visit.createVisitFromRequest(request)
@@ -54,7 +52,8 @@ def storeVisitBegun():
 
 @app.route('/visit_ended', methods=['POST'])
 def storeVisitEnded():
-	if areFieldsMissing(request, ['url', 'timeOut', 'id']):
+	fields = ['url', 'timeOut', 'id']
+	if areFieldsMissing(request, fields):
 		return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
 	visit = Visit.getMostRecentVisit(request.form['id'], request.form['url'])
@@ -67,7 +66,8 @@ def storeVisitEnded():
 
 @app.route('/suggestion_clicked', methods=['POST'])
 def suggestionClicked():
-	if areFieldsMissing(request, ['url', 'timeIn', 'id']):
+	fields = ['url', 'timeIn', 'id']
+	if areFieldsMissing(request, fields):
 		return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
 	visit = Visit.createVisitFromRequest(request)
@@ -78,7 +78,8 @@ def suggestionClicked():
 
 @app.route('/suggestions_received', methods=['POST'])
 def suggestionsReceived():
-	if areFieldsMissing(request, ['url', 'timeIn', 'id']):
+	fields = ['url', 'timeIn', 'id']
+	if areFieldsMissing(request, fields):
 		return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
 	visit = Visit.createVisitFromRequest(request)
