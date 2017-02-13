@@ -102,7 +102,9 @@ class Article(db.Model):
 		self.title = article.title
 		self.text = article.text
 
-
+	@staticmethod
+	def add(article):
+		return dbExecute(lambda session: session.add(article))
 
 	def __repr__(self):
 		return '<Article %s>' % (self.title.encode('utf-8'))

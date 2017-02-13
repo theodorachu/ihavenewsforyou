@@ -1,9 +1,10 @@
 from server import app, db #, login_manager
 from models import Article, User, Visit
 from db_helpers import dbExecute
-from dateutil import parser as dateparser
+from recommendArticles import BingSearch
+from news_article import NewsArticle
 
-from contextlib import contextmanager
+from dateutil import parser as dateparser
 
 
 from flask import render_template, request
@@ -27,7 +28,18 @@ def index():
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
-	pass
+	if 'url' not in request.values.keys():
+		return createJSONResp(error="Missing url field")
+	article = NewsArticle(request.values['url'])
+	successfulParse = article.parse()
+	if not successfulParse:
+		return createJSONResp(error='Failed to parse article')
+	search = BingSearch()
+	suggestions = search.get_suggestions(article)
+
+	return json.dumps(suggestions)
+
+
 
 @app.route('/visit_begun', methods=['POST'])
 def storeVisitBegun():
