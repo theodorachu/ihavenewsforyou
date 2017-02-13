@@ -25,10 +25,13 @@ Docs:
 def index():
 	return render_template('index.html')
 
+@app.route('/recommend_articles', methods=['GET'])
+def recommendArticles():
+	pass
+
 @app.route('/visit_begun', methods=['POST'])
 def storeVisitBegun():
-	fields = ['url', 'timeIn', 'id']
-	if areFieldsMissing(request, fields):
+	if areFieldsMissing(request, ['url', 'timeIn', 'id']):
 		return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
 	visit = Visit.createVisitFromRequest(request)
@@ -39,8 +42,7 @@ def storeVisitBegun():
 
 @app.route('/visit_ended', methods=['POST'])
 def storeVisitEnded():
-	fields = ['url', 'timeOut', 'id']
-	if areFieldsMissing(request, fields):
+	if areFieldsMissing(request, ['url', 'timeOut', 'id']):
 		return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
 	visit = Visit.getMostRecentVisit(request.form['id'], request.form['url'])
@@ -53,8 +55,7 @@ def storeVisitEnded():
 
 @app.route('/suggestion_clicked', methods=['POST'])
 def suggestionClicked():
-	fields = ['url', 'timeIn', 'id']
-	if areFieldsMissing(request, fields):
+	if areFieldsMissing(request, ['url', 'timeIn', 'id']):
 		return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
 	visit = Visit.createVisitFromRequest(request)
@@ -62,6 +63,18 @@ def suggestionClicked():
 	if not success:
 		return createJSONResp('Failed to update visit')
 	return createJSONResp(success=True)
+
+@app.route('/suggestions_received', methods=['POST'])
+def suggestionsReceived():
+	if areFieldsMissing(request, ['url', 'timeIn', 'id']):
+		return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+
+	visit = Visit.createVisitFromRequest(request)
+	success = Visit.update(visit, {'receivedSuggestions': True})
+	if not success:
+		return createJSONResp('Failed to update visit')
+	return createJSONResp(success=True)
+
 
 
 ############## HELPER METHODS #####################
