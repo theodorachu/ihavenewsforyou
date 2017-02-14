@@ -2,12 +2,11 @@ var interval = null;
 var updateTime = 5000; // In milliseconds
 var currentTabInfo = {};
 //API routes
-url_visit_begun = 'https://localhost:5000/visit_begun';
-url_visit_ended = 'https://localhost:5000/visit_ended';
-url_suggestion_clicked = 'https://localhost:5000/suggestion_clicked';
+url_visit_begun = 'http://localhost:5000/visit_begun';
+url_visit_ended = 'http://localhost:5000/visit_ended';
+url_suggestion_clicked = 'http://localhost:5000/suggestion_clicked';
 
-TIME_IN = 1;
-TIME_OUT = 0;
+TIME_IN = true;
 //todo
 user_id = 12345;
 
@@ -108,28 +107,37 @@ function isNewsSource(url){
   return news_sites.includes(domain);
 }
 
-function sendUrl(url, timein){
+function sendUrl(url, isTimeIn){
   console.log('sending url');
-  $.post(url_visit_begun, {
-      'url': article_url,
+  postURL = ""
+  params = {
+      'url': url,
       'id': 12345,
-      'timeIn': Date.Now()
-    }, function(data, error) {
-      console.log('got data');
+    }
+  if (!isTimeIn) {
+    postURL = url_visit_ended
+    params['timeOut'] = new Date().toLocaleString()
+  } else {
+    postURL = url_visit_begun
+    params['timeIn'] = new Date().toLocaleString()
+  }
+  
+  $.post(postURL, params, function(data, error) {
       console.log(data);
-      if (error) errorCallback('Network error');
-      callback(JSON.parse(data));
   });  
 }
+
 prev_url = "";
 //chrome.tabs.onUpdated.addListener(getCurrentTab);
 chrome.tabs.onActivated.addListener(function() {
   getCurrentTabUrl(function(url) {
-    if (url != prev_url){
-      sendUrl(prev_url, TIME_OUT);
-      sendUrl(url, TIME_OUT);
+    if (url != prev_url && prev_url != ""){
+      // We log that the user has navigated to a new page (TIME_IN) and that they left the old (!TIME_IN)
+      sendUrl(prev_url, !TIME_IN);
+      sendUrl(url, TIME_IN);
     }
     else sendUrl(url, TIME_IN);
+    prev_url = url;
   });
 });
 

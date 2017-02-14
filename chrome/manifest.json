@@ -19,7 +19,7 @@
   ],
   "background": { 
     "scripts": [
-      "ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js", "background.js"
+      "jquery-3.1.1.min.js", "background.js"
     ],
     "persistent": true
   }
