@@ -12,14 +12,9 @@
   "permissions": [
     "topSites",
     "tabs",
-    "webRequest", 
-    "https://across-the-aisle.herokuapp.com/*",
-    "activeTab"
-  ],
-  "background": { 
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": true
-  }
+	"webRequest", 
+	"https://across-the-aisle.herokuapp.com/*",
+      "activeTab",
+    "https://ajax.googleapis.com/"
+  ]
 }

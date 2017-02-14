@@ -1,9 +1,7 @@
 // What license?
 
-//API routes
-recomend_url = 'https://across-the-aisle.herokuapp.com/recomend_articles'
 
-
+var BKG = chrome.extension.getBackgroundPage()
 /**
  * Get the current URL.
  *
@@ -50,9 +48,8 @@ function isNewsSource(url){
   else {
     domain = url.split('/')[0];
   }
-  //TODO make more exhaustive or move to backend
-  var news_sites = ["nytimes", "sfchronicle", "nationalreview", "breitbart",
-                    "washingtonpost"];
+
+  var news_sites = ["nytimes", "sfchronicle", "nationalreview", "breitbart"];
   return news_sites.includes(domain);
 }
 
@@ -65,8 +62,7 @@ function isNewsSource(url){
  */
 function getArticleSuggestions(article_url, callback, errorCallback) {
   if (!isNewsSource(article_url)) errorCallback('Not an indexed news site');
-  return;
-  var searchUrl = recomend_url + '?url=' + article_url;
+  var searchUrl = 'https://across-the-aisle.herokuapp.com/' + '?url=' + article_url;
   var x = new XMLHttpRequest();
   x.open('GET', searchUrl);
   // The server responds with JSON, so let Chrome parse it.
@@ -75,8 +71,13 @@ function getArticleSuggestions(article_url, callback, errorCallback) {
   
   x.onload = function() {
     var response = x.response;
-    //if response.contains('error') alert('error');
-    //TODO: handle empty/error responses
+    /*
+    if (!response || !response.responseData || !response.responseData.results ||
+        response.responseData.results.length === 0) {
+      errorCallback('No response from Google Image search!');
+      return;
+    }
+    */
     callback(response);
   };
   x.onerror = function() {
@@ -85,10 +86,6 @@ function getArticleSuggestions(article_url, callback, errorCallback) {
   x.send();
 }
 
-/**
- * Execution starts when a page is loaded
- * Takes url response and parses it to display the list of suggested sites
- */
 document.addEventListener('DOMContentLoaded', function() {
   getCurrentTabUrl(function(url) {
     getArticleSuggestions(url, function(response) {
@@ -104,8 +101,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
     }, function(errorMessage) {
-      //alert('Error: ' + errorMessage);
-      //TODO: present better error message, this crashes chrome
+      alert('Error: ' + errorMessage);
+      BKG.console.log('just log');
+      console.log('please log');
+      //TODO: present better error message
     });
   });
 });
