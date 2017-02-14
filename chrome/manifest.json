@@ -4,6 +4,7 @@
   "name": "I have news for you",
   "description": "This extension recommends articles that hold different perspectives from the current one",
   "version": "1.0",
+  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'",
 
   "browser_action": {
     "default_icon": "icon.png",
@@ -18,7 +19,7 @@
   ],
   "background": { 
     "scripts": [
-      "background.js"
+      "ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js", "background.js"
     ],
     "persistent": true
   }

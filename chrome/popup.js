@@ -1,8 +1,8 @@
 // What license?
 
 //API routes
-recomend_url = 'https://across-the-aisle.herokuapp.com/recomend_articles'
-
+var recommend_url = 'http://localhost:5000/recommend_articles'
+var LOGGER = chrome.extension.getBackgroundPage();
 
 /**
  * Get the current URL.
@@ -65,24 +65,13 @@ function isNewsSource(url){
  */
 function getArticleSuggestions(article_url, callback, errorCallback) {
   if (!isNewsSource(article_url)) errorCallback('Not an indexed news site');
-  return;
-  var searchUrl = recomend_url + '?url=' + article_url;
-  var x = new XMLHttpRequest();
-  x.open('GET', searchUrl);
-  // The server responds with JSON, so let Chrome parse it.
-  x.responseType = 'json'; //TODO
-  //x.responseType = 'text';
-  
-  x.onload = function() {
-    var response = x.response;
-    //if response.contains('error') alert('error');
-    //TODO: handle empty/error responses
-    callback(response);
-  };
-  x.onerror = function() {
-    errorCallback('Network error');
-  };
-  x.send();
+
+  console.log('about to request');
+  $.get(recommend_url, {'url': article_url, 'id': 12345}, function(data, error) {
+    if (error) errorCallback('Network error');
+    callback(JSON.parse(data));
+  });  
+
 }
 
 /**
@@ -94,14 +83,13 @@ document.addEventListener('DOMContentLoaded', function() {
     getArticleSuggestions(url, function(response) {
       var popupDiv = document.getElementById('suggested_div');
       var ol = popupDiv.appendChild(document.createElement('ol'));
-
-      for (var i = 0; i < response.urls.length; i++) {
+      response.forEach(function(article){
         var li = ol.appendChild(document.createElement('li'));
         var a = li.appendChild(document.createElement('a'));
-        a.href = response.urls[i];
-        a.appendChild(document.createTextNode(response.Titles[i]));
-        a.addEventListener('click', onAnchorClick);
-      }
+        a.href = article['url'];
+        a.appendChild(document.createTextNode(article['title']));
+        // a.addEventListener('click', onAnchorClick);
+      });
 
     }, function(errorMessage) {
       //alert('Error: ' + errorMessage);

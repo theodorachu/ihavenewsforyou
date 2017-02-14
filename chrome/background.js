@@ -2,9 +2,9 @@ var interval = null;
 var updateTime = 5000; // In milliseconds
 var currentTabInfo = {};
 //API routes
-url_visit_begun = 'https://across-the-aisle.herokuapp.com/visit_begun';
-url_visit_ended = 'https://across-the-aisle.herokuapp.com/visit_ended';
-url_suggestion_clicked = 'https://across-the-aisle.herokuapp.com/suggestion_clicked';
+url_visit_begun = 'https://localhost:5000/visit_begun';
+url_visit_ended = 'https://localhost:5000/visit_ended';
+url_suggestion_clicked = 'https://localhost:5000/suggestion_clicked';
 
 TIME_IN = 1;
 TIME_OUT = 0;
@@ -109,20 +109,17 @@ function isNewsSource(url){
 }
 
 function sendUrl(url, timein){
-  if(isNewsSource(url){
-  var http = new XMLHttpRequest();
-  var params = 'url='+article_url+ '&id=' + user_id;
-  if(timein) params += '&timeIn=' + Date.Now();
-  else params += '&timeOut=' + Date.Now();
-  http.open('POST', url_visit_begun, true);
-  http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  http.onreadystatechange = function() {//Call a function when the state changes.
-    if(http.readyState == 4 && http.status == 200) {
-        //TODO something on successfull response
-    }
-}
-  x.send(params);
-  }
+  console.log('sending url');
+  $.post(url_visit_begun, {
+      'url': article_url,
+      'id': 12345,
+      'timeIn': Date.Now()
+    }, function(data, error) {
+      console.log('got data');
+      console.log(data);
+      if (error) errorCallback('Network error');
+      callback(JSON.parse(data));
+  });  
 }
 prev_url = "";
 //chrome.tabs.onUpdated.addListener(getCurrentTab);
