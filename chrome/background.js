@@ -2,16 +2,14 @@ var interval = null;
 var updateTime = 5000; // In milliseconds
 var currentTabInfo = {};
 //API routes
-url_visit_begun = 'https://localhost:5000/visit_begun';
-url_visit_ended = 'https://localhost:5000/visit_ended';
-url_suggestion_clicked = 'https://localhost:5000/suggestion_clicked';
+url_visit_begun = 'https://across-the-aisle.herokuapp.com/visit_begun';
+url_visit_ended = 'https://across-the-aisle.herokuapp.com/visit_ended';
+url_suggestion_clicked = 'https://across-the-aisle.herokuapp.com/suggestion_clicked';
 
 TIME_IN = 1;
 TIME_OUT = 0;
 //todo
 user_id = 12345;
-
-console.log('page loaded');
 
 
 var getURL = function(url) {
@@ -111,7 +109,6 @@ function isNewsSource(url){
 }
 
 function sendUrl(url, timein){
-  console.log('send url');
   if(isNewsSource(url){
   var http = new XMLHttpRequest();
   var params = 'url='+article_url+ '&id=' + user_id;
