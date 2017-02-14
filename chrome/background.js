@@ -2,9 +2,9 @@ var interval = null;
 var updateTime = 5000; // In milliseconds
 var currentTabInfo = {};
 //API routes
-url_visit_begun = 'http://localhost:5000/visit_begun';
-url_visit_ended = 'http://localhost:5000/visit_ended';
-url_suggestion_clicked = 'http://localhost:5000/suggestion_clicked';
+url_visit_begun = 'http://across-the-aisle.herokuapp.com/visit_begun';
+url_visit_ended = 'http://across-the-aisle.herokuapp.com/visit_ended';
+url_suggestion_clicked = 'http://across-the-aisle.herokuapp.com/suggestion_clicked';
 
 TIME_IN = true;
 //todo

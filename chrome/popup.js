@@ -1,7 +1,7 @@
 // What license?
 
 //API routes
-var recommend_url = 'http://localhost:5000/recommend_articles'
+var recommend_url = 'http://across-the-aisle.herokuapp.com/recommend_articles'
 var LOGGER = chrome.extension.getBackgroundPage();
 
 /**
