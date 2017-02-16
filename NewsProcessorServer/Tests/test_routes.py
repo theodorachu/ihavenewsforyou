@@ -50,5 +50,19 @@ class VisitDBTests(DBTests):
 			))
 			assertSuccess(resp)
 
+class StatsTests(DBTests):
+	def testStats(self):
+		with self.client as c:
+			resp = c.get('/stats', data=dict(weeksago=1))
+			print "Stats test returns: "
+			print json.loads(resp.data)
+
+class VisitsTests(DBTests):
+	def testVisits(self):
+		with self.client as c:
+			resp = c.get('/visits', data=dict(weeksago=1))
+			print "Visits test returns: "
+			print json.loads(resp.data)
+
 if __name__ == '__main__':
 	unittest.main()

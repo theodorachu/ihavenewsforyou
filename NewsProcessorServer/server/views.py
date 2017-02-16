@@ -33,25 +33,26 @@ def stats():
 
 	visits = Visit.query.all() # TODO: Filter by date
 	totalVisits = len(visits)
-	numExtensionClicks = sum(int(v.recievedSuggestions) for v in visits)
-	numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
-	return json.dumps(dict(
-		totalVisits=totalVisits,
-		numExtensionClicks=numExtensionClicks,
-		numLinkFollows=numLinkFollows
-		))
+	# numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
+	# numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
+	# return json.dumps(dict(
+	# 	totalVisits=totalVisits,
+	# 	numExtensionClicks=numExtensionClicks,
+	# 	numLinkFollows=numLinkFollows
+	# 	))
+	return json.dumps({"Total":totalVisits})
 
 @app.route('/visits', methods=['GET'])
 def visits():
 	if 'weeksago' not in request.values.keys():
 		return createJSONResp(error="Missing temporal field")	
 
-	visits = Visit.query.all() # TODO: Filter by date
-	results = []
-	for v in visits:
-		a = Article.query.filter(url=v.url)
-		results.append({"source": a.source, "title": a.title, "url": a.url})
-	return json.dumps(results)
+	# visits = Visit.query.all() # TODO: Filter by date
+	# results = []
+	# for v in visits:
+	# 	a = Article.query.filter(url=v.url)
+	# 	results.append({"source": a.source, "title": a.title, "url": a.url})
+	return json.dumps({"Articles": Article.query.all(), "Visits": Visit.query.all()})
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
