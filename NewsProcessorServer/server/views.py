@@ -55,7 +55,7 @@ def visits():
 	# 		title=a.title,
 	# 		url=a.url
 	# 		))
-	return json.dumps(len(Articles.query.all()))
+	return json.dumps(dict(numArticles=len(Articles.query.all())))
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
