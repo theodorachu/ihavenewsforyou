@@ -47,14 +47,14 @@ def visits():
 		return createJSONResp(error="Missing temporal field")	
 
 	visits = Visit.query.all() # TODO: Filter by date
-	results = []
-	for v in visits:
-		a = Article.query.filter(url=str(v.url))
-		results.append(dict(
-			source=str(a.source),
-			title=str(a.title),
-			url=str(a.url)
-			))
+	results = [v.url for v in visits]
+	# for v in visits:
+		# a = Article.query.filter(url=str(v.url))
+		# results.append(dict(
+			# source=a.source,
+			# title=a.title,
+			# url=a.url
+			# ))
 	return json.dumps(results)
 
 @app.route('/recommend_articles', methods=['GET'])
