@@ -1,5 +1,9 @@
 // What license?
 
+//API routes
+var recommend_url = 'http://across-the-aisle.herokuapp.com/recommend_articles'
+var LOGGER = chrome.extension.getBackgroundPage();
+
 /**
  * Get the current URL.
  *
@@ -46,8 +50,9 @@ function isNewsSource(url){
   else {
     domain = url.split('/')[0];
   }
-
-  var news_sites = ["nytimes", "sfchronicle", "nationalreview", "breitbart"];
+  //TODO make more exhaustive or move to backend
+  var news_sites = ["nytimes", "sfchronicle", "nationalreview", "breitbart",
+                    "washingtonpost"];
   return news_sites.includes(domain);
 }
 
@@ -60,47 +65,35 @@ function isNewsSource(url){
  */
 function getArticleSuggestions(article_url, callback, errorCallback) {
   if (!isNewsSource(article_url)) errorCallback('Not an indexed news site');
-  var searchUrl = 'https://across-the-aisle.herokuapp.com/' + '?url=' + article_url;
-  var x = new XMLHttpRequest();
-  x.open('GET', searchUrl);
-  // The server responds with JSON, so let Chrome parse it.
-  x.responseType = 'json'; //TODO
-  //x.responseType = 'text';
-  
-  x.onload = function() {
-    var response = x.response;
-    /*
-    if (!response || !response.responseData || !response.responseData.results ||
-        response.responseData.results.length === 0) {
-      errorCallback('No response from Google Image search!');
-      return;
-    }
-    */
-    callback(response);
-  };
-  x.onerror = function() {
-    errorCallback('Network error');
-  };
-  x.send();
+
+  console.log('about to request');
+  $.get(recommend_url, {'url': article_url, 'id': 12345}, function(data, error) {
+    if (error) errorCallback('Network error');
+    callback(JSON.parse(data));
+  });  
+
 }
 
+/**
+ * Execution starts when a page is loaded
+ * Takes url response and parses it to display the list of suggested sites
+ */
 document.addEventListener('DOMContentLoaded', function() {
   getCurrentTabUrl(function(url) {
     getArticleSuggestions(url, function(response) {
       var popupDiv = document.getElementById('suggested_div');
       var ol = popupDiv.appendChild(document.createElement('ol'));
-
-      for (var i = 0; i < response.urls.length; i++) {
+      response.forEach(function(article){
         var li = ol.appendChild(document.createElement('li'));
         var a = li.appendChild(document.createElement('a'));
-        a.href = response.urls[i];
-        a.appendChild(document.createTextNode(response.Titles[i]));
-        a.addEventListener('click', onAnchorClick);
-      }
+        a.href = article['url'];
+        a.appendChild(document.createTextNode(article['title']));
+        // a.addEventListener('click', onAnchorClick);
+      });
 
     }, function(errorMessage) {
-      alert('Error: ' + errorMessage);
-      //TODO: present better error message
+      //alert('Error: ' + errorMessage);
+      //TODO: present better error message, this crashes chrome
     });
   });
 });
