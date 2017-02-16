@@ -40,19 +40,20 @@ def stats():
 	# 	numExtensionClicks=numExtensionClicks,
 	# 	numLinkFollows=numLinkFollows
 	# 	))
-	return json.dumps({"Total":totalVisits})
+	return json.dumps(visits[0])
 
 @app.route('/visits', methods=['GET'])
 def visits():
 	if 'weeksago' not in request.values.keys():
 		return createJSONResp(error="Missing temporal field")	
 
+	articles = Article.query.all()
 	# visits = Visit.query.all() # TODO: Filter by date
 	# results = []
 	# for v in visits:
 	# 	a = Article.query.filter(url=v.url)
 	# 	results.append({"source": a.source, "title": a.title, "url": a.url})
-	return json.dumps({"Articles": Article.query.all(), "Visits": Visit.query.all()})
+	return json.dumps(articles[0])
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
