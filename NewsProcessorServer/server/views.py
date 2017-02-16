@@ -48,7 +48,7 @@ def visits():
 
 	visits = Visit.query.all() #TODO: Filter by date 
 	results = []
-	for i in xrange(10):
+	for i in xrange(2):
 		v = visits[i]
 		a = NewsArticle(v.url)
 		try: 
