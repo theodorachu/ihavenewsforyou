@@ -46,16 +46,18 @@ def visits():
 	if 'weeksago' not in request.values.keys():
 		return createJSONResp(error="Missing temporal field")	
 
-	visits = Visit.query.all() # TODO: Filter by date
+	visits = Visit.query.all() 
 	results = []
-	# for v in visits:
-	# 	a = Article.query.filter(Article.url == str(v.url)).first()
-	# 	results.append(dict(
-	# 		source=a.source,
-	# 		title=a.title,
-	# 		url=a.url
-	# 		))
-	return json.dumps(dict(numArticles=len(Articles.query.all())))
+	for v in visits:
+		a = NewsArticle(v.url)
+		successfulParse = a.parse()
+		if not successfulParse: continue
+		results.append(dict(
+			source=a.source,
+			title=a.title,
+			url=a.url
+			))
+	return json.dumps(results)
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
