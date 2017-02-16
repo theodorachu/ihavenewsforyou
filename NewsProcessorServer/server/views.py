@@ -33,8 +33,8 @@ def stats():
 
 	visits = Visit.query.all() # TODO: Filter by date
 	totalVisits = len(visits)
-	numExtensionClicks = str(sum(int(v.receivedSuggestions) for v in visits))
-	numLinkFollows = str(sum(int(v.clickedSuggestion) for v in visits))
+	numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
+	numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
 	return json.dumps(dict(
 		totalVisits=totalVisits,
 		numExtensionClicks=numExtensionClicks,
