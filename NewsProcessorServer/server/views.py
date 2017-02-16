@@ -26,6 +26,13 @@ Docs:
 def index():
 	return render_template('index.html')
 
+@app.route('/stats', methods=['GET'])
+def stats():
+	if 'weeksago' not in request.values.keys():
+		return createJSONResp(error="Missing temporal field")
+	return json.dumps(["hello", "world"])
+
+
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
 	if 'url' not in request.values.keys():
@@ -87,8 +94,6 @@ def suggestionsReceived():
 	if not success:
 		return createJSONResp('Failed to update visit')
 	return createJSONResp(success=True)
-
-
 
 ############## HELPER METHODS #####################
 def areFieldsMissing(request, fields):
