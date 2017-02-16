@@ -46,11 +46,15 @@ def visits():
 	if 'weeksago' not in request.values.keys():
 		return createJSONResp(error="Missing temporal field")	
 
-	visits = Visit.query.all() 
+	visits = Visit.query.all() #TODO: Filter by date 
 	results = []
 	for v in visits:
 		a = NewsArticle(v.url)
-		successfulParse = a.parse()
+		try: 
+			successfulParse = a.parse()
+		except: 
+			print v.url, "failed to be parsed"
+			continue
 		if not successfulParse: continue
 		results.append(dict(
 			source=a.source,
