@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Extension Usage</title>
+        <title>Reading Habits</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js'></script>
     </head>
@@ -15,59 +15,38 @@
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Extension Usage<span class="sr-only">(current)</span></a></li>
-                        <li><a href="#">Reading Habits</a></li>
+                        <li><a href="#">Extension Usage</a></li>
+                        <li class="active"><a href="#">Reading Habits<span class="sr-only">(current)</span></a></li>
                     </ul>
                 </div>
             </div>
         </nav>
         <div class="container">
             <div class="row">
-                <h1>Extension Usage</h1>
+                <h1>Reading Habits</h1>
             </div>
             <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <h4>{{legend_ext | safe}}</h4>
-                        <canvas id="chart" width="500" height="300"></canvas>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <h4>{{legend_alt_art | safe}}</h4>
-                    <canvas id="chart2" width="500" height="300"></canvas>
-                </div>
+                <h4>{{legend_sources | safe}}</h4>
+                <canvas id="chart" width="500" height="300"></canvas>
             </div>
         </div>
         <script>
             // get chart canvas
             var mychart = document.getElementById("chart").getContext("2d");
-            var secondPiechart = document.getElementById("chart2").getContext("2d");
             steps = 10
             max = 10
             // draw pie chart
             var data = {
-                labels: {{labels_ext|safe}},
+                labels: {{labels_sources|safe}},
                 datasets: [{
-                    data: {{values_ext}},
-                    backgroundColor: {{colors_ext|safe}},
-                    hoverBackgroundColor: {{colors_ext|safe}}
-                }]
-            };
-            var data2 = {
-                labels: {{labels_alt_art|safe}},
-                datasets:[{
-                    data: {{values_alt_art}},
-                    backgroundColor: {{colors_alt_art|safe}},
-                    hoverBackgroundColor: {{colors_alt_art|safe}}
+                    data: {{values_sources}},
+                    backgroundColor: {{colors_sources|safe}},
+                    hoverBackgroundColor: {{colors_sources|safe}}
                 }]
             };
             var myPiechart = new Chart(mychart, {
                 type: 'pie',
                 data: data,
-            });
-            var secondPiechart = new Chart(secondPiechart, {
-                type: 'pie',
-                data: data2,
             });
         </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
