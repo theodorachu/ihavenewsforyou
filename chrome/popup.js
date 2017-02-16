@@ -34,6 +34,11 @@ function getCurrentTabUrl(callback) {
     // If you want to see the URL of other tabs (e.g. after removing active:true
     // from |queryInfo|), then the "tabs" permission is required to see their
     // "url" properties.
+    if (localStorage.getItem(url) !== null) {
+      displayArticles(JSON.parse(localStorage.getItem(url)));
+      console.log('hi');
+    }
+    console.log('here')
     console.assert(typeof url == 'string', 'tab.url should be a string');
 
     callback(url);
@@ -66,12 +71,23 @@ function isNewsSource(url){
 function getArticleSuggestions(article_url, callback, errorCallback) {
   if (!isNewsSource(article_url)) errorCallback('Not an indexed news site');
 
-  console.log('about to request');
-  $.get(recommend_url, {'url': article_url, 'id': 12345}, function(data, error) {
+  $.get(recommend_url, {'url': article_url}, function(data, error) {
     if (error) errorCallback('Network error');
-    callback(JSON.parse(data));
+    callback(data);
   });  
 
+}
+
+function displayArticles(response) {
+  var popupDiv = document.getElementById('suggested_div');
+  var ol = popupDiv.appendChild(document.createElement('ol'));
+  response.forEach(function(article){
+    var li = ol.appendChild(document.createElement('li'));
+    var a = li.appendChild(document.createElement('a'));
+    a.href = article['url'];
+    a.appendChild(document.createTextNode(article['title']));
+    // a.addEventListener('click', onAnchorClick);
+  });
 }
 
 /**
@@ -80,16 +96,10 @@ function getArticleSuggestions(article_url, callback, errorCallback) {
  */
 document.addEventListener('DOMContentLoaded', function() {
   getCurrentTabUrl(function(url) {
-    getArticleSuggestions(url, function(response) {
-      var popupDiv = document.getElementById('suggested_div');
-      var ol = popupDiv.appendChild(document.createElement('ol'));
-      response.forEach(function(article){
-        var li = ol.appendChild(document.createElement('li'));
-        var a = li.appendChild(document.createElement('a'));
-        a.href = article['url'];
-        a.appendChild(document.createTextNode(article['title']));
-        // a.addEventListener('click', onAnchorClick);
-      });
+    getArticleSuggestions(url, function(data) {
+      response = JSON.parse(data);
+      localStorage.setItem(url, data);
+      displayArticles(response);
 
     }, function(errorMessage) {
       //alert('Error: ' + errorMessage);
