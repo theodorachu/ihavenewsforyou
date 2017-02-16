@@ -1,6 +1,6 @@
 import feedparser as fp
 import re
-from bs4 import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 from collections import defaultdict
 import json
 import newspaper
