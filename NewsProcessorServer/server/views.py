@@ -57,7 +57,7 @@ def visits():
 			title=a.title,
 			url=a.url
 			))
-	return json.dumps(results)
+	return json.dumps(visits)
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
