@@ -40,7 +40,7 @@ def stats():
 	# 	numExtensionClicks=numExtensionClicks,
 	# 	numLinkFollows=numLinkFollows
 	# 	))
-	return json.dumps(visits[0])
+	return json.dumps([str(visits[0].receivedSuggestions), str(visits[0].clickedSuggestion)])
 
 @app.route('/visits', methods=['GET'])
 def visits():
@@ -53,7 +53,7 @@ def visits():
 	# for v in visits:
 	# 	a = Article.query.filter(url=v.url)
 	# 	results.append({"source": a.source, "title": a.title, "url": a.url})
-	return json.dumps(articles[0])
+	return json.dumps(articles[0].url)
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
