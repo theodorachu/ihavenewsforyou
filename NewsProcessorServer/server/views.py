@@ -50,7 +50,11 @@ def visits():
 	results = []
 	for v in visits:
 		a = NewsArticle(v.url)
-		successfulParse = a.parse()
+		try: 
+			successfulParse = a.parse()
+		except: 
+			print v.url, "failed to be parsed"
+			continue
 		if not successfulParse: continue
 		results.append(dict(
 			source=a.source,
