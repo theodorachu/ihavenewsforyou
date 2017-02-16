@@ -48,19 +48,14 @@ def visits():
 
 	visits = Visit.query.all() # TODO: Filter by date
 	results = []
-	for v in visits:
-		a = Article.query.filter(Article.url == str(v.url)).first()
-		if a:
-			results.append(str(a.source))
-		else:
-			results.append('empty')
-		break
-		results.append(dict(
-			source=a.source,
-			title=a.title,
-			url=a.url
-			))
-	return json.dumps([results, len(Articles.query.all())])
+	# for v in visits:
+	# 	a = Article.query.filter(Article.url == str(v.url)).first()
+	# 	results.append(dict(
+	# 		source=a.source,
+	# 		title=a.title,
+	# 		url=a.url
+	# 		))
+	return json.dumps(len(Articles.query.all()))
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
