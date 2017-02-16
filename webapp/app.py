@@ -1,5 +1,5 @@
 from flask import Flask, render_template, Markup
-from flask.ext.sqlalchemy import SQLAlchemy
+#from flask.ext.sqlalchemy import SQLAlchemy
 from urllib2 import Request, urlopen, URLError
 import os
 
@@ -30,14 +30,15 @@ def ext_usage_chart():
     colors_ext = ["#04a35b", "#F7464A"]
     values_ext = [1, 2] #TODO: retrieve_from_db()
     labels_ext = ["Navigated Away Without Using Extension", "Clicked on Extension"]
-    
+        
+    """
     ext_request = Request("https://across-the-aisle.herokuapp.com/%E2%80%9C/stats?weeksago=4")
     try:
         response = urlopen(ext_request)
         clickingstats = response.read()
         values_ext[1] = len(clickingstats)
     except URLError, e:
-        print "uh oh"
+        print "can't query extension click stats"
 
     total_clicks = Request("https://across-the-aisle.herokuapp.com/%E2%80%9C/visits?weeksago=4")
     try:
@@ -45,8 +46,8 @@ def ext_usage_chart():
         visits = response.read()
         values_ext[0] = len(visits)-values_ext[0]
     except URLError, e:
-        print "uh oh 2"
-
+        print "can't query visits"
+    """
 
     legend_alt_art = "How Often Extension Article Recommendations are Read"
     colors_alt_art = colors_ext
