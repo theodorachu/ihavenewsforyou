@@ -49,7 +49,7 @@ def visits():
 	visits = Visit.query.all() # TODO: Filter by date
 	results = []
 	for v in visits:
-		a = Article.query.filter(url == v.url).first()
+		a = Article.query.filter(Article.url == v.url).first()
 		results.append(dict(
 			source=a.source,
 			title=a.title,
