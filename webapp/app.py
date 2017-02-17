@@ -80,7 +80,7 @@ def read_analysis():
                 num_source_visits[visit["source"]] = 1
         source_visit_values = []
         for source in sources:
-            source_visit_values.append(visit_data[source])
+            source_visit_values.append(num_source_visits[source])
     except URLError, e:
         print "can't get visits data"
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
