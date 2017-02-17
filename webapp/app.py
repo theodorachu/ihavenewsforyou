@@ -4,6 +4,7 @@ from urllib2 import Request, urlopen, URLError
 import ast
 import random
 import os
+import json
 
 #POSTGRES_URL = 'postgresql://localhost/pre-registration' #TODO: change this bc it's wrong
 
@@ -70,7 +71,10 @@ def read_analysis():
     try:
         response = urlopen(visit_req)
         visit_data = response.read()
-        visit_data = ast.literal_eval(visit_data)
+        # visit_data = ast.literal_eval(visit_data)
+        visit_data = json.loads(visit_data)
+        for visit in visit_data:
+            visit['source'] = str(visit['source'])
         sources = list(set([x["source"] for x in visit_data]))
         num_source_visits = {}
         for visit in visit_data:
@@ -80,7 +84,7 @@ def read_analysis():
                 num_source_visits[visit["source"]] = 1
         source_visit_values = []
         for source in sources:
-            source_visit_values.append(visit_data[source])
+            source_visit_values.append(num_source_visits[source])
     except URLError, e:
         print "can't get visits data"
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
