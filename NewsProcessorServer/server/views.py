@@ -48,8 +48,7 @@ def visits():
 
 	visits = Visit.query.all() #TODO: Filter by date 
 	results = []
-	for i in xrange(20):
-		v = visits[i]
+	for v in visits:
 		if "www" not in v.url:
 			continue
 
