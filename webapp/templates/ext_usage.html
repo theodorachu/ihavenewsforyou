@@ -16,7 +16,7 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="#">Extension Usage<span class="sr-only">(current)</span></a></li>
-                        <li><a href="#">Reading Habits</a></li>
+                        <li><a href="/reading">Reading Habits</a></li>
                     </ul>
                 </div>
             </div>
@@ -42,12 +42,11 @@
             // get chart canvas
             var mychart = document.getElementById("chart").getContext("2d");
             var secondPiechart = document.getElementById("chart2").getContext("2d");
-            steps = 10
-            max = 10
-            // draw pie chart
+            // draw chart
             var data = {
                 labels: {{labels_ext|safe}},
                 datasets: [{
+                    label: "Graph 1",
                     data: {{values_ext}},
                     backgroundColor: {{colors_ext|safe}},
                     hoverBackgroundColor: {{colors_ext|safe}}
@@ -56,6 +55,7 @@
             var data2 = {
                 labels: {{labels_alt_art|safe}},
                 datasets:[{
+                    label: "Graph 2",
                     data: {{values_alt_art}},
                     backgroundColor: {{colors_alt_art|safe}},
                     hoverBackgroundColor: {{colors_alt_art|safe}}

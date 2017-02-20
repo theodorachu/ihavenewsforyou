@@ -43,7 +43,6 @@ def ext_usage_chart():
     values_ext = [1, 2] #TODO: retrieve_from_db()
     colors_ext = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_ext))))
     labels_ext = ["Navigated Away Without Using Extension", "Clicked on Extension"]
-    print values_ext
         
     legend_alt_art = "How Often Extension Article Recommendations are Read"
     values_alt_art = [1, 2] #TODO: retrieve_from_db()
