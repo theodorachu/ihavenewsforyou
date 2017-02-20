@@ -30,8 +30,8 @@ def homepage():
     name = "You"
     return render_template("index.html", author=author, name=name)
 
-@app.route('/usage')
-def ext_usage_chart():
+@app.route('/usage/<int:ext_time>')
+def ext_usage_chart(ext_time):
     # how often you actually click on the extension
         # for every news site you visited in last month, what % of the time do you use extension
         # what % of the time do you navigate to an alternative article when you actually click on extension in last month
@@ -49,7 +49,7 @@ def ext_usage_chart():
     colors_alt_art = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_alt_art))))
     labels_alt_art = ["Did Not Read Recommended Articles", "Read at Least One Recommended Article"]
     
-    ext_request = Request("https://across-the-aisle.herokuapp.com/stats?weeksago=4")
+    ext_request = Request("https://across-the-aisle.herokuapp.com/stats?weeksago=" + str(ext_time))
     try:
         response = urlopen(ext_request)
         clickingstats = response.read()

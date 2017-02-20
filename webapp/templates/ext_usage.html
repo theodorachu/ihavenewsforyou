@@ -27,9 +27,18 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card">
-                        <h4>{{legend_ext | safe}}</h4>
-                        <canvas id="chart" width="500" height="300"></canvas>
+                    <h4>{{legend_ext | safe}}</h4>
+                    <canvas id="chart" width="500" height="300"></canvas>
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Timeframe of Data
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href = {{url_for('ext_usage_chart', ext_time=52)}}>Last Year</a></li>
+                            <li><a href = {{url_for('ext_usage_chart', ext_time=4)}}>Last Month</a></li>
+                            <li><a href = {{url_for('ext_usage_chart', ext_time=1)}}>Last Week</a></li>
+                        </ul>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -39,6 +48,9 @@
             </div>
         </div>
         <script>
+            //document.getElementById("extYear").addEventListener("click", function() {
+
+            //}, false);
             // get chart canvas
             var mychart = document.getElementById("chart").getContext("2d");
             var secondPiechart = document.getElementById("chart2").getContext("2d");
