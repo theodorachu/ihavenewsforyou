@@ -27,6 +27,17 @@
             </div>
             <div class="row">
                 <h4>{{legend_sources | safe}}</h4>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Change Timeframe of Data
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li id="year"><a href = {{url_for('read_analysis', time=52)}} data-value="last year">Last Year</a></li>
+                        <li id="month"><a href = {{url_for('read_analysis', time=4)}} data-value="last month">Last Month</a></li>
+                        <li id="week"><a href = {{url_for('read_analysis', time=1)}} data-value="last week">Last Week</a></li>
+                    </ul>
+                </div>
                 <canvas id="chart" width="900" height="300"></canvas>
             </div>
         </div>

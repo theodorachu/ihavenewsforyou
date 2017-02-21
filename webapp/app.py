@@ -63,10 +63,10 @@ def ext_usage_chart(time):
     
     return render_template("ext_usage.html", legend_ext=legend_ext, colors_ext=colors_ext, values_ext=values_ext, labels_ext=labels_ext, legend_alt_art = legend_alt_art, colors_alt_art = colors_alt_art, values_alt_art = values_alt_art, labels_alt_art = labels_alt_art)
 
-@app.route('/reading')
-def read_analysis():
+@app.route('/reading/<int:time>')
+def read_analysis(time):
     legend_sources = "Sources Read"
-    visit_req = Request("https://across-the-aisle.herokuapp.com/visits?weeksago=4")
+    visit_req = Request("https://across-the-aisle.herokuapp.com/visits?weeksago=" + str(time))
     try:
         response = urlopen(visit_req)
         visit_data = response.read()
