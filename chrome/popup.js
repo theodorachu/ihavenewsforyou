@@ -85,10 +85,19 @@ document.addEventListener('DOMContentLoaded', function() {
       var ol = popupDiv.appendChild(document.createElement('ol'));
       response.forEach(function(article){
         var li = ol.appendChild(document.createElement('li'));
+        //TODO: retrieve image from backend
+        var _img = document.createElement('img');
+        _img.src = "icon.png";
+        _img.height = "50";
+        _img.width = "50";
+        _img.id = "news source image";
+        li.appendChild(_img);
+        //hyperlink
         var a = li.appendChild(document.createElement('a'));
         a.href = article['url'];
         a.appendChild(document.createTextNode(article['title']));
         // a.addEventListener('click', onAnchorClick);
+        
       });
 
     }, function(errorMessage) {
