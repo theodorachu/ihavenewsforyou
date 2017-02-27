@@ -7,73 +7,7 @@ url_visit_ended = 'http://across-the-aisle.herokuapp.com/visit_ended';
 url_suggestion_clicked = 'http://across-the-aisle.herokuapp.com/suggestion_clicked';
 
 TIME_IN = true;
-//todo
-user_id = 12345;
-
-
-var getURL = function(url) {
-    chrome.storage.sync.get('trackr', function(data) {
-        var index, found;
-
-        if ($.isEmptyObject(data)) {
-            currentTabInfo.id = '_' + Math.random().toString(36).substr(2, 9);
-            currentTabInfo.title = new URL(url).hostname;
-            currentTabInfo.time = 0;
-            var obj = {
-                'trackr': [{
-                    'id': currentTabInfo.id,
-                    'title': currentTabInfo.title,
-                    'time': currentTabInfo.time
-                }]
-            };
-            chrome.storage.sync.set(obj);
-            return;
-        }
-
-        $.each(data.trackr, function(i, v) {
-            if (v.title === new URL(url).hostname) {
-                index = i;
-                found = true;
-                return false;
-            }
-        });
-
-        if (found) {
-            var retrieved = data.trackr[index];
-            currentTabInfo.id = retrieved.id;
-            currentTabInfo.title = retrieved.title;
-            currentTabInfo.time = retrieved.time;
-        } else {
-            currentTabInfo.id = '_' + Math.random().toString(36).substr(2, 9);
-            currentTabInfo.title = new URL(url).hostname;
-            currentTabInfo.time = 0;
-
-            data.trackr.push({
-                'id': currentTabInfo.id,
-                'title': currentTabInfo.title,
-                'time': currentTabInfo.time
-            });
-        }
-
-        chrome.storage.sync.set(data);
-    });
-};
-
-var updateURL = function() {
-    console.log('CURRENT TAB URL: ' + currentTabInfo.title);
-    chrome.storage.sync.get('trackr', function(data) {
-        var index;
-        $.each(data.trackr, function(i, v) {
-            if (v.title === currentTabInfo.title) {
-                index = i;
-                return false;
-            }
-        });
-        data.trackr[index].time = data.trackr[index].time + 1;
-
-        chrome.storage.sync.set(data);
-    });
-};
+USER_ID = 12345;
 
 /**
  * Get the current URL.
@@ -81,67 +15,71 @@ var updateURL = function() {
  * @param {function(string)} callback - called when the URL of the current tab
  *   is found.
  */
-function getCurrentTabUrl(callback) {
-  var queryInfo = {
-    active: true,
-    currentWindow: true
-  };
-  chrome.tabs.query(queryInfo, function(tabs) {
-    var tab = tabs[0];
-    var url = tab.url;
-    console.assert(typeof url == 'string', 'tab.url should be a string');
-    callback(url);
-  });
-}
-
-function isNewsSource(url){
-  var domain;
-  if (url.indexOf("://") > -1) {
-    domain = url.split('.')[1];
-  }
-  else {
-    domain = url.split('/')[0];
-  }
-  //TODO make more exhaustive or move to backend
-  var news_sites = ["nytimes", "sfchronicle", "nationalreview", "breitbart"];
-  return news_sites.includes(domain);
-}
+ function getCurrentTabUrl(callback) {
+ 	var queryInfo = {
+ 		active: true,
+ 		currentWindow: true
+ 	};
+ 	chrome.tabs.query(queryInfo, function(tabs) {
+ 		var tab = tabs[0];
+ 		var url = tab.url;
+ 		console.assert(typeof url == 'string', 'tab.url should be a string');
+ 		callback(url);
+ 	});
+ }
 
 function sendUrl(url, isTimeIn){
-  console.log('sending url');
-  postURL = ""
-  params = {
-      'url': url,
-      'id': 12345,
-    }
-  if (!isTimeIn) {
-    postURL = url_visit_ended
-    params['timeOut'] = new Date().toLocaleString()
-  } else {
-    postURL = url_visit_begun
-    params['timeIn'] = new Date().toLocaleString()
-  }
-  
-  $.post(postURL, params, function(data, error) {
-      console.log(data);
-  });  
+	var postURL = ""
+	var params = {
+		'url': url,
+		'id': 12345,
+	}
+	if (!isTimeIn) {
+		postURL = url_visit_ended
+		params['timeOut'] = getCurrTimeAsString();
+	} else {
+		postURL = url_visit_begun
+		params['timeIn'] = getCurrTimeAsString();
+	}
+
+	console.log('sending url to ' + postURL);
+	$.post(postURL, params, function(data, error) {
+		console.log(data);
+	});  
 }
 
-prev_url = "";
-//chrome.tabs.onUpdated.addListener(getCurrentTab);
-chrome.tabs.onActivated.addListener(function() {
-  getCurrentTabUrl(function(url) {
-    if (url != prev_url && prev_url != ""){
-      // We log that the user has navigated to a new page (TIME_IN) and that they left the old (!TIME_IN)
-      sendUrl(prev_url, !TIME_IN);
-      sendUrl(url, TIME_IN);
-    }
-    else sendUrl(url, TIME_IN);
-    prev_url = url;
-  });
-});
+function getPreviousTabUrl() {
+	var prevURL = ""
+	if (isKeyInLocalStorage(CONSTANTS['PREV_URL_KEY'])) {
+		prevURL = getObjectFromLocalStorage(CONSTANTS['PREV_URL_KEY']);
+	}
+	return prevURL;
+}
 
-// chrome.alarms.onAlarm.addListener(function() {
-//     console.log('ALARM FIRED');
-//     updateURL();
-// });
+function sendArticleReadInfo() {
+	getCurrentTabUrl(function(url) {
+		var prevURL = getPreviousTabUrl();
+		if (prevURL !== "") sendUrl(prevURL, !TIME_IN);
+		sendUrl(url, TIME_IN);
+		storeObjectInLocalStorage(CONSTANTS['PREV_URL_KEY'], url);
+	}); 
+}
+
+function addPageRefreshListener() {
+	console.log('event added');
+	window.addEventListener('hashchange', function() {
+		console.log('loaded');
+	});  
+}
+
+function main() {
+	chrome.tabs.onActivated.addListener(function() {
+		sendArticleReadInfo();
+		addPageRefreshListener();
+	});
+}
+
+main();
+
+
+
