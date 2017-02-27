@@ -48,7 +48,11 @@ def visits():
 
 	visits = Visit.query.all() #TODO: Filter by date 
 	results = []
-	for v in visits:
+	for i in xrange(50):
+		v = visits[i]
+		if "www" not in v.url:
+			continue
+
 		a = NewsArticle(v.url)
 		try: 
 			successfulParse = a.parse()

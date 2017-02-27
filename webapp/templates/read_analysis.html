@@ -11,11 +11,11 @@
         <nav class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#">Across the Aisle</a>
+                    <a class="navbar-brand" href={{url_for('homepage')}}>Across the Aisle</a>
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li><a href="#">Extension Usage</a></li>
+                        <li><a href = {{url_for('ext_usage_chart', time=4)}}>Extension Usage</a></li>
                         <li class="active"><a href="#">Reading Habits<span class="sr-only">(current)</span></a></li>
                     </ul>
                 </div>
@@ -27,15 +27,24 @@
             </div>
             <div class="row">
                 <h4>{{legend_sources | safe}}</h4>
-                <canvas id="chart" width="500" height="300"></canvas>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Change Timeframe of Data
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li id="year"><a href = {{url_for('read_analysis', time=52)}} data-value="last year">Last Year</a></li>
+                        <li id="month"><a href = {{url_for('read_analysis', time=4)}} data-value="last month">Last Month</a></li>
+                        <li id="week"><a href = {{url_for('read_analysis', time=1)}} data-value="last week">Last Week</a></li>
+                    </ul>
+                </div>
+                <canvas id="chart" width="900" height="300"></canvas>
             </div>
         </div>
         <script>
             // get chart canvas
             var mychart = document.getElementById("chart").getContext("2d");
-            steps = 10
-            max = 10
-            // draw pie chart
+            // draw chart
             var data = {
                 labels: {{labels_sources|safe}},
                 datasets: [{
@@ -44,9 +53,14 @@
                     hoverBackgroundColor: {{colors_sources|safe}}
                 }]
             };
-            var myPiechart = new Chart(mychart, {
-                type: 'pie',
+            var mychart = new Chart(mychart, {
+                type: 'bar',
                 data: data,
+                options: {
+                    legend: {
+                        display: false
+                    }
+                }
             });
         </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

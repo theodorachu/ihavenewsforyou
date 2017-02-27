@@ -4,6 +4,7 @@ from urllib2 import Request, urlopen, URLError
 import ast
 import random
 import os
+import json
 
 #POSTGRES_URL = 'postgresql://localhost/pre-registration' #TODO: change this bc it's wrong
 
@@ -30,26 +31,25 @@ def homepage():
     return render_template("index.html", author=author, name=name)
 
 @app.route('/usage')
-def ext_usage_chart():
+@app.route('/usage/<int:time>')
+def ext_usage_chart(time):
     # how often you actually click on the extension
         # for every news site you visited in last month, what % of the time do you use extension
         # what % of the time do you navigate to an alternative article when you actually click on extension in last month
         # how many times per week do you use extension
-    #hist = db.session.query(History).all()
 
     legend_ext = "How Often Extension is Used per News Site Visit"
     
     values_ext = [1, 2] #TODO: retrieve_from_db()
     colors_ext = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_ext))))
     labels_ext = ["Navigated Away Without Using Extension", "Clicked on Extension"]
-    print values_ext
         
     legend_alt_art = "How Often Extension Article Recommendations are Read"
     values_alt_art = [1, 2] #TODO: retrieve_from_db()
     colors_alt_art = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_alt_art))))
     labels_alt_art = ["Did Not Read Recommended Articles", "Read at Least One Recommended Article"]
     
-    ext_request = Request("https://across-the-aisle.herokuapp.com/stats?weeksago=4")
+    ext_request = Request("https://across-the-aisle.herokuapp.com/stats?weeksago=" + str(time))
     try:
         response = urlopen(ext_request)
         clickingstats = response.read()
@@ -63,14 +63,17 @@ def ext_usage_chart():
     
     return render_template("ext_usage.html", legend_ext=legend_ext, colors_ext=colors_ext, values_ext=values_ext, labels_ext=labels_ext, legend_alt_art = legend_alt_art, colors_alt_art = colors_alt_art, values_alt_art = values_alt_art, labels_alt_art = labels_alt_art)
 
-@app.route('/reading')
-def read_analysis():
+@app.route('/reading/<int:time>')
+def read_analysis(time):
     legend_sources = "Sources Read"
-    visit_req = Request("https://across-the-aisle.herokuapp.com/visits?weeksago=4")
+    visit_req = Request("https://across-the-aisle.herokuapp.com/visits?weeksago=" + str(time))
     try:
         response = urlopen(visit_req)
         visit_data = response.read()
-        visit_data = ast.literal_eval(visit_data)
+        # visit_data = ast.literal_eval(visit_data)
+        visit_data = json.loads(visit_data)
+        for visit in visit_data:
+            visit['source'] = str(visit['source'])
         sources = list(set([x["source"] for x in visit_data]))
         num_source_visits = {}
         for visit in visit_data:
@@ -80,7 +83,7 @@ def read_analysis():
                 num_source_visits[visit["source"]] = 1
         source_visit_values = []
         for source in sources:
-            source_visit_values.append(visit_data[source])
+            source_visit_values.append(num_source_visits[source])
     except URLError, e:
         print "can't get visits data"
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
