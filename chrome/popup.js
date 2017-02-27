@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var ol = popupDiv.appendChild(document.createElement('ol'));
       response.forEach(function(article){
         var li = ol.appendChild(document.createElement('li'));
+        //li.style.color = orange;
         //TODO: retrieve image from backend
         var _img = document.createElement('img');
         _img.src = "icon.png";

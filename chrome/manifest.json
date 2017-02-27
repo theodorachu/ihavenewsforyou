@@ -15,11 +15,13 @@
     "tabs",
     "webRequest", 
     "https://across-the-aisle.herokuapp.com/*",
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
   "background": { 
     "scripts": [
-      "jquery-3.1.1.min.js", "background.js"
+      "jquery-3.1.1.min.js", 
+      "background.js"
     ],
     "persistent": true
   }
