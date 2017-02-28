@@ -56,7 +56,13 @@ class NewsArticle:
 
 	@staticmethod
 	def parseSource(url):
-		return re.search('www\.([a-zA-Z0-9]+)\.com', url).group(1)
+		sourceMatch = re.search('www\.([a-zA-Z0-9]+)\.com', url)
+		if not sourceMatch:
+			sourceMatch = re.search('([a-zA-Z0-9]+)\.com', url)
+		if not sourceMatch: 
+			return "unknown"
+		return sourceMatch.group(1)
+
 
 
 

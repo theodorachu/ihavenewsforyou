@@ -53,14 +53,7 @@ function getArticleSuggestions(article_url, callback, errorCallback) {
 	});  
 }
 
-// Helper method that prints the contents of local storage
-function _printLocalStorage() {
-	console.log("Printing Local Storage");
-	for (var i = 0; i < localStorage.length; i++) {
-		var key = localStorage.key(i);
-		console.log(key + ": " + localStorage.getItem(key));
-	}
-}
+
 
 function displayArticles(suggestedArticles) {
 	var popupDiv = document.getElementById('suggested_div');
