@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Reading Habits</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js'></script>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href={{url_for('homepage')}}>Across the Aisle</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a href = {{url_for('ext_usage_chart', time=4)}}>Extension Usage</a></li>
+                        <li class="active"><a href="#">Reading Habits<span class="sr-only">(current)</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <h1>Reading Habits</h1>
+            </div>
+            <div class="row">
+                <h4>{{legend_sources | safe}}</h4>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Change Timeframe of Data
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li id="year"><a href = {{url_for('read_analysis', time=52)}} data-value="last year">Last Year</a></li>
+                        <li id="month"><a href = {{url_for('read_analysis', time=4)}} data-value="last month">Last Month</a></li>
+                        <li id="week"><a href = {{url_for('read_analysis', time=1)}} data-value="last week">Last Week</a></li>
+                    </ul>
+                </div>
+                <canvas id="chart" width="900" height="300"></canvas>
+            </div>
+        </div>
+        <script>
+            // get chart canvas
+            var mychart = document.getElementById("chart").getContext("2d");
+            // draw chart
+            var data = {
+                labels: {{labels_sources|safe}},
+                datasets: [{
+                    data: {{values_sources}},
+                    backgroundColor: {{colors_sources|safe}},
+                    hoverBackgroundColor: {{colors_sources|safe}}
+                }]
+            };
+            var mychart = new Chart(mychart, {
+                type: 'bar',
+                data: data,
+                options: {
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    </body>
+</html>

@@ -1,0 +1,22 @@
+button#dropdownMenu1    {
+    margin-top: 25px;
+}
+
+body    {
+    background-image: url("bg.png");
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+#title  {
+    text-align: center;
+    font-size: 80px;
+}
+
+#rainbow    {
+    font-size: 80px;
+    text-align: center;
+    background: -webkit-linear-gradient(#CEF6F5,#F6CECE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
