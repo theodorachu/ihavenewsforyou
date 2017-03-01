@@ -53,20 +53,23 @@ function getArticleSuggestions(article_url, callback, errorCallback) {
 	});  
 }
 
-
-
 function displayArticles(suggestedArticles) {
 	var popupDiv = document.getElementById('suggested_div');
 	var ol = popupDiv.appendChild(document.createElement('ol'));
 	suggestedArticles.forEach(function(article){
 		var li = ol.appendChild(document.createElement('li'));
 		var a = li.appendChild(document.createElement('a'));
+        var _img = document.createElement('img');
+        _img.src = "icon.png";
+        _img.height = "50";
+        _img.width = "50";
+        _img.id = "news source image";
+        li.appendChild(_img);
 		a.href = article['url'];
 		a.target = "_blank";
 		a.appendChild(document.createTextNode(article['title']));
 	});
 }
-
 
 
 function getSuggestionsAndDisplayArticles(url) {
@@ -91,12 +94,9 @@ function notifyAPIChromeExtensionOpened(url) {
 
 function addChromeExtensionOpenedListener() {
 	document.addEventListener('DOMContentLoaded', function() {
-
 		getCurrentTabUrl(
 			getSuggestionsAndDisplayArticles
 		);
 	});  
 }
-
-
 

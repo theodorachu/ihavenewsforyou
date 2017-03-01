@@ -1,6 +1,9 @@
 var ACTIVE_URLS_KEY = CONSTANTS.ACTIVE_URLS_LS_KEY;
 var TAB_URLS_KEY = CONSTANTS.TAB_URLS_LS_KEY;
 
+//facebook login
+var url_login_success = 'www.facebook.com/connect/login_success.html';
+
 function main() {
 	chrome.tabs.onActivated.addListener(onTabOpen);
 	chrome.tabs.onUpdated.addListener(onURLChange);
@@ -105,3 +108,31 @@ function getCurrentURLPromise() {
 	 	});
 	});
 }
+
+/*
+* listener for login
+* TODO: security
+* result.accessToken
+*/
+// chrome.tabs.onActivated.addListener(function(){
+//   chrome.storage.sync.get('accessToken', function (result) {
+//     if (result != null){
+//       getCurrentTabUrl(function(url){
+//         if(url.indexOf(url_login_success) != -1){
+//           //slightly complicated way of getting token from url
+//           var params = tabs[i].url.split('#')[1];
+//           var accessToken = params.split('&')[0];
+//           accessToken = accessToken.split('=')[1];
+        
+//           chrome.storage.sync.set({'acessToken': acessToken}, function(){
+//             console.log('Account info saved');
+//         });
+//         }
+//       });
+//     } else {
+//       console.log('accessToken found');
+//     }
+//   });
+
+// });
+

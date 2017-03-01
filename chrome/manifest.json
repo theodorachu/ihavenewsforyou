@@ -15,7 +15,8 @@
     "tabs",
     "webRequest", 
     "https://across-the-aisle.herokuapp.com/*",
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
   "background": { 
     "scripts": [
