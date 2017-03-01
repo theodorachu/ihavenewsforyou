@@ -190,6 +190,15 @@ def login():
 		# return flask.render_template('login.html', form=form)
 
 
+@app.route('/is_news_source', methods=['GET'])
+def checkWhetherURLIsForNewsSource():
+	if 'url' not in request.values.keys():
+		return createJSONResp(error="Missing url field")
+	url = request.values['url']
+	article = NewsArticle(request.values['url'])
+	print article.isNewsArticle(), url
+	return json.dumps({'is_news_article': article.isNewsArticle()})
+
 @app.route('/visit_begun', methods=['POST'])
 def storeVisitBegun():
 		fields = ['url', 'timeIn', 'id']

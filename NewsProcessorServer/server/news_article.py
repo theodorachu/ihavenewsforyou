@@ -7,7 +7,7 @@ import newspaper
 import sys
 import os
 import re
-
+from lxml.etree import XMLSyntaxError, DocumentInvalid 
 
 
 
@@ -23,7 +23,11 @@ def setUpParsedArticle(parsedArticle):
 			parsedArticle.parse()
 			parsedArticle.nlp()
 			articleParsed = True
-		except: # Something went wrong because the newspaper module is a little buggy. Try again!
+		except XMLSyntaxError as e: # Something went wrong because the newspaper module is a little buggy. Try again!
+			loopCount += 1
+			if loopCount > 5:
+				return False
+		except:
 			loopCount += 1
 			if loopCount > 5:
 				return False
@@ -34,6 +38,9 @@ def setUpParsedArticle(parsedArticle):
 class NewsArticle:
 	def __init__(self, url):
 		self.url = url
+
+	def isNewsArticle(self):
+		return 'cnn' in self.url
 
 	def parse(self):
 		parsedArticle = newspaper.Article(self.url)
@@ -48,15 +55,21 @@ class NewsArticle:
 			self.summary = parsedArticle.summary
 			self.text = parsedArticle.text
 
-		#ENCODE EVERYTHING IN UTF 6
-		for k, v in self.__dict__.iteritems():
-			if isinstance(v, unicode) or isinstance(v, str):
-				self.__dict__[k] = v.encode('utf-8')
+			#ENCODE EVERYTHING IN UTF 6
+			for k, v in self.__dict__.iteritems():
+				if isinstance(v, unicode) or isinstance(v, str):
+					self.__dict__[k] = v.encode('utf-8')
 		return success
 
 	@staticmethod
 	def parseSource(url):
-		return re.search('www\.([a-zA-Z0-9]+)\.com', url).group(1)
+		sourceMatch = re.search('www\.([a-zA-Z0-9]+)\.com', url)
+		if not sourceMatch:
+			sourceMatch = re.search('([a-zA-Z0-9]+)\.com', url)
+		if not sourceMatch: 
+			return "unknown"
+		return sourceMatch.group(1)
+
 
 
 
