@@ -64,7 +64,7 @@ def ext_usage_chart(time):
 	values_ext[0] = totalVisits
 	values_ext[1] = numExtensionClicks
 	values_alt_art[0] = totalVisits - numLinkFollows
-	values_alt_art[1] = numTotalLinkFollows         
+	values_alt_art[1] = numLinkFollows         
 	return render_template("ext_usage.html", 
 													legend_ext=legend_ext,
 													colors_ext=colors_ext, 
@@ -82,7 +82,7 @@ def read_analysis(time):
 	# QUERY DATABASE
 	visits = Visit.query.all() #TODO: Filter by date 
 	visit_data = []
-	for i in xrange(50):
+	for i in xrange(min(len(visits), 50)): # TODO: Go through all the visits
 			v = visits[i]
 			if "www" not in v.url:
 					continue
