@@ -13,3 +13,5 @@ db = SQLAlchemy(app)
 # login_manager.init_app(app)
 
 from server import views, models
+
+

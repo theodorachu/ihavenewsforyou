@@ -12,6 +12,7 @@ from apiclient import discovery
 from oauth2client import client
 import json
 import random
+from newsSources import is_news_source
 
 """
 Docs:
@@ -195,9 +196,7 @@ def checkWhetherURLIsForNewsSource():
 	if 'url' not in request.values.keys():
 		return createJSONResp(error="Missing url field")
 	url = request.values['url']
-	article = NewsArticle(request.values['url'])
-	print article.isNewsArticle(), url
-	return json.dumps({'is_news_article': article.isNewsArticle()})
+	return json.dumps({'is_news_article': is_news_source(url)})
 
 @app.route('/visit_begun', methods=['POST'])
 def storeVisitBegun():
@@ -207,6 +206,9 @@ def storeVisitBegun():
 
 		visit = Visit.createVisitFromRequest(request)
 		success = Visit.add(visit)
+		article = NewsArticle(url)
+		if (article.parse()):
+			Article.add(Article(article))
 		if not success:
 				return createJSONResp(error='Failed to add visit to db')
 		return createJSONResp(success=True)
