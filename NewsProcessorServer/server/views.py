@@ -69,16 +69,15 @@ def visits():
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
-	# if 'url' not in request.values.keys():
-	# 	return createJSONResp(error="Missing url field")
-	return json.dumps([{'url': request.values['url'], 'title': 'TITLE 1'}, {'url': request.values['url'], 'title': 'TITLE 2'}])
-	# article = NewsArticle(request.values['url'])
-	# successfulParse = article.parse()
-	# if not successfulParse:
-	# 	return createJSONResp(error='Failed to parse article')
-	# search = BingSearch()
-	# suggestions = search.get_suggestions(article)
-	# return json.dumps(suggestions)
+	if 'url' not in request.values.keys():
+		return createJSONResp(error="Missing url field")
+	article = NewsArticle(request.values['url'])
+	successfulParse = article.parse()
+	if not successfulParse:
+		return createJSONResp(error='Failed to parse article')
+	search = BingSearch()
+	suggestions = search.get_suggestions(article)
+	return json.dumps(suggestions)
 
 @app.route('/is_news_source', methods=['GET'])
 def checkWhetherURLIsForNewsSource():
@@ -86,8 +85,8 @@ def checkWhetherURLIsForNewsSource():
 		return createJSONResp(error="Missing url field")
 	url = request.values['url']
 	article = NewsArticle(request.values['url'])
-	successfulParse = article.parse()
-	return json.dumps({'is_news_article': successfulParse})
+	print article.isNewsArticle(), url
+	return json.dumps({'is_news_article': article.isNewsArticle()})
 
 @app.route('/visit_begun', methods=['POST'])
 def storeVisitBegun():
