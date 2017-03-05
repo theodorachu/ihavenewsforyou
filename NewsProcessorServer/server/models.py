@@ -17,26 +17,31 @@ class User(db.Model):
 class Visit(db.Model):
 	__tablename__ = 'visits'
 
-	url = db.Column(db.String(256), primary_key=True)
+	url = db.Column(db.String(256))
 	userID = db.Column(db.Integer, primary_key=True)
 	timeIn = db.Column(db.DateTime, primary_key=True)
 	timeOut = db.Column(db.DateTime)
+	lastActiveTime = db.Column(db.DateTime)
+	state = db.Column(db.String(32))
+	timeSpent = db.Column(db.Float)
 	receivedSuggestions = db.Column(db.Boolean)
 	clickedSuggestion = db.Column(db.Boolean)
 
-	def __init__(self, url, userID, timeIn, timeOut=None, receivedSuggestions=False, clickedSuggestion=False):
+	def __init__(self, url, userID, timeIn, timeOut=None, timeSpent=0.0, receivedSuggestions=False, clickedSuggestion=False):
 		self.url =  url
 		self.userID = int(userID)
 		self.timeIn = timeIn
 		self.timeOut = timeOut
+		self.timeSpent = timeSpent
+		self.lastActiveTime = timeIn
+		self.state = 'active' #can be active, closed, suspended
 		self.receivedSuggestions = receivedSuggestions
 		self.clickedSuggestion = clickedSuggestion
 
 	@staticmethod
-	def getMostRecentVisit(userID, url):
+	def getVisit(userID, url):
 		return db.session.query(Visit) \
-					.filter_by(userID=userID, url=url) \
-					.order_by(Visit.timeIn.desc()).first()
+					.filter_by(userID=userID, url=url).first()
 
 	@staticmethod
 	def getByUserID(userID):
@@ -52,24 +57,11 @@ class Visit(db.Model):
 		updateCommand = lambda session: session.query(Visit) \
 							.filter_by(
 								userID=visit.userID, 
-								timeIn =visit.timeIn,
 								url=visit.url
 							) \
 							.update(updateParams)
 		success = dbExecute(updateCommand)
 		return success
-
-	@staticmethod
-	def createVisitFromRequest(request):
-		url = request.form['url']
-		timeIn = dateparser.parse(request.form['timeIn'])
-		userID = request.form['id']
-		optionalParams = {}
-		if 'timeOut' in request.form: optionalParams['timeOut'] = dateparser.parse(request.form['timeOut'])
-		if 'receivedSuggestions' in request.form: optionalParams['receivedSuggestions'] = dateparser.parse(request.form['receivedSuggestions'])
-		if 'clickedSuggestion' in request.form: optionalParams['clickedSuggestion'] = dateparser.parse(request.form['clickedSuggestion'])
-		return Visit(url, userID, timeIn, **optionalParams)	
-
 
 	def __repr__(self):
 		return '<Visit %s>' % self.url

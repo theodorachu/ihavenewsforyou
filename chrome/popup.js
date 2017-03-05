@@ -67,6 +67,7 @@ function displayArticles(suggestedArticles) {
         li.appendChild(_img);
 		a.href = article['url'];
 		a.target = "_blank";
+		a.onclick = notifyAPIChromeExtensionOpened
 		a.appendChild(document.createTextNode(article['title']));
 	});
 }
@@ -83,12 +84,11 @@ function getSuggestionsAndDisplayArticles(url) {
 			displayArticles(suggestedArticles);
 		}, function(errorMessage) {
 			// TODO: Brandon - Create a better error message
-			//alert('Error: ' + errorMessage);
 		});
 	}
 }
 
-function notifyAPIChromeExtensionOpened(url) {
+function notifyAPIArticleWasCliked() {
 	
 }
 
