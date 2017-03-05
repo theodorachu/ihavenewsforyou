@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Extension Usage</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js'></script>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href={{url_for('index')}}>Across the Aisle</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">Extension Usage<span class="sr-only">(current)</span></a></li>
+                        <li><a href= {{url_for('read_analysis', time=4)}}>Reading Habits</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h1>Extension Usage</h1>
+                </div>
+                <div class="col-md-8">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Change Timeframe of Data
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li id="year"><a href = {{url_for('ext_usage_chart', time=52)}} data-value="last year">Last Year</a></li>
+                            <li id="month"><a href = {{url_for('ext_usage_chart', time=4)}} data-value="last month">Last Month</a></li>
+                            <li id="week"><a href = {{url_for('ext_usage_chart', time=1)}} data-value="last week">Last Week</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <br>
+                <br>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>{{legend_ext | safe}}</h4>
+                    <canvas id="chart" width="500" height="300"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <h4>{{legend_alt_art | safe}}</h4>
+                    <canvas id="chart2" width="500" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <script>
+            /*$(".dropdown-menu").click(function(){
+                $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+                $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+            });*/
+            //document.getElementById("extYear").addEventListener("click", function() {
+
+            //}, false);
+            // get chart canvas
+            var mychart = document.getElementById("chart").getContext("2d");
+            var secondPiechart = document.getElementById("chart2").getContext("2d");
+            // draw chart
+            var data = {
+                labels: {{labels_ext|safe}},
+                datasets: [{
+                    label: "Graph 1",
+                    data: {{values_ext}},
+                    backgroundColor: {{colors_ext|safe}},
+                    hoverBackgroundColor: {{colors_ext|safe}}
+                }]
+            };
+            var data2 = {
+                labels: {{labels_alt_art|safe}},
+                datasets:[{
+                    label: "Graph 2",
+                    data: {{values_alt_art}},
+                    backgroundColor: {{colors_alt_art|safe}},
+                    hoverBackgroundColor: {{colors_alt_art|safe}}
+                }]
+            };
+            var myPiechart = new Chart(mychart, {
+                type: 'pie',
+                data: data,
+            });
+            var secondPiechart = new Chart(secondPiechart, {
+                type: 'pie',
+                data: data2,
+            });
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    </body>
+</html>
