@@ -1,6 +1,3 @@
-var ACTIVE_URLS_KEY = CONSTANTS.ACTIVE_URLS_LS_KEY;
-var TAB_URLS_KEY = CONSTANTS.TAB_URLS_LS_KEY;
-
 //facebook login
 var url_login_success = 'www.facebook.com/connect/login_success.html';
 
@@ -11,6 +8,7 @@ function main() {
 
 main();
 
+
 // On tab open, we send API notice that the tab has been opened
 var currURL = "";
 function onTabOpen(tabInfo, unimportantInfo) {
@@ -18,11 +16,11 @@ function onTabOpen(tabInfo, unimportantInfo) {
 	getCurrentURLPromise().then(function(newURL) {
 		if (prevURL === newURL) return;
 		isURLNewsSourcePromise(prevURL).then(function() {
-			sendTimeOutToServer(prevURL);
+			sendTimeToServerPromise(prevURL, VISIT_ACTIONS.SUSPEND).then();
 		});
 
 		isURLNewsSourcePromise(newURL).then(function() {
-			sendTimeInToServer(newURL);
+			sendTimeToServerPromise(newURL, VISIT_ACTIONS.ACTIVATE).then();
 		});
 		currURL = newURL;
 	}, function(err) {});
@@ -31,11 +29,13 @@ function onTabOpen(tabInfo, unimportantInfo) {
 function onURLChange(tabID, changeInfo, tab) {
 	console.log('url changed');
 	isURLNewsSourcePromise(tab.url).then(function() {
-		sendTimeInToServer(tab.url);
-		sendTimeOutToServer(currURL);
+		// We have to chain these because the url refreshes multiple times
+		sendTimeToServerPromise(currURL, VISIT_ACTIONS.SUSPEND)
+			.then(sendTimeToServerPromise(tab.url, VISIT_ACTIONS.ACTIVATE));
 		currURL = tab.url;
 	});
 }
+
 
 function removeHashBang(url) {
 	var hashBangIndex = url.indexOf('#');
@@ -68,32 +68,27 @@ function isURLNewsSourcePromise(url) {
 	});
 }
 
-function sendTimeInfoToServer(params, apiURL) {
-	if (!params.url) return;
-	var sendType = params.timeOut ? "time out" : "time in";
-	Promise.all([isURLNewsSourcePromise(params.url), constructPostPromise(apiURL, params)]).then(function(response) {
-		console.log(sendType + ':', params.url, 'sent successfully with time', params.timeOut ? params.timeOut : params.timeIn);
-	}, function(error) {
-		console.log(params.url, 'not sent correctly:', error);
-	});	
-}
-
-function sendTimeOutToServer(url) {
-	sendTimeInfoToServer({
+function sendTimeToServerPromise(url, visitUpdateType) {
+	return new Promise(function(resolve, reject) {
+		var params = {
 		'url': url,
 		'id': 12345,
-		'timeOut': getCurrTimeAsString()
-	}, CONSTANTS['VISIT_ENDED_API']);
+		'time': getCurrTimeAsString(),
+		'visitUpdateType': visitUpdateType
+		}
+		var apiURL = CONSTANTS['VISITS_API'];
+		if (!params.url) return;
 
+		constructPostPromise(apiURL, params).then(function(response) {
+			console.log(params.visitUpdateType + ':', params.url, 'sent successfully with time', params.time);
+			resolve();
+		}, function(error) {
+			console.log(params.url, 'not sent correctly:', error);
+			reject(error);
+		});	
+	});
 }
 
-function sendTimeInToServer(url){
-	sendTimeInfoToServer({
-		'url': url,
-		'id': 12345,
-		'timeIn': getCurrTimeAsString()
-	}, CONSTANTS['VISIT_BEGUN_API']);
-}
 
 function getCurrentURLPromise() {
 	return new Promise(function(resolve, reject) {
