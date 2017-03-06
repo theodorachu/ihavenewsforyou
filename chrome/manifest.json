@@ -23,5 +23,9 @@
       "jquery-3.1.1.min.js", "helpers.js", "background.js"
     ],
     "persistent": true
+  },
+  
+  "externally_connectable": {
+    "matches": ["http://127.0.0.1:5000/", "https://across-the-aisle.herokuapp.com/*"]
   }
 }

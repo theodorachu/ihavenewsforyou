@@ -9,6 +9,79 @@ import os
 import re
 from lxml.etree import XMLSyntaxError, DocumentInvalid 
 
+NEWS_SOURCES = [
+    'ourfuture',
+    'shadowproof',
+    'counterpunch',
+    'dailykos',
+    'democraticunderground',
+    'crooksandliars',
+    'thepoliticalcarnival',
+    'alternet',
+    'motherjones',
+    'thenation',
+    'thinkprogress',
+    'progressive',
+    'rollingstone',
+    'prospect',
+    'americanprogress',
+    'salon',
+    'msnbc',
+    'mediamatters',
+    'newrepublic',
+    'businessinsider',
+    'huffingtonpost',
+    'thedailybeast',
+    'foreignpolicy',
+    'nationaljournal',
+    'mediaite',
+    'talkingpointsmemo',
+    'theguardian',
+    'ap',
+    'nytimes',
+    'bloomberg',
+    'theweek',
+    'msn',
+    'reuters',
+    'realclearpolitics',
+    'bbc',
+    'washingtonexaminer',
+    'washingtonindependent',
+    'aol',
+    'aljazeera',
+    'newser',
+    'thehill',
+    'politifact',
+    'washingtonpost',
+    'cnn',
+    'economist',
+    'ft',
+    'politico',
+    'slate',
+    'theamericanconservative',
+    'wsj',
+    'forbes',
+    'nationalreview',
+    'foxnews',
+    'freerepublic',
+    'weeklystandard',
+    'washingtontimes',
+    'newsmax',
+    'theblaze',
+    'wnd',
+    'breitbart',
+    'esquire',
+    'newyorker',
+    'vanityfair',
+    'newsweek',
+    'time',
+    'usnews',
+    'rawstory',
+    'nbcnews',
+    'npr',
+    'cnbc'    
+  ]
+
 
 
 # The newspaper package requires that you download(), parse() and nlp() before getting information
@@ -69,6 +142,15 @@ class NewsArticle:
 		if not sourceMatch: 
 			return "unknown"
 		return sourceMatch.group(1)
+
+	@staticmethod
+	def is_news_source(url):
+		sourceMatch = re.search('www\.([a-zA-Z0-9]+)\.', url)
+		if not sourceMatch:
+			sourceMatch = re.search('([a-zA-Z0-9]+)\.', url)
+		if not sourceMatch: 
+			return False
+		return (sourceMatch.group(1) in NEWS_SOURCES)
 
 
 

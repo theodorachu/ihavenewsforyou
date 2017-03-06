@@ -12,7 +12,6 @@ from apiclient import discovery
 from oauth2client import client
 import json
 import random
-from newsSources import is_news_source
 
 from flask_login import login_user, logout_user, current_user
 from OAuthUtil import OAuthSignIn
@@ -158,6 +157,11 @@ def read_analysis(time):
 																						labels_sources = sources)
 
 
+
+################ BACKEND ROUTES ##################################################
+################ BACKEND ROUTES ##################################################
+################ BACKEND ROUTES ##################################################
+################ BACKEND ROUTES ##################################################
 ################ BACKEND ROUTES ##################################################
 
 @app.route('/stats', methods=['GET'])
@@ -232,22 +236,62 @@ def checkWhetherURLIsForNewsSource():
 	if 'url' not in request.values.keys():
 		return createJSONResp(error="Missing url field")
 	url = request.values['url']
-	return json.dumps({'is_news_article': is_news_source(url)})
+	return json.dumps({'is_news_article': NewsArticle.is_news_source(url)})
 
-@app.route('/visit_begun', methods=['POST'])
+@app.route('/visits', methods=['POST'])
 def storeVisitBegun():
-		fields = ['url', 'timeIn', 'id']
-		if areFieldsMissing(request, fields):
-				return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+	print request.form
+	fields = ['url', 'time', 'id', 'visitUpdateType']
+	if areFieldsMissing(request, fields):
+			return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
-		visit = Visit.createVisitFromRequest(request)
+	visitUpdateType = request.form['visitUpdateType'].lower()
+	if visitUpdateType not in ['activate', 'suspend']:
+		return createJSONResp(error='Invalid request change type: ' + visitUpdateType)
+	url = request.form['url']
+	timeStr = request.form['time']
+	userID = request.form['id']
+	success = True
+	visit = Visit.getVisit(userID, url)
+
+	if visit and not visitStateChangeIsConsistent(visit, visitUpdateType):
+		return createJSONResp(error='Invalid request change type')
+
+	# Visit created (or reactivated)
+	if visitUpdateType == 'activate' and visit == None:
+		visit = Visit(url, userID, timeStr)
 		success = Visit.add(visit)
-		article = NewsArticle(url)
-		if (article.parse()):
-			Article.add(Article(article))
-		if not success:
-				return createJSONResp(error='Failed to add visit to db')
-		return createJSONResp(success=True)
+		# article = NewsArticle(url)
+		# if (article.parse()):
+		# 	Article.add(Article(article))
+	elif visitUpdateType == 'activate' and visit:
+		success = Visit.update(visit, {
+			'state': 'active',
+			'lastActiveTime': timeStr
+		})
+
+	# Visit suspended
+	if visitUpdateType == 'suspend':
+		additionalTime = (dateparser.parse(timeStr) - visit.lastActiveTime).total_seconds()
+		success = Visit.update(visit, {
+			'state': 'suspended',
+			'lastActiveTime': timeStr,
+			'timeOut': timeStr,
+			'timeSpent': visit.timeSpent + additionalTime
+		})
+
+	if not success:
+			return createJSONResp(error='Failed to add visit to db')
+	return createJSONResp(success=True)
+
+def visitStateChangeIsConsistent(visit, visitUpdateType):
+	if visit.state == 'active':
+		return visitUpdateType in ['suspend']
+	if visit.state == 'suspended':
+		return visitUpdateType in ['activate']
+	return False
+
+
 
 @app.route('/visit_ended', methods=['POST'])
 def storeVisitEnded():
@@ -255,7 +299,7 @@ def storeVisitEnded():
 		if areFieldsMissing(request, fields):
 				return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
-		visit = Visit.getMostRecentVisit(request.form['id'], request.form['url'])
+		visit = Visit.getVisit(request.form['id'], request.form['url'])
 		success = Visit.update(visit, {'timeOut': dateparser.parse(request.form['timeOut'])})
 		if not visit:
 				return createJSONResp(error='Visit does not exist')

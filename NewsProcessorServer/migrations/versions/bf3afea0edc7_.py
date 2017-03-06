@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 695dd1da1eac
+Revision ID: bf3afea0edc7
 Revises: 
-Create Date: 2017-02-16 11:42:36.673109
+Create Date: 2017-03-05 13:46:05.817436
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '695dd1da1eac'
+revision = 'bf3afea0edc7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -42,13 +42,14 @@ def upgrade():
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_index(op.f('ix_users_name'), 'users', ['name'], unique=False)
     op.create_table('visits',
-    sa.Column('url', sa.String(length=256), nullable=False),
+    sa.Column('url', sa.String(length=256), nullable=True),
     sa.Column('userID', sa.Integer(), nullable=False),
     sa.Column('timeIn', sa.DateTime(), nullable=False),
     sa.Column('timeOut', sa.DateTime(), nullable=True),
+    sa.Column('timeSpent', sa.Float(), nullable=True),
     sa.Column('receivedSuggestions', sa.Boolean(), nullable=True),
     sa.Column('clickedSuggestion', sa.Boolean(), nullable=True),
-    sa.PrimaryKeyConstraint('url', 'userID', 'timeIn')
+    sa.PrimaryKeyConstraint('userID', 'timeIn')
     )
     # ### end Alembic commands ###
 

@@ -86,7 +86,8 @@ class BingSearch:
 		return random.randint(0, self.numArticles)
 
  # Argument: NewsArticle class
-	def get_suggestions(self, news_article, fn):
+ # Nathaniel commented out parameter fn
+	def get_suggestions(self, news_article):
 		headers = {'Ocp-Apim-Subscription-Key': self.key1}
 		query = " ".join(news_article.keywords)
 		payload = {'q': query, "count": self.numArticles} 
@@ -112,8 +113,6 @@ class BingSearch:
 				"providers": providers,
 				"description": entry["description"]
 				})
-
-		# return fn(searchResults) # Uses callback to sort the search results
 
 		# Get the bias of the article you are currently on
 		sourceBias = BingSearch.getSourceBias(BingSearch.sanitizeSrc(news_article.source))
