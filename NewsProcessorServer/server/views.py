@@ -13,15 +13,11 @@ from oauth2client import client
 import json
 import random
 
-<<<<<<< HEAD
 import datetime
 from sqlalchemy import and_
-||||||| merged common ancestors
-=======
 from flask_login import login_user, logout_user, current_user
 from OAuthUtil import OAuthSignIn
 
->>>>>>> 9761c2be4122a8c01bcb09cc572921b32453aa3b
 """
 Docs:
 1) Flask Login: 
