@@ -64,6 +64,8 @@
 
                     {% if current_user.is_authenticated %}
                         <li>
+
+
                             <a href="{{ url_for('logout') }}">Logout</a>
                         </li>
                     {% else %}
@@ -175,10 +177,15 @@
 
     {% if current_user.is_authenticated %}
     <script>
-      //testing messaging, should be moved to end of login process
       var extensionId = "doppjpgaejbdajihphgjhjcjkamiggbn";
       chrome.runtime.sendMessage(extensionId, {"userId": {{current_user.id}}});
     </script>
+    {% else %}
+    <script>
+      var extensionId = "doppjpgaejbdajihphgjhjcjkamiggbn";
+      chrome.runtime.sendMessage(extensionId, {"userId": -1});
+    </script>
+
     {% endif %}
 
 </body>
