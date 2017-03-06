@@ -1,5 +1,5 @@
 from server import app, db #, login_manager
-from models import Article, User, Visit
+from models import Article, User, Visit, NewsSource
 from db_helpers import dbExecute
 from recommendArticles import BingSearch
 from news_article import NewsArticle
@@ -200,7 +200,8 @@ def checkWhetherURLIsForNewsSource():
 	if 'url' not in request.values.keys():
 		return createJSONResp(error="Missing url field")
 	url = request.values['url']
-	return json.dumps({'is_news_article': NewsArticle.is_news_source(url)})
+	newsSourceOrigin = NewsSource.getSourceByURL(url)
+	return json.dumps({'is_news_article': newsSourceOrigin != None})
 
 @app.route('/visits', methods=['POST'])
 def storeVisitBegun():

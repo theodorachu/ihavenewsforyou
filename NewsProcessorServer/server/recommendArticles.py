@@ -111,7 +111,7 @@ class BingSearch:
 				"url": entry["url"],
 				"title": entry["name"],
 				"providers": providers,
-				"description": entry["description"]
+				"description": entry["description"],
 				})
 
 		# Get the bias of the article you are currently on
