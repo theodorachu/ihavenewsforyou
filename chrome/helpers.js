@@ -2,6 +2,10 @@ function storeObjectInLocalStorage(key, item) {
 	localStorage.setItem(key, JSON.stringify(item));
 }
 
+function removeObjectInLocalStorage(key){
+  localStorage.removeItem(key);
+}
+
 function isKeyInLocalStorage(key) {
 	return localStorage.getItem(key) !== null;
 }
@@ -39,8 +43,5 @@ function _printLocalStorage() {
 }
 
 function getUserId(){
-  if(isKeyInLocalStorage("userId") == null ){
-    return "12345";
-  }
-  else return getObjectFromLocalStorage("userId");
+  return getObjectFromLocalStorage("userId");
 }
