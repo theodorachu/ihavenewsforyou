@@ -3,9 +3,6 @@ var userId;
 function main() {
 	chrome.tabs.onActivated.addListener(onTabOpen);
 	chrome.tabs.onUpdated.addListener(onURLChange);
-  //debugging-----
-  removeObjectInLocalStorage("userId");
-  //------
   checkIfLoggedIn();
 }
 
@@ -117,12 +114,16 @@ function getCurrentURLPromise() {
 }
 
 /*
-* receive message with from webapp
+* receive message with Id from webapp
 */
 chrome.runtime.onMessageExternal.addListener(
   function(message, sender, sendResponse) {
     userId = message["userId"];
+    if(userId == -1){
+      //user clicked logout
+      removeObjectInLocalStorage("userId");
+    }
     storeObjectInLocalStorage("userId", userId);
-    console.log("new userID stored: ", userId); 
+    console.log("new userId stored: ", userId); 
   });
 
