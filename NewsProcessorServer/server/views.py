@@ -1,4 +1,4 @@
-from server import app, db #, login_manager
+from server import app, db
 from models import Article, User, Visit
 from db_helpers import dbExecute
 from recommendArticles import BingSearch
@@ -13,6 +13,10 @@ from oauth2client import client
 import json
 import random
 from newsSources import is_news_source
+
+from flask_login import login_user, current_user
+from OAuthUtil import OAuthSignIn
+
 
 """
 Docs:
@@ -35,6 +39,34 @@ COLOR_WHEEL = ['#000000', '#00FF00', '#0000FF', '#FF0000', '#01FFFE', '#FFA6FE',
 @app.route('/')
 def index():
 	return render_template("index.html")
+
+@app.route('/profile')
+def profile():
+	return render_template('profile.html')
+
+@app.route('/authorize/<provider>')
+def oauth_authorize(provider):
+    if not current_user.is_anonymous:
+        return redirect(url_for('index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    return oauth.authorize()
+
+@app.route('/callback/<provider>')
+def oauth_callback(provider):
+    if not current_user.is_anonymous:
+        return redirect(url_for('index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    social_id, username, email = oauth.callback()
+    if social_id is None:
+        flash('Authentication failed.')
+        return redirect(url_for('index'))
+    user = User.query.filter_by(social_id=social_id).first()
+    if not user:
+        user = User(social_id=social_id, name=username, email=email)
+        db.session.add(user)
+        db.session.commit()
+    login_user(user, True)
+    return redirect(url_for('/'))
 
 @app.route('/usage')
 @app.route('/usage/<int:time>')
