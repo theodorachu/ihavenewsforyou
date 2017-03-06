@@ -2,6 +2,10 @@ function storeObjectInLocalStorage(key, item) {
 	localStorage.setItem(key, JSON.stringify(item));
 }
 
+function removeObjectInLocalStorage(key){
+  localStorage.removeItem(key);
+}
+
 function isKeyInLocalStorage(key) {
 	return localStorage.getItem(key) !== null;
 }
@@ -36,4 +40,8 @@ function _printLocalStorage() {
 		var key = localStorage.key(i);
 		console.log(key + ": " + localStorage.getItem(key));
 	}
+}
+
+function getUserId(){
+  return getObjectFromLocalStorage("userId");
 }

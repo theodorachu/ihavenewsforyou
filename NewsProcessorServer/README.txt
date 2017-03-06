@@ -10,6 +10,7 @@ To Use the Database:
 	a) python manage.py db init
 	b) python manage.py db migrate
 	c) python manage.py db upgrade
+	NOTE: you may need to run postgres -D /usr/local/var/postgres to get psql to start up
 4) Whenever you change the models in models.py, run 3b) and 3c) to complete the migration
 5) Type: psql news_db to examine the contents of the database
 	- Type \dt. There should be 4 tables as of 2/13 - alembic, Visits, Users and Articles

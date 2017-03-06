@@ -1,14 +1,18 @@
 from server import db #, login_manager
 from db_helpers import dbExecute
 from dateutil import parser as dateparser
+import re
+from flask_login import UserMixin
 
-class User(db.Model):
+class User(UserMixin, db.Model):
 	__tablename__ = 'users'
 
-	userID = db.Column(db.Integer, primary_key=True)
-	googleID = db.Column(db.String(64), nullable=False, unique=True)
+	id = db.Column(db.Integer, primary_key=True)
+	# googleID = db.Column(db.String(64), nullable=False, unique=True)
+	socialID = db.Column(db.String(64), nullable=False, unique=True)
 	name = db.Column(db.String(64), index=True)
-	email = db.Column(db.String(120), index=True, unique=True)
+	test = db.Column(db.Boolean)
+	# email = db.Column(db.String(120), index=True, unique=True)
 
 	def __repr__(self):
 		return '<User %r>' % (self.name)
@@ -65,6 +69,33 @@ class Visit(db.Model):
 
 	def __repr__(self):
 		return '<Visit %s>' % self.url
+
+class NewsSource(db.Model):
+	__tablename__ = 'sources'
+
+	name = db.Column(db.String(128), primary_key=True)
+	url = db.Column(db.String(128))
+	bias = db.Column(db.Integer)
+	allSidesURL = db.Column(db.String(128))
+	
+	def __repr__(self):
+		return '<NewsSource %s>' % self.name
+
+	@staticmethod
+	def add(source):
+		return dbExecute(lambda session: session.add(source))
+
+	@staticmethod
+	def getSourceByURL(url):
+		baseURLMatch = re.search('[\.a-z0-9A-Z]+.com', url)
+		if baseURLMatch:
+			url = baseURLMatch.group(0)
+		print url
+		source = db.session.query(NewsSource) \
+			.filter(NewsSource.url.like("%" + url + "%"))
+		if source: 
+			return source.one()
+		return None
 
 
 class Article(db.Model):

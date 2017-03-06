@@ -1,20 +1,27 @@
 from server import app, db #, login_manager
-from models import Article, User, Visit
+from models import Article, User, Visit, NewsSource
 from db_helpers import dbExecute
 from recommendArticles import BingSearch
 from news_article import NewsArticle
 
 from dateutil import parser as dateparser
 
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for, flash
 import httplib2
 from apiclient import discovery
 from oauth2client import client
 import json
 import random
 
+<<<<<<< HEAD
 import datetime
 from sqlalchemy import and_
+||||||| merged common ancestors
+=======
+from flask_login import login_user, logout_user, current_user
+from OAuthUtil import OAuthSignIn
+
+>>>>>>> 9761c2be4122a8c01bcb09cc572921b32453aa3b
 """
 Docs:
 1) Flask Login: 
@@ -40,6 +47,39 @@ LAST_YEAR = 52
 @app.route('/')
 def index():
 	return render_template("index.html")
+
+@app.route('/profile')
+def profile():
+	return render_template('profile.html')
+
+@app.route('/authorize/<provider>')
+def oauth_authorize(provider):
+    if not current_user.is_anonymous:
+        return redirect(url_for('index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    return oauth.authorize()
+
+@app.route('/callback/<provider>')
+def oauth_callback(provider):
+    if not current_user.is_anonymous:
+        return redirect(url_for('index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    social_id, name = oauth.callback()
+    if social_id is None:
+        flash('Authentication failed.')
+        return redirect(url_for('index'))
+    user = User.query.filter_by(socialID=social_id).first()
+    if not user:
+        user = User(socialID=social_id, name=name)
+        db.session.add(user)
+        db.session.commit()
+    login_user(user, True)
+    return redirect(url_for('index'))
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/usage/<int:time>')
 def ext_usage_chart(time):
@@ -252,7 +292,8 @@ def checkWhetherURLIsForNewsSource():
 	if 'url' not in request.values.keys():
 		return createJSONResp(error="Missing url field")
 	url = request.values['url']
-	return json.dumps({'is_news_article': NewsArticle.is_news_source(url)})
+	newsSourceOrigin = NewsSource.getSourceByURL(url)
+	return json.dumps({'is_news_article': newsSourceOrigin != None})
 
 @app.route('/visits', methods=['POST'])
 def storeVisitBegun():
