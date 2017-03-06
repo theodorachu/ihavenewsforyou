@@ -173,6 +173,14 @@
     <!-- Theme JavaScript -->
     <script src="../static/grayscale.min.js"></script>
 
+    {% if current_user.is_authenticated %}
+    <script>
+      //testing messaging, should be moved to end of login process
+      var extensionId = "doppjpgaejbdajihphgjhjcjkamiggbn";
+      chrome.runtime.sendMessage(extensionId, {"userId": {{current_user.id}}});
+    </script>
+    {% endif %}
+
 </body>
 
 </html>
