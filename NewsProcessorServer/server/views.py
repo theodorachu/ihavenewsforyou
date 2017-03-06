@@ -129,7 +129,8 @@ def read_analysis(time):
 
     today = datetime.datetime.today()
 
-   # time spent per article
+    # time spent per article
+    # TODO: edit time spent to be hours and min (curr in secs)
     visits = Visit.query.all() #TODO: Filter by date
     total_time_spent = sum([visit.timeSpent for visit in visits])
     average_time_spent = total_time_spent / len(visits)
