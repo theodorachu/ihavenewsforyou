@@ -37,3 +37,10 @@ function _printLocalStorage() {
 		console.log(key + ": " + localStorage.getItem(key));
 	}
 }
+
+function getUserId(){
+  if(isKeyInLocalStorage("userId") == null ){
+    return "12345";
+  }
+  else return getObjectFromLocalStorage("userId");
+}

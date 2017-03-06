@@ -1,9 +1,9 @@
-//facebook login
-var url_login_success = 'www.facebook.com/connect/login_success.html';
+var userId;
 
 function main() {
 	chrome.tabs.onActivated.addListener(onTabOpen);
 	chrome.tabs.onUpdated.addListener(onURLChange);
+  userId = getUserId();
 }
 
 main();
@@ -72,7 +72,7 @@ function sendTimeToServerPromise(url, visitUpdateType) {
 	return new Promise(function(resolve, reject) {
 		var params = {
 		'url': url,
-		'id': 12345,
+		'id': userId,
 		'time': getCurrTimeAsString(),
 		'visitUpdateType': visitUpdateType
 		}
@@ -105,29 +105,12 @@ function getCurrentURLPromise() {
 }
 
 /*
-* listener for login
-* TODO: security
-* result.accessToken
+* receive message with from webapp
 */
-// chrome.tabs.onActivated.addListener(function(){
-//   chrome.storage.sync.get('accessToken', function (result) {
-//     if (result != null){
-//       getCurrentTabUrl(function(url){
-//         if(url.indexOf(url_login_success) != -1){
-//           //slightly complicated way of getting token from url
-//           var params = tabs[i].url.split('#')[1];
-//           var accessToken = params.split('&')[0];
-//           accessToken = accessToken.split('=')[1];
-        
-//           chrome.storage.sync.set({'acessToken': acessToken}, function(){
-//             console.log('Account info saved');
-//         });
-//         }
-//       });
-//     } else {
-//       console.log('accessToken found');
-//     }
-//   });
-
-// });
+chrome.runtime.onMessageExternal.addListener(
+  function(message, sender, sendResponse) {
+    userId = message["userId"];
+    storeObjectInLocalStorage("userId", userId);
+    console.log("new userID stored: ", userId); 
+  });
 
