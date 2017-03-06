@@ -6,7 +6,7 @@ from news_article import NewsArticle
 
 from dateutil import parser as dateparser
 
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for, flash
 import httplib2
 from apiclient import discovery
 from oauth2client import client
@@ -14,9 +14,8 @@ import json
 import random
 from newsSources import is_news_source
 
-from flask_login import login_user, current_user
+from flask_login import login_user, logout_user, current_user
 from OAuthUtil import OAuthSignIn
-
 
 """
 Docs:
@@ -56,17 +55,22 @@ def oauth_callback(provider):
     if not current_user.is_anonymous:
         return redirect(url_for('index'))
     oauth = OAuthSignIn.get_provider(provider)
-    social_id, username, email = oauth.callback()
+    social_id, name = oauth.callback()
     if social_id is None:
         flash('Authentication failed.')
         return redirect(url_for('index'))
-    user = User.query.filter_by(social_id=social_id).first()
+    user = User.query.filter_by(socialID=social_id).first()
     if not user:
-        user = User(social_id=social_id, name=username, email=email)
+        user = User(socialID=social_id, name=name)
         db.session.add(user)
         db.session.commit()
     login_user(user, True)
-    return redirect(url_for('/'))
+    return redirect(url_for('index'))
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/usage')
 @app.route('/usage/<int:time>')

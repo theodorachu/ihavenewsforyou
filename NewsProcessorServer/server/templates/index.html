@@ -61,12 +61,27 @@
                     <li>
                         <a class="page-scroll" href="#contact">Contact</a>
                     </li>
+
+                    {% if current_user.is_authenticated %}
+                        <li>
+                            <a href="{{ url_for('logout') }}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{{ url_for('oauth_authorize', provider='facebook') }}">Login with Facebook</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
         </div>
         <!-- /.container -->
     </nav>
+
+    <!-- Welcome message -->
+    {% if current_user.is_authenticated %}
+        Hi, {{current_user.name}}!
+    {% endif %}
 
     <!-- Intro Header -->
     <header class="intro">

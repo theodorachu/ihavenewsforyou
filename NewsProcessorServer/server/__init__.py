@@ -11,6 +11,8 @@ from flask_login import LoginManager, UserMixin
 
 app = Flask(__name__)
 # CORS(app)
+
+app.config['SECRET_KEY'] = 'thisisthesecretkey'
 app.config.from_object(os.environ['APP_SETTINGS']) #get the config from the config.py file
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #Nathaniel does not know why or if we need this line
 
@@ -28,6 +30,6 @@ from server import models, views
 from models import User
 
 @lm.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+def load_user(id):
+    return User.query.get(int(id))
 
