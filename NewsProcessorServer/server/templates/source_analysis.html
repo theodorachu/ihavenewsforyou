@@ -16,21 +16,18 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li><a href = {{url_for('ext_usage_chart', time=4)}}>Extension Usage</a></li>
-                        <li><a href= {{url_for('source_analysis', time=4)}}>Source Analysis</a></li>
-                        <li class="active"><a href="#">Reading Analysis<span class="sr-only">(current)</span></a></li>
+                        <li class="active"><a href="#">Source Analysis<span class="sr-only">(current)</span></a></li>
+                        <li><a href = {{url_for('read_analysis', time=4)}}>Reading Analysis</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
         <div class="container">
             <div class="row">
-                <h1>Reading Habits</h1>
+                <h1>Sources You're Reading</h1>
             </div>
             <div class="row">
-                <h3>Average time spent per article: {{average_time_spent | safe}}</h3>
-            </div>
-            <div class="row">
-                <h4>{{legend_article_frequency | safe}}</h4>
+                <h4>{{legend_sources | safe}}</h4>
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         Change Timeframe of Data
@@ -44,29 +41,21 @@
                 </div>
                 <canvas id="chart" width="900" height="300"></canvas>
             </div>
-            <div class="row">
-                <h2>Articles Read over Selected Time Span</h2>
-                    <ul>
-                        {% for article in articles %}
-                        <li>{{ article }}</li>
-                        {% endfor %}
-                    </ul>
-            </div>
         </div>
         <script>
             // get chart canvas
             var mychart = document.getElementById("chart").getContext("2d");
             // draw chart
             var data = {
-                labels: {{labels_article_frequency|safe}},
+                labels: {{labels_sources|safe}},
                 datasets: [{
-                    data: {{values_article_frequency}},
-                    //backgroundColor: {{colors_sources|safe}},     TODO
-                    //hoverBackgroundColor: {{colors_sources|safe}}
+                    data: {{values_sources}},
+                    backgroundColor: {{colors_sources|safe}},
+                    hoverBackgroundColor: {{colors_sources|safe}}
                 }]
             };
             var mychart = new Chart(mychart, {
-                type: 'line',
+                type: 'bar',
                 data: data,
                 options: {
                     legend: {
@@ -78,4 +67,4 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     </body>
-</html> 
+</html>

@@ -1,5 +1,5 @@
-from server import app, db
-from models import Article, User, Visit
+from server import app, db #, login_manager
+from models import Article, User, Visit, NewsSource
 from db_helpers import dbExecute
 from recommendArticles import BingSearch
 from news_article import NewsArticle
@@ -12,6 +12,8 @@ from oauth2client import client
 import json
 import random
 
+import datetime
+from sqlalchemy import and_
 from flask_login import login_user, logout_user, current_user, login_required
 from OAuthUtil import OAuthSignIn
 
@@ -32,6 +34,10 @@ COLOR_WHEEL = ['#000000', '#00FF00', '#0000FF', '#FF0000', '#01FFFE', '#FFA6FE',
 '#BB8800', '#43002C', '#DEFF74', '#00FFC6', '#FFE502', '#620E00', '#008F9C', '#98FF52', '#7544B1',\
 '#B500FF', '#00FF78', '#FF6E41', '#005F39', '#6B6882', '#5FAD4E', '#A75740', '#A5FFD2', '#FFB167',\
 '#009BFF', '#E85EBE']
+
+LAST_WEEK = 1
+LAST_MONTH = 4
+LAST_YEAR = 52
 
 @app.route('/')
 def index():
@@ -86,7 +92,6 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/usage')
 @app.route('/usage/<int:time>')
 def ext_usage_chart(time):
 		# how often you actually click on the extension
@@ -128,6 +133,54 @@ def ext_usage_chart(time):
 
 @app.route('/reading/<int:time>')
 def read_analysis(time):
+    if time == LAST_WEEK:   # TODO: extract this into external function
+        size = 7
+    elif time == LAST_MONTH:
+        size = 28
+    elif time == LAST_YEAR:
+        size = 364
+    else:
+        raise ValueError("unexpected value for time parameter")
+
+    today = datetime.datetime.today()
+
+    # time spent per article
+    # TODO: edit time spent to be hours and min (curr in secs)
+    visits = Visit.query.all() #TODO: Filter by date
+    total_time_spent = sum([visit.timeSpent for visit in visits])
+    average_time_spent = total_time_spent / len(visits)
+
+    # score for bias of articles
+    #TODO
+
+    # line graph for how frequently you read articles
+
+    labels_article_frequency = [0]*size
+    values_article_frequency = [0]*size
+    for i in xrange(len(values_article_frequency)): # creates the array starting from present to past
+        day = today - datetime.timedelta(days = i)
+        visits_on_day = Visit.query.filter(and_(today - Visit.timeIn > datetime.timedelta(days=i-1), today - Visit.timeIn < datetime.timedelta(days=i+1))).all()
+        values_article_frequency[i] = len(visits_on_day)
+        labels_article_frequency[i] = day.strftime("%B %d, %Y")
+    legend_article_frequency = "Num Articles Read Per Day"
+
+    # show every article read in time frame
+    visits_in_time_frame = Visit.query.filter(today - Visit.timeIn <= datetime.timedelta(size)).all()
+    visits_in_time_frame = []
+    articles = [(Article.query.filter(Article.url == visit.url)).title for visit in visits_in_time_frame]
+
+    labels_article_frequency = labels_article_frequency[::-1]
+    values_article_frequency = values_article_frequency[::-1]
+
+    return render_template("read_analysis.html",    
+                                                    articles = articles,
+                                                    average_time_spent = average_time_spent,
+                                                    labels_article_frequency = labels_article_frequency,
+                                                    values_article_frequency = values_article_frequency,
+                                                    legend_article_frequency = legend_article_frequency)
+
+@app.route('/sources/<int:time>')
+def source_analysis(time):
 	legend_sources = "Sources Read"
 
 	# QUERY DATABASE
@@ -165,7 +218,7 @@ def read_analysis(time):
 	for source in sources:
 				source_visit_values.append(num_source_visits[source])
 	colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
-	return render_template("read_analysis.html", 
+	return render_template("source_analysis.html", 
 																						legend_sources = legend_sources, 
 																						colors_sources = colors_sources, 
 																						values_sources = source_visit_values, 
@@ -251,7 +304,8 @@ def checkWhetherURLIsForNewsSource():
 	if 'url' not in request.values.keys():
 		return createJSONResp(error="Missing url field")
 	url = request.values['url']
-	return json.dumps({'is_news_article': NewsArticle.is_news_source(url)})
+	newsSourceOrigin = NewsSource.getSourceByURL(url)
+	return json.dumps({'is_news_article': newsSourceOrigin != None})
 
 @app.route('/visits', methods=['POST'])
 def storeVisitBegun():

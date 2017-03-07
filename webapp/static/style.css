@@ -2,11 +2,13 @@ button#dropdownMenu1    {
     margin-top: 25px;
 }
 
-body    {
+/*
+body#bgbody    {
     background-image: url("bg.png");
     background-repeat: no-repeat;
     background-size: 100%;
 }
+*/
 
 #title  {
     text-align: center;

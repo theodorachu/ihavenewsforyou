@@ -6,14 +6,7 @@ import random
 import os
 import json
 
-#POSTGRES_URL = 'postgresql://localhost/pre-registration' #TODO: change this bc it's wrong
-
 app = Flask(__name__)
-#app.config['SQLALCHEMY_DATABASE_URI'] = POSTGRES_URL
-#app.config.from_pyfile('config.py')
-#db = SQLAlchemy(app)
-
-#from models import History
 
 COLOR_WHEEL = ['#000000', '#00FF00', '#0000FF', '#FF0000', '#01FFFE', '#FFA6FE', '#FFDB66', '#006401', \
 '#010067', '#95003A', '#007DB5', '#FF00F6', '#FFEEE8', '#774D00', '#90FB92', '#0076FF', '#D5FF00',\
@@ -89,7 +82,13 @@ def read_analysis(time):
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
     return render_template("read_analysis.html", legend_sources = legend_sources, colors_sources = colors_sources, values_sources = source_visit_values, labels_sources = sources)
 
+@app.route('/signup')
+def signup():
+    return render_template("signup.html")
+
+@app.route('/login')
+def login():
+    return render_template("login.html")
 
 if __name__ == '__main__':
     app.run()
-

@@ -3,11 +3,20 @@ var userId;
 function main() {
 	chrome.tabs.onActivated.addListener(onTabOpen);
 	chrome.tabs.onUpdated.addListener(onURLChange);
-  userId = getUserId();
+  checkIfLoggedIn();
 }
 
 main();
 
+//Get userId from storage
+//If there is no Id, redirect them to the landing page
+function checkIfLoggedIn(){
+  var userId = getObjectFromLocalStorage("userId");
+  if(userId == null){
+    var newURL = "http://127.0.0.1:5000/";
+    chrome.tabs.create({ url: newURL });
+  }
+}
 
 // On tab open, we send API notice that the tab has been opened
 var currURL = "";
@@ -105,12 +114,16 @@ function getCurrentURLPromise() {
 }
 
 /*
-* receive message with from webapp
+* receive message with Id from webapp
 */
 chrome.runtime.onMessageExternal.addListener(
   function(message, sender, sendResponse) {
     userId = message["userId"];
+    if(userId == -1){
+      //user clicked logout
+      removeObjectInLocalStorage("userId");
+    }
     storeObjectInLocalStorage("userId", userId);
-    console.log("new userID stored: ", userId); 
+    console.log("new userId stored: ", userId); 
   });
 
