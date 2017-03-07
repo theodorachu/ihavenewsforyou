@@ -7,13 +7,12 @@ from news_article import NewsArticle
 from dateutil import parser as dateparser
 
 from flask import render_template, request, redirect, url_for, flash
-import httplib2
 from apiclient import discovery
 from oauth2client import client
 import json
 import random
 
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from OAuthUtil import OAuthSignIn
 
 """
@@ -38,9 +37,25 @@ COLOR_WHEEL = ['#000000', '#00FF00', '#0000FF', '#FF0000', '#01FFFE', '#FFA6FE',
 def index():
 	return render_template("index.html")
 
-@app.route('/profile')
-def profile():
-	return render_template('profile.html')
+# @app.route('/friends')
+# def get_friends():
+# 	fbAuth = OAuthSignIn.get_provider('facebook').service
+# 	return fbAuth.authorize(callback=url_for('friends_callback', 
+# 																						provider='facebook',
+# 																						_external=True))
+
+# @app.route('/friends2')
+# def friends_callback(provider):
+# 	fbAuth = OAuthSignIn.get_provider(provider).service
+
+# 	return render_template("friends.html")
+
+@app.route('/test')
+@login_required
+def test():
+	print OAuthSignIn.get_provider('facebook').getFriends()
+	return render_template("index.html")
+
 
 @app.route('/authorize/<provider>')
 def oauth_authorize(provider):
