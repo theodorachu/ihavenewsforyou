@@ -60,7 +60,7 @@ function displayArticles(suggestedArticles) {
 		var li = ol.appendChild(document.createElement('li'));
 		var a = li.appendChild(document.createElement('a'));
         var _img = document.createElement('img');
-        _img.src = "icon.png";
+        _img.src = getSiteFavicon(article['url']);
         _img.height = "50";
         _img.width = "50";
         _img.id = "news source image";
