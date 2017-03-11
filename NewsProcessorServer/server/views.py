@@ -101,7 +101,7 @@ def ext_usage_chart(time):
 	numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
 	numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
 
-		# RENDER THE DATA
+    # RENDER THE DATA
 	values_ext[0] = totalVisits
 	values_ext[1] = numExtensionClicks
 	values_alt_art[0] = totalVisits - numLinkFollows
@@ -134,6 +134,8 @@ def read_analysis(time):
     visits = Visit.query.all() #TODO: Filter by date
     total_time_spent = sum([visit.timeSpent for visit in visits])
     average_time_spent = total_time_spent / len(visits)
+    average_min = int(average_time_spent/60)
+    average_sec = int(average_time_spent % 60)
 
     # score for bias of articles
     #TODO
@@ -149,17 +151,24 @@ def read_analysis(time):
         labels_article_frequency[i] = day.strftime("%B %d, %Y")
     legend_article_frequency = "Num Articles Read Per Day"
 
+    '''
     # show every article read in time frame
-    visits_in_time_frame = Visit.query.filter(today - Visit.timeIn <= datetime.timedelta(size)).all()
-    visits_in_time_frame = []
-    articles = [(Article.query.filter(Article.url == visit.url)).title for visit in visits_in_time_frame]
-
+    visits_in_time_frame = Visit.query.filter(today - Visit.timeIn <= datetime.timedelta(days=size)).all()
+    articles = []
+    for visit in visits_in_time_frame:
+        article = Article.query.filter(Article.url == visit.url).all()
+        if article:
+            articles.append(article[0].title)
+        else:
+            raise ValueError("Unexpected value error - article filter should return a value")
     labels_article_frequency = labels_article_frequency[::-1]
     values_article_frequency = values_article_frequency[::-1]
+    '''
 
+    articles = ['cnn','test2']
     return render_template("read_analysis.html",    
                                                     articles = articles,
-                                                    average_time_spent = average_time_spent,
+                                                    average_time_spent = [average_min, average_sec],
                                                     labels_article_frequency = labels_article_frequency,
                                                     values_article_frequency = values_article_frequency,
                                                     legend_article_frequency = legend_article_frequency)
