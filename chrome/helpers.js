@@ -45,3 +45,7 @@ function _printLocalStorage() {
 function getUserId(){
   return getObjectFromLocalStorage("userId");
 }
+
+function getSiteFavicon(url){
+	return url.split('/')[2] + "/favicon.ico";
+}

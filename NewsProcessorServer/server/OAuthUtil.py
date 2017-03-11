@@ -29,6 +29,9 @@ class OAuthSignIn(object):
                 self.providers[provider.provider_name] = provider
         return self.providers[provider_name]
 
+    def getFriends(self):
+        pass
+
 class FacebookSignIn(OAuthSignIn):
     def __init__(self):
         super(FacebookSignIn, self).__init__('facebook')
@@ -40,10 +43,11 @@ class FacebookSignIn(OAuthSignIn):
             access_token_url='https://graph.facebook.com/oauth/access_token',
             base_url='https://graph.facebook.com/'
         )
+        self.oauth_session = None
 
     def authorize(self):
         return redirect(self.service.get_authorize_url(
-            scope='email',
+            scope='email, user_friends',
             response_type='code',
             redirect_uri=self.get_callback_url())
         )
@@ -51,17 +55,21 @@ class FacebookSignIn(OAuthSignIn):
     def callback(self):
         if 'code' not in request.args:
             return None, None, None
-        oauth_session = self.service.get_auth_session(
+        self.oauth_session = self.service.get_auth_session(
             data={'code': request.args['code'],
                   'grant_type': 'authorization_code',
                   'redirect_uri': self.get_callback_url()}
         )
-        me = oauth_session.get('me').json()
+
+        me = self.oauth_session.get('me').json()
         return (
             'facebook$' + me['id'],
             me['name']
         )
 
+    def getFriends(self):
+        r = self.oauth_session.get('me/friends', params={'metadata': 1})
+        return r.json()
 
 
 
