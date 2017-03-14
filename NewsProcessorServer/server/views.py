@@ -43,39 +43,32 @@ LAST_YEAR = 52
 def index():
 	return render_template("index.html")
 
-# @app.route('/friends')
-# def get_friends():
-# 	fbAuth = OAuthSignIn.get_provider('facebook').service
-# 	return fbAuth.authorize(callback=url_for('friends_callback', 
-# 																						provider='facebook',
-# 																						_external=True))
-
-# @app.route('/friends2')
-# def friends_callback(provider):
-# 	fbAuth = OAuthSignIn.get_provider(provider).service
-
-# 	return render_template("friends.html")
-
-@app.route('/test')
+@app.route('/friends')
 @login_required
-def test():
-	print OAuthSignIn.get_provider('facebook').getFriends()
-	return render_template("index.html")
+def friends():
+	fb = OAuthSignIn.get_provider('facebook')
+	firstFriend = fb.getFriends()['data'][0]
+	name = firstFriend['name']
+	socialId = firstFriend['id']
+	picUrl = fb.getProfilePic(socialId)['data']['url']
 
+  # Obtain visit information
+  userId = socialId[len('facebook$'):]
+
+
+	return render_template("friends.html", name=name, imgsrc=picUrl)
 
 @app.route('/authorize/<provider>')
 def oauth_authorize(provider):
-    if not current_user.is_anonymous:
-        return redirect(url_for('index'))
-    oauth = OAuthSignIn.get_provider(provider)
-    return oauth.authorize()
+	if not current_user.is_anonymous:
+		return redirect(url_for('index'))
+	return OAuthSignIn.get_provider('facebook').authorize()
 
 @app.route('/callback/<provider>')
 def oauth_callback(provider):
     if not current_user.is_anonymous:
         return redirect(url_for('index'))
-    oauth = OAuthSignIn.get_provider(provider)
-    social_id, name = oauth.callback()
+    social_id, name = OAuthSignIn.get_provider('facebook').authorize_callback()
     if social_id is None:
         flash('Authentication failed.')
         return redirect(url_for('index'))
