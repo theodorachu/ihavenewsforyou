@@ -284,15 +284,18 @@ def visits():
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
-		if 'url' not in request.values.keys():
-				return createJSONResp(error="Missing url field")
+	if 'url' not in request.values.keys():
+		return createJSONResp(error="Missing url field")
+	article = Article.get(request.values['url'])
+	if not article:
 		article = NewsArticle(request.values['url'])
 		successfulParse = article.parse()
 		if not successfulParse:
 				return createJSONResp(error='Failed to parse article')
-		search = BingSearch()
-		suggestions = search.get_suggestions(article)
-		return json.dumps(suggestions)
+	search = BingSearch()
+	suggestions = search.get_suggestions(article)
+	suggestions = filter(lambda x: x['url'] != request.values['url'], suggestions)
+	return json.dumps(suggestions)
 
 
 @app.route('/is_news_source', methods=['GET'])
@@ -305,7 +308,6 @@ def checkWhetherURLIsForNewsSource():
 
 @app.route('/visits', methods=['POST'])
 def storeVisitBegun():
-	print request.form
 	fields = ['url', 'time', 'id', 'visitUpdateType']
 	if areFieldsMissing(request, fields):
 			return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
@@ -317,32 +319,33 @@ def storeVisitBegun():
 	timeStr = request.form['time']
 	userID = request.form['id']
 	success = True
-	visit = Visit.getVisit(userID, url)
+	storedVisit = Visit.getVisit(userID, url)
 
-	if visit and not visitStateChangeIsConsistent(visit, visitUpdateType):
+	if storedVisit and not visitStateChangeIsConsistent(storedVisit, visitUpdateType):
 		return createJSONResp(error='Invalid request change type')
 
 	# Visit created (or reactivated)
-	if visitUpdateType == 'activate' and visit == None:
-		visit = Visit(url, userID, timeStr)
-		success = Visit.add(visit)
-		# article = NewsArticle(url)
-		# if (article.parse()):
-		# 	Article.add(Article(article))
-	elif visitUpdateType == 'activate' and visit:
-		success = Visit.update(visit, {
+	if visitUpdateType == 'activate' and storedVisit == None:
+		newVisit = Visit(url, userID, timeStr)
+		success = Visit.add(newVisit)
+		article = NewsArticle(url)
+		if (article.parse()):
+			print "putting article in db"
+			Article.add(Article(article))
+	elif visitUpdateType == 'activate' and storedVisit:
+		success = Visit.update(storedVisit, {
 			'state': 'active',
 			'lastActiveTime': timeStr
 		})
 
 	# Visit suspended
 	if visitUpdateType == 'suspend':
-		additionalTime = (dateparser.parse(timeStr) - visit.lastActiveTime).total_seconds()
-		success = Visit.update(visit, {
+		additionalTime = (dateparser.parse(timeStr) - storedVisit.lastActiveTime).total_seconds()
+		success = Visit.update(storedVisit, {
 			'state': 'suspended',
 			'lastActiveTime': timeStr,
 			'timeOut': timeStr,
-			'timeSpent': visit.timeSpent + additionalTime
+			'timeSpent': storedVisit.timeSpent + additionalTime
 		})
 
 	if not success:

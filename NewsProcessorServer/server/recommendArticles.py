@@ -51,7 +51,7 @@ class BingSearch:
 		self.key2 = "37dc1d03772e41fe936e91641d8dcc41"
 		self.numArticles = numArticles # from the Bing Search
 		self.numSuggestions = numSuggestions
-		self.sources = db.query(NewsSource).all()
+		self.sources = db.session.query(NewsSource).all()
  
 	@staticmethod
 	def sanitizeSrc(s):
@@ -68,25 +68,20 @@ class BingSearch:
 
 	@staticmethod
 	# Gets the bias value of a given source
-	def getSourceBias(src):
-		src = BingSearch.sanitizeSrc(src)
-		matches = [x for x in BIAS_TABLE.keys() if src.find(x) != -1]
-		if len(matches) >= 1:
-			return BIAS_TABLE[matches[0]]
-		return -1
+	def getSourceBias(url):
+		source = NewsSource.getSourceByURL(url)
+		if not source:
+			return 0
+		return source.bias
 	
 	# Gets the "bias difference" between current source and the entry
-	def calcBiasDifference(self, entry, sourceBias):
-		sugg_src = entry["providers"][0] # TODO: run through all the providers when querying?
-
-		suggestedSourceBias = BingSearch.getSourceBias(sugg_src)
-		if sourceBias >= 0:
-			if suggestedSourceBias >= 0:
-				return abs(sourceBias - suggestedSourceBias)
-			else:
-				return	-1
-
-		return random.randint(0, self.numArticles)
+	@staticmethod
+	def calcBiasDifference(entry, sourceBias, sourceURL):
+		suggestedURL = entry['url']
+		if suggestedURL == sourceURL:
+			return -100
+		suggestionBias = BingSearch.getSourceBias(suggestedURL)
+		return abs(suggestionBias - sourceBias)
 
  # Argument: NewsArticle class
 	def get_suggestions(self, news_article):
@@ -115,17 +110,18 @@ class BingSearch:
 				})
 
 		# Get the bias of the article you are currently on
-		sourceBias = BingSearch.getSourceBias(BingSearch.sanitizeSrc(news_article.source))
+		sourceBias = BingSearch.getSourceBias(news_article.url)
 
 		# Sort the suggestions and return the ones that are the most different
-		sortedSearchResults = sorted(searchResults, key=lambda x: self.calcBiasDifference(x, sourceBias), reverse=True)
+		sortedSearchResults = sorted(searchResults, key=lambda suggestion: BingSearch.calcBiasDifference(suggestion, sourceBias, news_article.url), reverse=True)
 		finalSearchResults = [{
 								'url': BingSearch.getURLAfterRedirection(searchResult['url']),
 								'title': searchResult['title'],
-								'thumbnail': searchResult['thumbnail']
-							  } for searchResult in sortedSearchResults]
+								'thumbnail': searchResult['thumbnail'],
+							  } for searchResult in sortedSearchResults[:self.numSuggestions]]
 
-		return finalSearchResults[:self.numSuggestions] 
+		print finalSearchResults
+		return finalSearchResults
 
 
 

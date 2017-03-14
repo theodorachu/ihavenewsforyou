@@ -155,19 +155,6 @@
     <!-- Theme JavaScript -->
     <script src="../static/grayscale.min.js"></script>
 
-    {% if current_user.is_authenticated %}
-    <script>
-      var extensionId = "doppjpgaejbdajihphgjhjcjkamiggbn";
-      chrome.runtime.sendMessage(extensionId, {"userId": {{current_user.id}}});
-    </script>
-    {% else %}
-    <script>
-      var extensionId = "doppjpgaejbdajihphgjhjcjkamiggbn";
-      chrome.runtime.sendMessage(extensionId, {"userId": -1});
-    </script>
-
-    {% endif %}
-
 </body>
 
 </html>

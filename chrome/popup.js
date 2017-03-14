@@ -59,15 +59,14 @@ function displayArticles(suggestedArticles) {
 	suggestedArticles.forEach(function(article){
 		var li = ol.appendChild(document.createElement('li'));
 		var a = li.appendChild(document.createElement('a'));
-        var _img = document.createElement('img');
-        _img.src = getSiteFavicon(article['url']);
-        _img.height = "50";
-        _img.width = "50";
-        _img.id = "news source image";
-        li.appendChild(_img);
+        // var _img = document.createElement('img');
+        // _img.src = getSiteFavicon(article['url']);
+        // _img.height = "50";
+        // _img.width = "50";
+        // _img.id = "news source image";
+        // li.appendChild(_img);
 		a.href = article['url'];
 		a.target = "_blank";
-		a.onclick = notifyAPIChromeExtensionOpened
 		a.appendChild(document.createTextNode(article['title']));
 	});
 }

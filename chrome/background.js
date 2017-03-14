@@ -3,7 +3,7 @@ var userId;
 function main() {
 	chrome.tabs.onActivated.addListener(onTabOpen);
 	chrome.tabs.onUpdated.addListener(onURLChange);
-  checkIfLoggedIn();
+	checkIfLoggedIn();
 }
 
 main();
@@ -13,7 +13,7 @@ main();
 function checkIfLoggedIn(){
   var userId = getObjectFromLocalStorage("userId");
   if(userId == null){
-    var newURL = "http://127.0.0.1:5000/";
+    var newURL = BASE_API + '/authorize/facebook';
     chrome.tabs.create({ url: newURL });
   }
 }
@@ -81,7 +81,7 @@ function sendTimeToServerPromise(url, visitUpdateType) {
 	return new Promise(function(resolve, reject) {
 		var params = {
 		'url': url,
-		'id': userId,
+		'id': 12345,
 		'time': getCurrTimeAsString(),
 		'visitUpdateType': visitUpdateType
 		}
@@ -118,6 +118,7 @@ function getCurrentURLPromise() {
 */
 chrome.runtime.onMessageExternal.addListener(
   function(message, sender, sendResponse) {
+  	console.log("ASDFASDF", message);
     userId = message["userId"];
     if(userId == -1){
       //user clicked logout
