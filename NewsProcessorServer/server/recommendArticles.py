@@ -2,6 +2,8 @@ import json
 import requests
 import random
 import urllib2
+from server import app, db
+from models import NewsSource
 
 # Table hardcoded from:
 # https://www.washingtonpost.com/news/the-fix/wp/2014/10/21/lets-rank-the-media-from-liberal-to-conservative-based-on-their-audiences/?utm_term=.0df4726d156b
@@ -49,6 +51,7 @@ class BingSearch:
 		self.key2 = "37dc1d03772e41fe936e91641d8dcc41"
 		self.numArticles = numArticles # from the Bing Search
 		self.numSuggestions = numSuggestions
+		self.sources = db.query(NewsSource).all()
  
 	@staticmethod
 	def sanitizeSrc(s):
@@ -86,18 +89,11 @@ class BingSearch:
 		return random.randint(0, self.numArticles)
 
  # Argument: NewsArticle class
- # Nathaniel commented out parameter fn
 	def get_suggestions(self, news_article):
 		headers = {'Ocp-Apim-Subscription-Key': self.key1}
 		query = " ".join(news_article.keywords)
 		payload = {'q': query, "count": self.numArticles} 
 		r = requests.get(self.url, headers=headers, params=payload).json()
-		# r.encoding = 'ascii'
-		# TODO: "thumbnail" parameter for Brandon
-		# print r["value"][0]["url"]
-		# print r["value"][0]["name"]
-		# print r["value"][0]["provider"][0]["name"]
-		# print r["value"][0]["description"]
 
 		# Gets all the search results from Bing
 		searchResults = []
@@ -107,11 +103,15 @@ class BingSearch:
 			for j in xrange(len(entry["provider"])):
 				providers.append(entry["provider"][j]["name"])
 
+			thumbnailURL = ""
+			if "image" in entry:
+				thumbnailURL = entry["image"]["thumbnail"]["contentUrl"]
 			searchResults.append({
 				"url": entry["url"],
 				"title": entry["name"],
 				"providers": providers,
 				"description": entry["description"],
+				"thumbnail": thumbnailURL
 				})
 
 		# Get the bias of the article you are currently on
@@ -121,7 +121,8 @@ class BingSearch:
 		sortedSearchResults = sorted(searchResults, key=lambda x: self.calcBiasDifference(x, sourceBias), reverse=True)
 		finalSearchResults = [{
 								'url': BingSearch.getURLAfterRedirection(searchResult['url']),
-								'title': searchResult['title']
+								'title': searchResult['title'],
+								'thumbnail': searchResult['thumbnail']
 							  } for searchResult in sortedSearchResults]
 
 		return finalSearchResults[:self.numSuggestions] 
