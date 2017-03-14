@@ -82,8 +82,8 @@ def oauth_callback(provider):
 
 @app.route('/logout')
 def logout():
-    logout_user()
-    return redirect(url_for('index'))
+	logout_user()
+	return redirect(url_for('index'))
 
 @app.route('/usage/<int:time>')
 def ext_usage_chart(time):
@@ -109,7 +109,7 @@ def ext_usage_chart(time):
 	numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
 	numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
 
-		# RENDER THE DATA
+    # RENDER THE DATA
 	values_ext[0] = totalVisits
 	values_ext[1] = numExtensionClicks
 	values_alt_art[0] = totalVisits - numLinkFollows
@@ -142,6 +142,8 @@ def read_analysis(time):
     visits = Visit.query.all() #TODO: Filter by date
     total_time_spent = sum([visit.timeSpent for visit in visits])
     average_time_spent = total_time_spent / len(visits)
+    average_min = int(average_time_spent/60)
+    average_sec = int(average_time_spent % 60)
 
     # score for bias of articles
     #TODO
@@ -157,17 +159,24 @@ def read_analysis(time):
         labels_article_frequency[i] = day.strftime("%B %d, %Y")
     legend_article_frequency = "Num Articles Read Per Day"
 
+    '''
     # show every article read in time frame
-    visits_in_time_frame = Visit.query.filter(today - Visit.timeIn <= datetime.timedelta(size)).all()
-    visits_in_time_frame = []
-    articles = [(Article.query.filter(Article.url == visit.url)).title for visit in visits_in_time_frame]
-
+    visits_in_time_frame = Visit.query.filter(today - Visit.timeIn <= datetime.timedelta(days=size)).all()
+    articles = []
+    for visit in visits_in_time_frame:
+        article = Article.query.filter(Article.url == visit.url).all()
+        if article:
+            articles.append(article[0].title)
+        else:
+            raise ValueError("Unexpected value error - article filter should return a value")
     labels_article_frequency = labels_article_frequency[::-1]
     values_article_frequency = values_article_frequency[::-1]
+    '''
 
+    articles = ['cnn','test2']
     return render_template("read_analysis.html",    
                                                     articles = articles,
-                                                    average_time_spent = average_time_spent,
+                                                    average_time_spent = [average_min, average_sec],
                                                     labels_article_frequency = labels_article_frequency,
                                                     values_article_frequency = values_article_frequency,
                                                     legend_article_frequency = legend_article_frequency)
@@ -268,28 +277,18 @@ def visits():
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
-		if 'url' not in request.values.keys():
-				return createJSONResp(error="Missing url field")
+	if 'url' not in request.values.keys():
+		return createJSONResp(error="Missing url field")
+	article = Article.get(request.values['url'])
+	if not article:
 		article = NewsArticle(request.values['url'])
 		successfulParse = article.parse()
 		if not successfulParse:
 				return createJSONResp(error='Failed to parse article')
-		search = BingSearch()
-		suggestions = search.get_suggestions(article)
-		return json.dumps(suggestions)
-
-@app.route('/login', methods=['POST'])
-def login():
-		pass
-		# form = LoginForm()
-		# if form.validate_on_submit():
-		#   login_user(user)
-		#   flask.flash('Logged in successfully')
-		#   next = flask.request.args.get('next')
-		#   if not is_safe_url(next):
-		#       return flask.abort(400)
-		#   return flask.redirect(next or flask.url_for('index'))
-		# return flask.render_template('login.html', form=form)
+	search = BingSearch()
+	suggestions = search.get_suggestions(article)
+	suggestions = filter(lambda x: x['url'] != request.values['url'], suggestions)
+	return json.dumps(suggestions)
 
 
 @app.route('/is_news_source', methods=['GET'])
@@ -302,7 +301,6 @@ def checkWhetherURLIsForNewsSource():
 
 @app.route('/visits', methods=['POST'])
 def storeVisitBegun():
-	print request.form
 	fields = ['url', 'time', 'id', 'visitUpdateType']
 	if areFieldsMissing(request, fields):
 			return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
@@ -314,32 +312,33 @@ def storeVisitBegun():
 	timeStr = request.form['time']
 	userID = request.form['id']
 	success = True
-	visit = Visit.getVisit(userID, url)
+	storedVisit = Visit.getVisit(userID, url)
 
-	if visit and not visitStateChangeIsConsistent(visit, visitUpdateType):
+	if storedVisit and not visitStateChangeIsConsistent(storedVisit, visitUpdateType):
 		return createJSONResp(error='Invalid request change type')
 
 	# Visit created (or reactivated)
-	if visitUpdateType == 'activate' and visit == None:
-		visit = Visit(url, userID, timeStr)
-		success = Visit.add(visit)
-		# article = NewsArticle(url)
-		# if (article.parse()):
-		# 	Article.add(Article(article))
-	elif visitUpdateType == 'activate' and visit:
-		success = Visit.update(visit, {
+	if visitUpdateType == 'activate' and storedVisit == None:
+		newVisit = Visit(url, userID, timeStr)
+		success = Visit.add(newVisit)
+		article = NewsArticle(url)
+		if (article.parse()):
+			print "putting article in db"
+			Article.add(Article(article))
+	elif visitUpdateType == 'activate' and storedVisit:
+		success = Visit.update(storedVisit, {
 			'state': 'active',
 			'lastActiveTime': timeStr
 		})
 
 	# Visit suspended
 	if visitUpdateType == 'suspend':
-		additionalTime = (dateparser.parse(timeStr) - visit.lastActiveTime).total_seconds()
-		success = Visit.update(visit, {
+		additionalTime = (dateparser.parse(timeStr) - storedVisit.lastActiveTime).total_seconds()
+		success = Visit.update(storedVisit, {
 			'state': 'suspended',
 			'lastActiveTime': timeStr,
 			'timeOut': timeStr,
-			'timeSpent': visit.timeSpent + additionalTime
+			'timeSpent': storedVisit.timeSpent + additionalTime
 		})
 
 	if not success:

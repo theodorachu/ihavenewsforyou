@@ -90,12 +90,9 @@ class NewsSource(db.Model):
 		baseURLMatch = re.search('[\.a-z0-9A-Z]+.com', url)
 		if baseURLMatch:
 			url = baseURLMatch.group(0)
-		print url
 		source = db.session.query(NewsSource) \
 			.filter(NewsSource.url.like("%" + url + "%"))
-		if source: 
-			return source.one()
-		return None
+		return source.first() #none if no first
 
 
 class Article(db.Model):
@@ -116,7 +113,7 @@ class Article(db.Model):
 		# Not included: tags, keywords
 		self.source = article.source
 		self.image = article.image
-		self.bias = article.bias
+		self.bias = "none for now"
 		self.publish_date = dateparser.parse(article.publishedDate)
 		self.url = article.url
 		self.authors = ",".join(article.authors)
@@ -128,6 +125,14 @@ class Article(db.Model):
 	@staticmethod
 	def add(article):
 		return dbExecute(lambda session: session.add(article))
+
+	@staticmethod
+	def get(url):
+		article = db.session.query(Article).filter_by(url=url).first()
+		if article:
+			article.keywords = article.keywords.split(',')
+			article.authors = article.authors.split(',')
+		return article
 
 	def __repr__(self):
 		return '<Article %s>' % (self.title.encode('utf-8'))

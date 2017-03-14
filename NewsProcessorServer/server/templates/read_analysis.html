@@ -27,10 +27,6 @@
                 <h1>Reading Habits</h1>
             </div>
             <div class="row">
-                <h3>Average time spent per article: {{average_time_spent | safe}}</h3>
-            </div>
-            <div class="row">
-                <h4>{{legend_article_frequency | safe}}</h4>
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         Change Timeframe of Data
@@ -42,10 +38,14 @@
                         <li id="week"><a href = {{url_for('read_analysis', time=1)}} data-value="last week">Last Week</a></li>
                     </ul>
                 </div>
+                <h4>{{legend_article_frequency | safe}}</h4>
                 <canvas id="chart" width="900" height="300"></canvas>
             </div>
             <div class="row">
-                <h2>Articles Read over Selected Time Span</h2>
+                <h3>Average time spent per article: {{average_time_spent[0] | safe}} minutes {{average_time_spent[1] | safe}} seconds</h3>
+            </div>
+            <div class="row">
+                <h2>Articles Read over Selected Time Span:</h2>
                     <ul>
                         {% for article in articles %}
                         <li>{{ article }}</li>

@@ -19,13 +19,13 @@ function getCurrTimeAsString() {
 }
 
 // var _BASE_API = 'http://across-the-aisle.herokuapp.com';
-var _BASE_API = 'http://0.0.0.0:5000'
+var BASE_API = 'http://0.0.0.0:5000'
 var CONSTANTS = {
 	'ACTIVE_URLS_LS_KEY': 'active_urls',
 	'TAB_URLS_LS_KEY': 'tab_urls',
-	'VISITS_API': _BASE_API + '/visits',
-	'SUGGESTION_CLICKED_API': _BASE_API + '/suggestion_clicked',
-	'IS_NEWS_SOURCE_API': _BASE_API + '/is_news_source'
+	'VISITS_API': BASE_API + '/visits',
+	'SUGGESTION_CLICKED_API': BASE_API + '/suggestion_clicked',
+	'IS_NEWS_SOURCE_API': BASE_API + '/is_news_source'
 };
 
 var VISIT_ACTIONS = {
