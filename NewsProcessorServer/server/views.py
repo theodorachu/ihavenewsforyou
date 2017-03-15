@@ -180,7 +180,7 @@ def read_analysis(time):
     values_article_frequency = values_article_frequency[::-1]
     '''
 
-    articles = ['cnn','test2']
+    articles = ['replace this code later!','test2']
     return render_template("read_analysis.html",    
                                                     articles = articles,
                                                     average_time_spent = [average_min, average_sec],
