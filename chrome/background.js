@@ -1,19 +1,42 @@
-var userId;
-
 function main() {
 	chrome.tabs.onActivated.addListener(onTabOpen);
 	chrome.tabs.onUpdated.addListener(onURLChange);
-	checkIfLoggedIn();
+
+	chrome.tabs.onUpdated.addListener(extractAccessToken);
+	logIn();
+
 }
 
 main();
 
+var USER_ID = "12345";
+function extractAccessToken(tabInfo, unimportantInfo) {
+	getCurrentURLPromise().then(function(url) {
+		if (!url.startsWith('https://www.facebook.com/connect/')) return;
+		chrome.tabs.onUpdated.removeListener(extractAccessToken);
+		var accessCode = url.slice(url.indexOf('code=') + 5);
+		var graphAPIURL = `${CONSTANTS.FB_GRAPH_API}?client_id=${CONSTANTS.APP_ID}&redirect_uri=${CONSTANTS.FB_REDIRECT_URI}&client_secret=${CONSTANTS.APP_SECRET}&code=${accessCode}`
+   		$.get(graphAPIURL, function(response) {
+   			var accessToken = response.access_token;
+   			$.get("https://graph.facebook.com/me?access_token=" + accessToken, function(response) {
+   				USER_ID = response.id;
+   				console.log('got user id', USER_ID)
+   			});
+   		});
+
+   		chrome.tabs.getCurrent(function(tab) {
+    		chrome.tabs.remove(tabInfo, function() { });
+		});
+	});
+}
+
 //Get userId from storage
 //If there is no Id, redirect them to the landing page
-function checkIfLoggedIn(){
+function logIn(){
   var userId = getObjectFromLocalStorage("userId");
   if(userId == null){
-    var newURL = BASE_API + '/authorize/facebook';
+    var newURL = 'https://www.facebook.com/v2.8/dialog/oauth?' +
+    	'client_id=' + CONSTANTS.APP_ID + '&redirect_uri=' + CONSTANTS.FB_REDIRECT_URI;
     chrome.tabs.create({ url: newURL });
   }
 }
@@ -81,7 +104,7 @@ function sendTimeToServerPromise(url, visitUpdateType) {
 	return new Promise(function(resolve, reject) {
 		var params = {
 		'url': url,
-		'id': 12345,
+		'id': USER_ID,
 		'time': getCurrTimeAsString(),
 		'visitUpdateType': visitUpdateType
 		}
@@ -113,18 +136,4 @@ function getCurrentURLPromise() {
 	});
 }
 
-/*
-* receive message with Id from webapp
-*/
-chrome.runtime.onMessageExternal.addListener(
-  function(message, sender, sendResponse) {
-  	console.log("ASDFASDF", message);
-    userId = message["userId"];
-    if(userId == -1){
-      //user clicked logout
-      removeObjectInLocalStorage("userId");
-    }
-    storeObjectInLocalStorage("userId", userId);
-    console.log("new userId stored: ", userId); 
-  });
 

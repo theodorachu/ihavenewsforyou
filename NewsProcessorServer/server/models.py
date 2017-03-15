@@ -22,7 +22,7 @@ class Visit(db.Model):
 	__tablename__ = 'visits'
 
 	url = db.Column(db.String(256))
-	userID = db.Column(db.Integer, primary_key=True)
+	userID = db.Column(db.String(128), primary_key=True)
 	timeIn = db.Column(db.DateTime, primary_key=True)
 	timeOut = db.Column(db.DateTime)
 	lastActiveTime = db.Column(db.DateTime)
@@ -33,7 +33,7 @@ class Visit(db.Model):
 
 	def __init__(self, url, userID, timeIn, timeOut=None, timeSpent=0.0, receivedSuggestions=False, clickedSuggestion=False):
 		self.url =  url
-		self.userID = int(userID)
+		self.userID = userID
 		self.timeIn = timeIn
 		self.timeOut = timeOut
 		self.timeSpent = timeSpent
