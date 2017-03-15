@@ -49,14 +49,15 @@ def friends():
 	fb = OAuthSignIn.get_provider('facebook')
 	firstFriend = fb.getFriends()['data'][0]
 	name = firstFriend['name']
-	socialId = firstFriend['id']
-	picUrl = fb.getProfilePic(socialId)['data']['url']
+	user_id = firstFriend['id']
+	social_id = 'facebook$' + user_id
+	picUrl = fb.getProfilePic(user_id)['data']['url']
 
-  # Obtain visit information
-  userId = socialId[len('facebook$'):]
-
-
-	return render_template("friends.html", name=name, imgsrc=picUrl)
+	# Obtain visit/article information
+	user = User.query.filter_by(socialID=social_id).first()
+	visits = Visit.getByUserID(user.id)
+	visit_urls = [visit.url for visit in visits]
+	return render_template("friends.html", name=name, imgsrc=picUrl, visit_urls=visit_urls)
 
 @app.route('/authorize/<provider>')
 def oauth_authorize(provider):
