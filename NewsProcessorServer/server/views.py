@@ -148,7 +148,7 @@ def read_analysis(time):
     # TODO: edit time spent to be hours and min (curr in secs)
     visits = Visit.query.all() #TODO: Filter by date
     total_time_spent = sum([visit.timeSpent for visit in visits])
-    average_time_spent = total_time_spent / len(visits)
+    average_time_spent = total_time_spent / len(visits) if len(visits) > 0 else 0
     average_min = int(average_time_spent/60)
     average_sec = int(average_time_spent % 60)
 
