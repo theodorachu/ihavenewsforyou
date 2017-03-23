@@ -2,10 +2,10 @@ var USER_ID = "12345";
 function main() {
 	chrome.tabs.onActivated.addListener(onTabOpen);
 	chrome.tabs.onUpdated.addListener(onURLChange);
-
 	if (isKeyInLocalStorage("USER_ID")) {
 		USER_ID = getObjectFromLocalStorage("USER_ID");
 	}
+]
 	chrome.tabs.onUpdated.addListener(extractAccessToken);
 	logIn();
 
