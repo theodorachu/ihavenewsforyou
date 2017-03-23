@@ -3,15 +3,16 @@
  This page is shown when the extension button is clicked, because the
  "browser_action" field in manifest.json contains the "default_popup" key with
  value "popup.html".
+ Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif
  -->
 <html>
   <head>
-    <title>Getting Started Extension's Popup</title>
-    <style>
+    <title>Across the aisle popup</title>
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">     <style>
       body {
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 100%;
-        background-color: #ffffff;
+        background-color: #555555;
       }
       #suggested_div {
         /* avoid an excessively wide status text */
@@ -19,19 +20,23 @@
         text-overflow: ellipsis;
         overflow: hidden;
         min-width: 300px;
+        margin-top: 25px;
+        background-color: #ffffff;
       }
-      .header img {
-      float: left;
-      width: 100px;
-      height: 100px;
-      background: #555;
-    }
 
-    .header h1 {
-      position: relative;
-      top: 18px;
-      left: 10px;
-    }
+      .header img {
+        float: left;
+        width: 50px;
+        height: 50px;
+        background: #555;
+      }
+
+      .header h1 {
+        position: relative;
+        font-family: 'Montserrat', sans-serif;
+        left: 10px;
+        color: #ffffff;
+      }
     </style>
 
     <script src="helpers.js"></script>
@@ -40,12 +45,14 @@
   </head>
   <body>
   <div class="header">
-      <div class="header">
-      <img src="icon.png" alt="logo" />
+      <a href="http://across-the-aisle.herokuapp.com/">
+          <img src="icon.png" alt="logo" />
+      </a>
       <h1>Suggested Articles</h1>
-      </div>
   </div>
-  <div id='suggested_div'></div>
+  <div class="suggested_container">
+    <div id='suggested_div'></div>
+  </div>
   </body>
 </html>
 
