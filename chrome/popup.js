@@ -8,7 +8,6 @@ function main() {
 		console.log("message recieved" + msg);
 		storeObjectInLocalStorage("USER_ID", msg);
 	});
-
 	addChromeExtensionOpenedListener();
 }
 
@@ -98,7 +97,7 @@ function getSuggestionsAndDisplayArticles(url) {
 			storeObjectInLocalStorage(url, suggestedArticles);
 			displayArticles(suggestedArticles);
 		}, function(errorMessage) {
-      console.log('error: ' + errorMessage);
+      		console.log('error: ' + errorMessage);
 		});
 	}
 		getCurrentTabUrl(sendArticlesWereDisplayed);
