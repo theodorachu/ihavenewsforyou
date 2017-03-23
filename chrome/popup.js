@@ -1,8 +1,16 @@
 // CONSTNATS
 //API routes
-var RECOMMEND_API_URL = 'http://0.0.0.0:5000/recommend_articles'
+var RECOMMEND_API_URL = BASE_API + '/recommend_articles'
 
 function main() {
+	var port = chrome.extension.connect({
+		name: "user_id_comm"
+	});
+	port.onMessage.addListener(function(msg) {
+		console.log("message recieved" + msg);
+		storeObjectInLocalStorage("USER_ID", msg);
+	});
+
 	addChromeExtensionOpenedListener();
 }
 
@@ -21,7 +29,6 @@ exactly one tab.
 See https://developer.chrome.com/extensions/tabs#method-query
 */
  function getCurrentTabUrl(callback) {
-
   var queryInfo = {
   	active: true,
   	currentWindow: true
@@ -29,13 +36,20 @@ See https://developer.chrome.com/extensions/tabs#method-query
 
   chrome.tabs.query(queryInfo, function(tabs) {
     var tab = tabs[0];
-    var url = tab.url; // See https://developer.chrome.com/extensions/tabs#type-Tab for tab object documentation
+    var url = tab.url;
     callback(url);
 });
 }
 
-function isNewsSource(url){
-	return true; 
+function isURLNewsSourcePromise(url) {
+	return new Promise(function(resolve, reject) {
+		$.get(CONSTANTS.IS_NEWS_SOURCE_API, {'url': url}, function(response) {
+			response = JSON.parse(response);
+			var error = response.error;
+			if (error || !response.is_news_article) reject();
+			else resolve();
+		});
+	});
 }
 
 /**
@@ -46,11 +60,14 @@ function isNewsSource(url){
  *   The callback gets a string that describes the failure reason.
  */
 function getArticleSuggestions(article_url, callback, errorCallback) {
-	if (!isNewsSource(article_url)) errorCallback('Not an indexed news site');
-	$.get(RECOMMEND_API_URL, {'url': article_url}, function(data, error) {
-		if (error) errorCallback('Network error');
-		callback(data);
-	});  
+	isURLNewsSourcePromise(article_url).then(function () {
+		$.get(RECOMMEND_API_URL, {'url': article_url}, function(data, error) {
+			if (error) errorCallback('Network error');
+			callback(data);
+		});  
+	}, function() {
+		$('h2').html('Not a news site');
+	});
 }
 
 function displayArticles(suggestedArticles) {
@@ -66,6 +83,7 @@ function displayArticles(suggestedArticles) {
         // _img.id = "news source image";
         // li.appendChild(_img);
 		a.href = article['url'];
+		a.addEventListener("click", getCurrentTabUrl(sendArticleWasClicked));
 		a.target = "_blank";
 		a.appendChild(document.createTextNode(article['title']));
 	});
@@ -85,10 +103,24 @@ function getSuggestionsAndDisplayArticles(url) {
 			// TODO: Brandon - Create a better error message
 		});
 	}
+		getCurrentTabUrl(sendArticlesWereDisplayed);
 }
 
-function notifyAPIArticleWasCliked() {
-	
+function sendArticlesWereDisplayed(url) {
+	var userID = getObjectFromLocalStorage("USER_ID");
+	var API_URL = BASE_API + '/suggestions_received'
+	$.post(API_URL, {'url': url, 'id': userID}, function(data, error) {
+		console.log(data);
+	});  
+}
+
+function sendArticleWasClicked(url) {
+	console.log("article clicked");
+	var userID = getObjectFromLocalStorage("USER_ID");
+	var API_URL = BASE_API + '/suggestion_clicked'
+	$.post(API_URL, {'url': url, 'id': userID}, function(data, error) {
+		console.log(data);
+	});  
 }
 
 function addChromeExtensionOpenedListener() {

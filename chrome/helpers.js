@@ -18,8 +18,8 @@ function getCurrTimeAsString() {
 	return new Date().toLocaleString()
 }
 
-var BASE_API = 'http://across-the-aisle.herokuapp.com';
-// var BASE_API = 'http://0.0.0.0:5000'
+// var BASE_API = 'http://across-the-aisle.herokuapp.com';
+var BASE_API = 'http://0.0.0.0:5000'
 var CONSTANTS = {
 	'APP_ID': 153629798477210,
 	'APP_SECRET': '7aa2a1778d69d1efc359be284dc354aa',
