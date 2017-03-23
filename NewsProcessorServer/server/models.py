@@ -49,8 +49,7 @@ class Visit(db.Model):
 
 	@staticmethod
 	def getByUserID(userID):
-		visits = db.session.query(Visit).filter_by(userID=userID)
-		return visits
+		return db.session.query(Visit).filter_by(userID=userID).all()
 
 	@staticmethod
 	def add(visit):
