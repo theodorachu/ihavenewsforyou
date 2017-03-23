@@ -1,7 +1,11 @@
+var USER_ID = "12345";
 function main() {
 	chrome.tabs.onActivated.addListener(onTabOpen);
 	chrome.tabs.onUpdated.addListener(onURLChange);
-
+	if (isKeyInLocalStorage("USER_ID")) {
+		USER_ID = getObjectFromLocalStorage("USER_ID");
+	}
+]
 	chrome.tabs.onUpdated.addListener(extractAccessToken);
 	logIn();
 
@@ -9,7 +13,15 @@ function main() {
 
 main();
 
-var USER_ID = "12345";
+function sendUserIDToPopup(userID) {
+	var port = chrome.extension.connect({
+		name: "user_id_comm"
+	});
+	port.postMessage(userID);
+	console.log("user id sent");
+}
+
+
 function extractAccessToken(tabInfo, unimportantInfo) {
 	getCurrentURLPromise().then(function(url) {
 		if (!url.startsWith('https://www.facebook.com/connect/')) return;
@@ -20,7 +32,9 @@ function extractAccessToken(tabInfo, unimportantInfo) {
    			var accessToken = response.access_token;
    			$.get("https://graph.facebook.com/me?access_token=" + accessToken, function(response) {
    				USER_ID = response.id;
-   				console.log('got user id', USER_ID)
+   				console.log('got user id in background', USER_ID);
+   				storeObjectInLocalStorage("USER_ID", USER_ID);
+   				sendUserIDToPopup(USER_ID);
    			});
    		});
 
@@ -33,12 +47,11 @@ function extractAccessToken(tabInfo, unimportantInfo) {
 //Get userId from storage
 //If there is no Id, redirect them to the landing page
 function logIn(){
-  var userId = getObjectFromLocalStorage("userId");
-  if(userId == null){
-    var newURL = 'https://www.facebook.com/v2.8/dialog/oauth?' +
-    	'client_id=' + CONSTANTS.APP_ID + '&redirect_uri=' + CONSTANTS.FB_REDIRECT_URI;
-    chrome.tabs.create({ url: newURL });
-  }
+  // if(USER_ID == null) {
+	var newURL = 'https://www.facebook.com/v2.8/dialog/oauth?' +
+		'client_id=' + CONSTANTS.APP_ID + '&redirect_uri=' + CONSTANTS.FB_REDIRECT_URI;
+	chrome.tabs.create({ url: newURL });
+  // }
 }
 
 // On tab open, we send API notice that the tab has been opened

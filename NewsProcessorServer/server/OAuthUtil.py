@@ -66,7 +66,7 @@ class FacebookSignIn(OAuthSignIn):
 
         me = self.oauth_session.get('me').json()
         return (
-            'facebook$' + me['id'],
+            me['id'],
             me['name']
         )
 
@@ -74,7 +74,7 @@ class FacebookSignIn(OAuthSignIn):
         r = self.oauth_session.get('me/friends', params={'metadata': 1})
         return r.json()
 
-    def getProfilePic(self, user_id):
+    def getProfilePic(self, user_id, height=250, width=250):
         r = self.oauth_session.get(user_id + '/picture', params={'height': 250, 'width': 250, 'redirect': False})
         return r.json()
 
