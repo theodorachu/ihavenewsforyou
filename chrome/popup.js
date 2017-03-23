@@ -8,7 +8,6 @@ function main() {
 		console.log("message recieved" + msg);
 		storeObjectInLocalStorage("USER_ID", msg);
 	});
-
 	addChromeExtensionOpenedListener();
 }
 
@@ -73,14 +72,14 @@ function displayArticles(suggestedArticles) {
 	var ol = popupDiv.appendChild(document.createElement('ol'));
 	suggestedArticles.forEach(function(article){
 		var li = ol.appendChild(document.createElement('li'));
-    var _img = document.createElement('img');
-    _img.src = getSiteFavicon(article['url']);
-    console.log("image source" + getSiteFavicon(article['url']));
-    _img.height = "50";
-    _img.width = "50";
-    _img.id = "news source image";
-    li.appendChild(_img);
-    var a = li.appendChild(document.createElement('a'));
+	    var _img = document.createElement('img');
+	    _img.src = getSiteFavicon(article['url']);
+	    console.log("image source" + getSiteFavicon(article['url']));
+	    _img.height = "50";
+	    _img.width = "50";
+	    _img.id = "news source image";
+	    li.appendChild(_img);
+	    var a = li.appendChild(document.createElement('a'));
 		a.href = article['url'];
 		a.addEventListener("click", getCurrentTabUrl(sendArticleWasClicked));
 		a.target = "_blank";
@@ -99,7 +98,7 @@ function getSuggestionsAndDisplayArticles(url) {
 			storeObjectInLocalStorage(url, suggestedArticles);
 			displayArticles(suggestedArticles);
 		}, function(errorMessage) {
-      console.log('error: ' + errorMessage);
+      		console.log('error: ' + errorMessage);
 		});
 	}
 		getCurrentTabUrl(sendArticlesWereDisplayed);
