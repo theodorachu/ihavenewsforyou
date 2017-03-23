@@ -51,5 +51,5 @@ function getUserId(){
 }
 
 function getSiteFavicon(url){
-	return url.split('/')[2] + "/favicon.ico";
+	return "http://" + url.split('/')[2] + "/favicon.ico";
 }
