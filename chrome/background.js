@@ -107,8 +107,14 @@ function isURLNewsSourcePromise(url) {
 			response = JSON.parse(response);
 			var error = response.error;
 			if (error) return;
-			else if (!response.is_news_article) return;
-			else resolve();
+			else if (!response.is_news_article) {
+				chrome.browserAction.disable();
+				return;
+			}
+			else {
+				chrome.browserAction.enable();
+				resolve()
+			};
 		})
 	});
 }

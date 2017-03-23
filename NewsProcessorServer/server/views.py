@@ -94,7 +94,7 @@ def oauth_callback(provider):
         db.session.add(user)
         db.session.commit()
     login_user(user, True)
-    return redirect(url_for('index'))
+    return render_template('index.html')
 
 @app.route('/logout')
 def logout():
