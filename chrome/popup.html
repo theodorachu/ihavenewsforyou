@@ -11,6 +11,7 @@
       body {
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 100%;
+        background-color: #ffffff;
       }
       #suggested_div {
         /* avoid an excessively wide status text */
@@ -19,6 +20,18 @@
         overflow: hidden;
         min-width: 300px;
       }
+      .header img {
+      float: left;
+      width: 100px;
+      height: 100px;
+      background: #555;
+    }
+
+    .header h1 {
+      position: relative;
+      top: 18px;
+      left: 10px;
+    }
     </style>
 
     <script src="helpers.js"></script>
@@ -27,17 +40,12 @@
   </head>
   <body>
   <div class="header">
-      <img id="image" src="icon.png" />
-      <span class="line"></span>
-      <h2>Suggested:</h2>
-      <span class="line"></span>
+      <div class="header">
+      <img src="icon.png" alt="logo" />
+      <h1>Suggested Articles</h1>
+      </div>
   </div>
-
-<style>
-body {
-    background-color: #aaaaaa;
-}
-</style>    <div id='suggested_div'></div>
+  <div id='suggested_div'></div>
   </body>
 </html>
 
