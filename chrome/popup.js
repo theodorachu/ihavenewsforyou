@@ -72,7 +72,6 @@ function displayArticles(suggestedArticles) {
 	var ol = popupDiv.appendChild(document.createElement('ol'));
 	suggestedArticles.forEach(function(article){
 		var li = ol.appendChild(document.createElement('li'));
-		var a = li.appendChild(document.createElement('a'));
 	    var _img = document.createElement('img');
 	    _img.src = getSiteFavicon(article['url']);
 	    console.log("image source" + getSiteFavicon(article['url']));
@@ -80,6 +79,7 @@ function displayArticles(suggestedArticles) {
 	    _img.width = "50";
 	    _img.id = "news source image";
 	    li.appendChild(_img);
+	    var a = li.appendChild(document.createElement('a'));
 		a.href = article['url'];
 		a.addEventListener("click", getCurrentTabUrl(sendArticleWasClicked));
 		a.target = "_blank";
