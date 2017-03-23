@@ -20,9 +20,9 @@ from OAuthUtil import OAuthSignIn
 """
 Docs:
 1) Flask Login: 
-		- https://flask-login.readthedocs.io/en/latest/
-		- https://blog.miguelgrinberg.com/post/oauth-authentication-with-flask
-		- https://pythonhosted.org/Flask-Social/
+    - https://flask-login.readthedocs.io/en/latest/
+    - https://blog.miguelgrinberg.com/post/oauth-authentication-with-flask
+    - https://pythonhosted.org/Flask-Social/
 
 """
 ################ FRONTEND ROUTES ##################################################
@@ -38,32 +38,47 @@ COLOR_WHEEL = ['#000000', '#00FF00', '#0000FF', '#FF0000', '#01FFFE', '#FFA6FE',
 LAST_WEEK = 1
 LAST_MONTH = 4
 LAST_YEAR = 52
+NUM_FRIENDS_TO_DISPLAY = 5
 
 @app.route('/')
 def index():
-	return render_template("index.html")
+  return render_template("index.html")
 
 @app.route('/friends')
 @login_required
 def friends():
-	fb = OAuthSignIn.get_provider('facebook')
-	firstFriend = fb.getFriends()['data'][0]
-	name = firstFriend['name']
-	user_id = firstFriend['id']
-	social_id = 'facebook$' + user_id
-	picUrl = fb.getProfilePic(user_id)['data']['url']
+  # Gets top 5 friends
+  fb = OAuthSignIn.get_provider('facebook')
+  friends = fb.getFriends()['data']
+  friends_data = []
+  for friend in friends[:NUM_FRIENDS_TO_DISPLAY]:
+    name = friend['name']
+    user_id = friend['id']
+    social_id = user_id
 
-	# Obtain visit/article information
-	user = User.query.filter_by(socialID=social_id).first()
-	visits = Visit.getByUserID(user.id)
-	visit_urls = [visit.url for visit in visits]
-	return render_template("friends.html", name=name, imgsrc=picUrl, visit_urls=visit_urls)
+    # Obtain user profile picture
+    imgsrc = fb.getProfilePic(user_id)['data']['url']
+
+    # Obtain user's visit information
+    user = User.query.filter_by(socialID=social_id).first()
+    if user is None:
+      continue 
+    visits = Visit.getByUserID(str(user.id))
+    visit_urls = [visit.url for visit in visits]
+
+    friends_data.append({
+      "name": name, 
+      "imgsrc": imgsrc,
+      "visit_urls": []
+    })
+
+  return render_template("friends.html", friends_data=friends_data)
 
 @app.route('/authorize/<provider>')
 def oauth_authorize(provider):
-	if not current_user.is_anonymous:
-		return redirect(url_for('index'))
-	return OAuthSignIn.get_provider('facebook').authorize()
+  if not current_user.is_anonymous:
+    return redirect(url_for('index'))
+  return OAuthSignIn.get_provider('facebook').authorize()
 
 @app.route('/callback/<provider>')
 def oauth_callback(provider):
@@ -83,47 +98,47 @@ def oauth_callback(provider):
 
 @app.route('/logout')
 def logout():
-	logout_user()
-	return redirect(url_for('index'))
+  logout_user()
+  return redirect(url_for('index'))
 
 @app.route('/usage/<int:time>')
 def ext_usage_chart(time):
-		# how often you actually click on the extension
-				# for every news site you visited in last month, what % of the time do you use extension
-				# what % of the time do you navigate to an alternative article when you actually click on extension in last month
-				# how many times per week do you use extension
+    # how often you actually click on the extension
+        # for every news site you visited in last month, what % of the time do you use extension
+        # what % of the time do you navigate to an alternative article when you actually click on extension in last month
+        # how many times per week do you use extension
 
-	legend_ext = "How Often Extension is Used per News Site Visit"
-	
-	values_ext = [1, 2] #TODO: retrieve_from_db()
-	colors_ext = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_ext))))
-	labels_ext = ["Navigated Away Without Using Extension", "Clicked on Extension"]
-			
-	legend_alt_art = "How Often Extension Article Recommendations are Read"
-	values_alt_art = [1, 2] #TODO: retrieve_from_db()
-	colors_alt_art = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_alt_art))))
-	labels_alt_art = ["Did Not Read Recommended Articles", "Read at Least One Recommended Article"]
+  legend_ext = "How Often Extension is Used per News Site Visit"
+  
+  values_ext = [1, 2] #TODO: retrieve_from_db()
+  colors_ext = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_ext))))
+  labels_ext = ["Navigated Away Without Using Extension", "Clicked on Extension"]
+      
+  legend_alt_art = "How Often Extension Article Recommendations are Read"
+  values_alt_art = [1, 2] #TODO: retrieve_from_db()
+  colors_alt_art = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_alt_art))))
+  labels_alt_art = ["Did Not Read Recommended Articles", "Read at Least One Recommended Article"]
 
-	# QUERY THE DATABASE
-	visits = Visit.query.all() # TODO: Filter by date
-	totalVisits = len(visits)
-	numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
-	numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
+  # QUERY THE DATABASE
+  visits = Visit.query.all() # TODO: Filter by date
+  totalVisits = len(visits)
+  numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
+  numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
 
     # RENDER THE DATA
-	values_ext[0] = totalVisits
-	values_ext[1] = numExtensionClicks
-	values_alt_art[0] = totalVisits - numLinkFollows
-	values_alt_art[1] = numLinkFollows         
-	return render_template("ext_usage.html", 
-													legend_ext=legend_ext,
-													colors_ext=colors_ext, 
-													values_ext=values_ext, 
-													labels_ext=labels_ext, 
-													legend_alt_art = legend_alt_art, 
-													colors_alt_art = colors_alt_art, 
-													values_alt_art = values_alt_art, 
-													labels_alt_art = labels_alt_art)
+  values_ext[0] = totalVisits
+  values_ext[1] = numExtensionClicks
+  values_alt_art[0] = totalVisits - numLinkFollows
+  values_alt_art[1] = numLinkFollows         
+  return render_template("ext_usage.html", 
+                          legend_ext=legend_ext,
+                          colors_ext=colors_ext, 
+                          values_ext=values_ext, 
+                          labels_ext=labels_ext, 
+                          legend_alt_art = legend_alt_art, 
+                          colors_alt_art = colors_alt_art, 
+                          values_alt_art = values_alt_art, 
+                          labels_alt_art = labels_alt_art)
 
 @app.route('/reading/<int:time>')
 def read_analysis(time):
@@ -184,48 +199,48 @@ def read_analysis(time):
 
 @app.route('/sources/<int:time>')
 def source_analysis(time):
-	legend_sources = "Sources Read"
+  legend_sources = "Sources Read"
 
-	# QUERY DATABASE
-	visits = Visit.query.all() #TODO: Filter by date 
-	visit_data = []
-	for i in xrange(min(len(visits), 50)): # TODO: Go through all the visits
-			v = visits[i]
-			if "www" not in v.url:
-					continue
+  # QUERY DATABASE
+  visits = Visit.query.all() #TODO: Filter by date 
+  visit_data = []
+  for i in xrange(min(len(visits), 50)): # TODO: Go through all the visits
+      v = visits[i]
+      if "www" not in v.url:
+          continue
 
-			a = NewsArticle(v.url)
-			try: 
-					successfulParse = a.parse()
-			except: 
-					print v.url, "failed to be parsed"
-					continue
-			if not successfulParse: continue
-			visit_data.append(dict(
-					source=a.source,
-					title=a.title,
-					url=a.url
-					))
+      a = NewsArticle(v.url)
+      try: 
+          successfulParse = a.parse()
+      except: 
+          print v.url, "failed to be parsed"
+          continue
+      if not successfulParse: continue
+      visit_data.append(dict(
+          source=a.source,
+          title=a.title,
+          url=a.url
+          ))
 
-	# RENDER THE DATA
-	for visit in visit_data:
-			visit['source'] = str(visit['source'])
-	sources = list(set([x["source"] for x in visit_data]))
-	num_source_visits = {}
-	for visit in visit_data:
-			if visit["source"] in num_source_visits:
-					num_source_visits[visit["source"]] += 1
-			else:
-					num_source_visits[visit["source"]] = 1
-	source_visit_values = []
-	for source in sources:
-				source_visit_values.append(num_source_visits[source])
-	colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
-	return render_template("source_analysis.html", 
-																						legend_sources = legend_sources, 
-																						colors_sources = colors_sources, 
-																						values_sources = source_visit_values, 
-																						labels_sources = sources)
+  # RENDER THE DATA
+  for visit in visit_data:
+      visit['source'] = str(visit['source'])
+  sources = list(set([x["source"] for x in visit_data]))
+  num_source_visits = {}
+  for visit in visit_data:
+      if visit["source"] in num_source_visits:
+          num_source_visits[visit["source"]] += 1
+      else:
+          num_source_visits[visit["source"]] = 1
+  source_visit_values = []
+  for source in sources:
+        source_visit_values.append(num_source_visits[source])
+  colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
+  return render_template("source_analysis.html", 
+                                            legend_sources = legend_sources, 
+                                            colors_sources = colors_sources, 
+                                            values_sources = source_visit_values, 
+                                            labels_sources = sources)
 
 
 
@@ -278,130 +293,130 @@ def visits():
 
 @app.route('/recommend_articles', methods=['GET'])
 def recommendArticles():
-	if 'url' not in request.values.keys():
-		return createJSONResp(error="Missing url field")
-	article = Article.get(request.values['url'])
-	if not article:
-		article = NewsArticle(request.values['url'])
-		successfulParse = article.parse()
-		if not successfulParse:
-				return createJSONResp(error='Failed to parse article')
-	search = BingSearch()
-	suggestions = search.get_suggestions(article)
-	suggestions = filter(lambda x: x['url'] != request.values['url'], suggestions)
-	return json.dumps(suggestions)
+  if 'url' not in request.values.keys():
+    return createJSONResp(error="Missing url field")
+  article = Article.get(request.values['url'])
+  if not article:
+    article = NewsArticle(request.values['url'])
+    successfulParse = article.parse()
+    if not successfulParse:
+        return createJSONResp(error='Failed to parse article')
+  search = BingSearch()
+  suggestions = search.get_suggestions(article)
+  suggestions = filter(lambda x: x['url'] != request.values['url'], suggestions)
+  return json.dumps(suggestions)
 
 
 @app.route('/is_news_source', methods=['GET'])
 def checkWhetherURLIsForNewsSource():
-	if 'url' not in request.values.keys():
-		return createJSONResp(error="Missing url field")
-	url = request.values['url']
-	newsSourceOrigin = NewsSource.getSourceByURL(url)
-	return json.dumps({'is_news_article': newsSourceOrigin != None})
+  if 'url' not in request.values.keys():
+    return createJSONResp(error="Missing url field")
+  url = request.values['url']
+  newsSourceOrigin = NewsSource.getSourceByURL(url)
+  return json.dumps({'is_news_article': newsSourceOrigin != None})
 
 @app.route('/visits', methods=['POST'])
 def storeVisitBegun():
-	fields = ['url', 'time', 'id', 'visitUpdateType']
-	if areFieldsMissing(request, fields):
-			return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+  fields = ['url', 'time', 'id', 'visitUpdateType']
+  if areFieldsMissing(request, fields):
+      return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
-	visitUpdateType = request.form['visitUpdateType'].lower()
-	if visitUpdateType not in ['activate', 'suspend']:
-		return createJSONResp(error='Invalid request change type: ' + visitUpdateType)
-	url = request.form['url']
-	timeStr = request.form['time']
-	userID = request.form['id']
-	success = True
-	storedVisit = Visit.getVisit(userID, url)
+  visitUpdateType = request.form['visitUpdateType'].lower()
+  if visitUpdateType not in ['activate', 'suspend']:
+    return createJSONResp(error='Invalid request change type: ' + visitUpdateType)
+  url = request.form['url']
+  timeStr = request.form['time']
+  userID = request.form['id']
+  success = True
+  storedVisit = Visit.getVisit(userID, url)
 
-	if storedVisit and not visitStateChangeIsConsistent(storedVisit, visitUpdateType):
-		return createJSONResp(error='Invalid request change type')
+  if storedVisit and not visitStateChangeIsConsistent(storedVisit, visitUpdateType):
+    return createJSONResp(error='Invalid request change type')
 
-	# Visit created (or reactivated)
-	if visitUpdateType == 'activate' and storedVisit == None:
-		newVisit = Visit(url, userID, timeStr)
-		success = Visit.add(newVisit)
-		article = NewsArticle(url)
-		if (article.parse()):
-			print "putting article in db"
-			Article.add(Article(article))
-	elif visitUpdateType == 'activate' and storedVisit:
-		success = Visit.update(storedVisit, {
-			'state': 'active',
-			'lastActiveTime': timeStr
-		})
+  # Visit created (or reactivated)
+  if visitUpdateType == 'activate' and storedVisit == None:
+    newVisit = Visit(url, userID, timeStr)
+    success = Visit.add(newVisit)
+    article = NewsArticle(url)
+    if (article.parse()):
+      print "putting article in db"
+      Article.add(Article(article))
+  elif visitUpdateType == 'activate' and storedVisit:
+    success = Visit.update(storedVisit, {
+      'state': 'active',
+      'lastActiveTime': timeStr
+    })
 
-	# Visit suspended
-	if visitUpdateType == 'suspend':
-		additionalTime = (dateparser.parse(timeStr) - storedVisit.lastActiveTime).total_seconds()
-		success = Visit.update(storedVisit, {
-			'state': 'suspended',
-			'lastActiveTime': timeStr,
-			'timeOut': timeStr,
-			'timeSpent': storedVisit.timeSpent + additionalTime
-		})
+  # Visit suspended
+  if visitUpdateType == 'suspend':
+    additionalTime = (dateparser.parse(timeStr) - storedVisit.lastActiveTime).total_seconds()
+    success = Visit.update(storedVisit, {
+      'state': 'suspended',
+      'lastActiveTime': timeStr,
+      'timeOut': timeStr,
+      'timeSpent': storedVisit.timeSpent + additionalTime
+    })
 
-	if not success:
-			return createJSONResp(error='Failed to add visit to db')
-	return createJSONResp(success=True)
+  if not success:
+      return createJSONResp(error='Failed to add visit to db')
+  return createJSONResp(success=True)
 
 def visitStateChangeIsConsistent(visit, visitUpdateType):
-	if visit.state == 'active':
-		return visitUpdateType in ['suspend']
-	if visit.state == 'suspended':
-		return visitUpdateType in ['activate']
-	return False
+  if visit.state == 'active':
+    return visitUpdateType in ['suspend']
+  if visit.state == 'suspended':
+    return visitUpdateType in ['activate']
+  return False
 
 
 
 @app.route('/visit_ended', methods=['POST'])
 def storeVisitEnded():
-		fields = ['url', 'timeOut', 'id']
-		if areFieldsMissing(request, fields):
-				return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+    fields = ['url', 'timeOut', 'id']
+    if areFieldsMissing(request, fields):
+        return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
-		visit = Visit.getVisit(request.form['id'], request.form['url'])
-		success = Visit.update(visit, {'timeOut': dateparser.parse(request.form['timeOut'])})
-		if not visit:
-				return createJSONResp(error='Visit does not exist')
-		if not success:
-				return createJSONResp(error='Failed to update visit')
-		return createJSONResp(success=True)
+    visit = Visit.getVisit(request.form['id'], request.form['url'])
+    success = Visit.update(visit, {'timeOut': dateparser.parse(request.form['timeOut'])})
+    if not visit:
+        return createJSONResp(error='Visit does not exist')
+    if not success:
+        return createJSONResp(error='Failed to update visit')
+    return createJSONResp(success=True)
 
 @app.route('/suggestion_clicked', methods=['POST'])
 def suggestionClicked():
-		fields = ['url', 'timeIn', 'id']
-		if areFieldsMissing(request, fields):
-				return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+    fields = ['url', 'timeIn', 'id']
+    if areFieldsMissing(request, fields):
+        return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
-		visit = Visit.createVisitFromRequest(request)
-		success = Visit.update(visit, {'clickedSuggestion': True})
-		if not success:
-				return createJSONResp('Failed to update visit')
-		return createJSONResp(success=True)
+    visit = Visit.createVisitFromRequest(request)
+    success = Visit.update(visit, {'clickedSuggestion': True})
+    if not success:
+        return createJSONResp('Failed to update visit')
+    return createJSONResp(success=True)
 
 @app.route('/suggestions_received', methods=['POST'])
 def suggestionsReceived():
-		fields = ['url', 'timeIn', 'id']
-		if areFieldsMissing(request, fields):
-				return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+    fields = ['url', 'timeIn', 'id']
+    if areFieldsMissing(request, fields):
+        return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
-		visit = Visit.createVisitFromRequest(request)
-		success = Visit.update(visit, {'receivedSuggestions': True})
-		if not success:
-				return createJSONResp('Failed to update visit')
-		return createJSONResp(success=True)
+    visit = Visit.createVisitFromRequest(request)
+    success = Visit.update(visit, {'receivedSuggestions': True})
+    if not success:
+        return createJSONResp('Failed to update visit')
+    return createJSONResp(success=True)
 
 ############## HELPER METHODS #####################
 def areFieldsMissing(request, fields):
-		for field in fields:
-				if field not in request.form.keys(): 
-						return True
-		return False
+    for field in fields:
+        if field not in request.form.keys(): 
+            return True
+    return False
 
 def createJSONResp(error=None, success=False):
-		return json.dumps({'error': error, 'success': success})
+    return json.dumps({'error': error, 'success': success})
 
 
 
