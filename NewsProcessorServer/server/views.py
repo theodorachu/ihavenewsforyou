@@ -386,27 +386,26 @@ def storeVisitEnded():
 
 @app.route('/suggestion_clicked', methods=['POST'])
 def suggestionClicked():
-    fields = ['url', 'timeIn', 'id']
-    if areFieldsMissing(request, fields):
-        return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+		fields = ['url', 'id']
+		if areFieldsMissing(request, fields):
+				return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
-    visit = Visit.createVisitFromRequest(request)
-    success = Visit.update(visit, {'clickedSuggestion': True})
-    if not success:
-        return createJSONResp('Failed to update visit')
-    return createJSONResp(success=True)
+		visit = Visit.getVisit(request.form['id'], request.form['url'])
+		success = Visit.update(visit, {'clickedSuggestion': True})
+		if not success:
+				return createJSONResp('Failed to update visit')
+		return createJSONResp(success=True)
 
 @app.route('/suggestions_received', methods=['POST'])
 def suggestionsReceived():
-    fields = ['url', 'timeIn', 'id']
-    if areFieldsMissing(request, fields):
-        return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
-
-    visit = Visit.createVisitFromRequest(request)
-    success = Visit.update(visit, {'receivedSuggestions': True})
-    if not success:
-        return createJSONResp('Failed to update visit')
-    return createJSONResp(success=True)
+	fields = ['url', 'id']
+	if areFieldsMissing(request, fields):
+			return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+	visit = Visit.getVisit(request.form['id'], request.form['url'])
+	success = Visit.update(visit, {'receivedSuggestions': True})
+	if not success:
+			return createJSONResp('Failed to update visit')
+	return createJSONResp(success=True)
 
 ############## HELPER METHODS #####################
 def areFieldsMissing(request, fields):
