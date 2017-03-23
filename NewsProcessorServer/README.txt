@@ -36,7 +36,7 @@ HEROKU! Our app is called across-the-aisle
 Set environment variables: heroku config:set VAR_NAME=VALUE -a across-the-aisle
 Upgrade/migrate database: heroku run python NewsProcessorServer/manage.py db upgrade -a across-the-aisle
 
-When pushing to Herok, remember:
+When pushing to Heroku, remember:
 1) python scrapeAllSides.py
 
 Heroku Files

@@ -50,6 +50,18 @@
             <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
                 <ul class="nav navbar-nav">
                     <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+
+                    {% if current_user.is_authenticated %}
+                        <li>
+                            <a href= {{url_for('ext_usage_chart', time=4)}}>Extension Usage</a>
+                        </li>
+                        <li>
+                            <a href= {{url_for('source_analysis', time=4)}}>Source Analysis</a>
+                        </li>
+                        <li>
+                            <a href = {{url_for('read_analysis', time=4)}}>Reading Analysis</a>
+                        </li>
+                    {% endif %}
                     <li class="hidden">
                         <a href="#page-top"></a>
                     </li>

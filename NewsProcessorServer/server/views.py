@@ -142,7 +142,7 @@ def read_analysis(time):
     # TODO: edit time spent to be hours and min (curr in secs)
     visits = Visit.query.all() #TODO: Filter by date
     total_time_spent = sum([visit.timeSpent for visit in visits])
-    average_time_spent = total_time_spent / len(visits)
+    average_time_spent = total_time_spent / len(visits) if len(visits) > 0 else 0
     average_min = int(average_time_spent/60)
     average_sec = int(average_time_spent % 60)
 
@@ -174,7 +174,7 @@ def read_analysis(time):
     values_article_frequency = values_article_frequency[::-1]
     '''
 
-    articles = ['cnn','test2']
+    articles = ['replace this code later!','test2']
     return render_template("read_analysis.html",    
                                                     articles = articles,
                                                     average_time_spent = [average_min, average_sec],

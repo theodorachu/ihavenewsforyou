@@ -18,9 +18,13 @@ function getCurrTimeAsString() {
 	return new Date().toLocaleString()
 }
 
-// var _BASE_API = 'http://across-the-aisle.herokuapp.com';
-var BASE_API = 'http://0.0.0.0:5000'
+var BASE_API = 'http://across-the-aisle.herokuapp.com';
+// var BASE_API = 'http://0.0.0.0:5000'
 var CONSTANTS = {
+	'APP_ID': 153629798477210,
+	'APP_SECRET': '7aa2a1778d69d1efc359be284dc354aa',
+	'FB_REDIRECT_URI': 'https://www.facebook.com/connect/login_success.html',
+	'FB_GRAPH_API': 'https://graph.facebook.com/v2.8/oauth/access_token',
 	'ACTIVE_URLS_LS_KEY': 'active_urls',
 	'TAB_URLS_LS_KEY': 'tab_urls',
 	'VISITS_API': BASE_API + '/visits',
