@@ -1,5 +1,3 @@
-// CONSTNATS
-//API routes
 var RECOMMEND_API_URL = BASE_API + '/recommend_articles'
 
 function main() {
@@ -76,12 +74,13 @@ function displayArticles(suggestedArticles) {
 	suggestedArticles.forEach(function(article){
 		var li = ol.appendChild(document.createElement('li'));
 		var a = li.appendChild(document.createElement('a'));
-        // var _img = document.createElement('img');
-        // _img.src = getSiteFavicon(article['url']);
-        // _img.height = "50";
-        // _img.width = "50";
-        // _img.id = "news source image";
-        // li.appendChild(_img);
+    var _img = document.createElement('img');
+    _img.src = getSiteFavicon(article['url']);
+    console.log("image source" + getSiteFavicon(article['url']));
+    _img.height = "50";
+    _img.width = "50";
+    _img.id = "news source image";
+    li.appendChild(_img);
 		a.href = article['url'];
 		a.addEventListener("click", getCurrentTabUrl(sendArticleWasClicked));
 		a.target = "_blank";
@@ -100,7 +99,7 @@ function getSuggestionsAndDisplayArticles(url) {
 			storeObjectInLocalStorage(url, suggestedArticles);
 			displayArticles(suggestedArticles);
 		}, function(errorMessage) {
-			// TODO: Brandon - Create a better error message
+      console.log('error: ' + errorMessage);
 		});
 	}
 		getCurrentTabUrl(sendArticlesWereDisplayed);
