@@ -1,10 +1,16 @@
+#friendfeed {
+    position: fixed;
+    top: 100px;
+
+}
+
 button#dropdownMenu1    {
     margin-top: 25px;
 }
 
 ul#dropdownlist {
     display:auto;
-    margin-left: 160px;
+    margin-left: 286px;
     padding-top: inherit;
     padding-bottom: inherit;
 }
