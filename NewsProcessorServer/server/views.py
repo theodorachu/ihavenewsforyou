@@ -20,7 +20,7 @@ from OAuthUtil import OAuthSignIn
 """
 Docs:
 1) Flask Login: 
-    - https://flask-login.readthedocs.io/en/latest/
+    - https://flask-login.readthedocs.io/en/latest  /
     - https://blog.miguelgrinberg.com/post/oauth-authentication-with-flask
     - https://pythonhosted.org/Flask-Social/
 
@@ -120,7 +120,7 @@ def ext_usage_chart(time):
   labels_alt_art = ["Did Not Read Recommended Articles", "Read at Least One Recommended Article"]
 
   # QUERY THE DATABASE
-  visits = Visit.query.all() # TODO: Filter by date
+  visits = Visit.getByUserID(current_user.socialID) # TODO: Filter by date
   totalVisits = len(visits)
   numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
   numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
@@ -142,105 +142,85 @@ def ext_usage_chart(time):
 
 @app.route('/reading/<int:time>')
 def read_analysis(time):
-    if time == LAST_WEEK:   # TODO: extract this into external function
-        size = 7
-    elif time == LAST_MONTH:
-        size = 28
-    elif time == LAST_YEAR:
-        size = 364
-    else:
-        raise ValueError("unexpected value for time parameter")
+	if time == LAST_WEEK:   # TODO: extract this into external function
+		size = 7
+	elif time == LAST_MONTH:
+		size = 28
+	elif time == LAST_YEAR:
+		size = 364
+	else:
+		raise ValueError("unexpected value for time parameter")
+	today = datetime.datetime.today()
 
-    today = datetime.datetime.today()
+	# time spent per article
+	visits = Visit.getByUserID(current_user.socialID)
+	total_time_spent = sum([visit.timeSpent for visit in visits])
+	average_time_spent = total_time_spent / len(visits) if len(visits) > 0 else 0
+	average_min = int(average_time_spent/60)
+	average_sec = int(average_time_spent % 60)
 
-    # time spent per article
-    # TODO: edit time spent to be hours and min (curr in secs)
-    visits = Visit.query.all() #TODO: Filter by date
-    total_time_spent = sum([visit.timeSpent for visit in visits])
-    average_time_spent = total_time_spent / len(visits) if len(visits) > 0 else 0
-    average_min = int(average_time_spent/60)
-    average_sec = int(average_time_spent % 60)
+	# Set up article labels
+	labels_article_frequency = [0]*size
+	for i in xrange(len(labels_article_frequency)): # creates the array starting from present to past
+		day = today - datetime.timedelta(days = i)
+		labels_article_frequency[i] = day.strftime("%B %d, %Y")
+	legend_article_frequency = "Num Articles Read Per Day"
+	labels_article_frequency = labels_article_frequency[::-1]
 
-    # score for bias of articles
-    #TODO
+	values_article_frequency = [0]*size
+	for visit in visits:
+		day = (today - visit.timeOut).days
+		values_article_frequency[size - 1 - day] += 1
 
-    # line graph for how frequently you read articles
+	articles = []
+	for visit in visits:
+		article = Article.get(visit.url)
+		if article:
+			articles.append(article.title)
+		else:
+			articles.append(visit.url)
 
-    labels_article_frequency = [0]*size
-    values_article_frequency = [0]*size
-    for i in xrange(len(values_article_frequency)): # creates the array starting from present to past
-        day = today - datetime.timedelta(days = i)
-        visits_on_day = Visit.query.filter(and_(today - Visit.timeIn > datetime.timedelta(days=i-1), today - Visit.timeIn < datetime.timedelta(days=i+1))).all()
-        values_article_frequency[i] = len(visits_on_day)
-        labels_article_frequency[i] = day.strftime("%B %d, %Y")
-    legend_article_frequency = "Num Articles Read Per Day"
-
-    '''
-    # show every article read in time frame
-    visits_in_time_frame = Visit.query.filter(today - Visit.timeIn <= datetime.timedelta(days=size)).all()
-    articles = []
-    for visit in visits_in_time_frame:
-        article = Article.query.filter(Article.url == visit.url).all()
-        if article:
-            articles.append(article[0].title)
-        else:
-            raise ValueError("Unexpected value error - article filter should return a value")
-    labels_article_frequency = labels_article_frequency[::-1]
-    values_article_frequency = values_article_frequency[::-1]
-    '''
-
-    articles = ['replace this code later!','test2']
-    return render_template("read_analysis.html",    
-                                                    articles = articles,
-                                                    average_time_spent = [average_min, average_sec],
-                                                    labels_article_frequency = labels_article_frequency,
-                                                    values_article_frequency = values_article_frequency,
-                                                    legend_article_frequency = legend_article_frequency)
+	return render_template("read_analysis.html",    
+			articles = articles,
+			average_time_spent = [average_min, average_sec],
+			labels_article_frequency = labels_article_frequency,
+			values_article_frequency = values_article_frequency,
+			legend_article_frequency = legend_article_frequency)
 
 @app.route('/sources/<int:time>')
 def source_analysis(time):
-  legend_sources = "Sources Read"
+	# QUERY DATABASE
+	visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 
+	visit_data = []
+	for visit in visits:
+		article = Article.get(visit.url)
+		if not article:
+			article = NewsArticle(visit.url)
+			successfulParse = article.parse()
+			if not successfulParse: continue
 
-  # QUERY DATABASE
-  visits = Visit.query.all() #TODO: Filter by date 
-  visit_data = []
-  for i in xrange(min(len(visits), 50)): # TODO: Go through all the visits
-      v = visits[i]
-      if "www" not in v.url:
-          continue
+		visit_data.append(dict(
+			source=article.source,
+			title=article.title,
+			url=article.url
+			))
 
-      a = NewsArticle(v.url)
-      try: 
-          successfulParse = a.parse()
-      except: 
-          print v.url, "failed to be parsed"
-          continue
-      if not successfulParse: continue
-      visit_data.append(dict(
-          source=a.source,
-          title=a.title,
-          url=a.url
-          ))
+	# RENDER THE DATA
+	sources = list(set([str(x["source"]) for x in visit_data]))
+	source_visit_counts = []
+	for i, source in enumerate(sources):
+		source_visit_counts.append(0)
+		for visit in visit_data:
+			source_visit_counts[i] += visit['source'] == source
 
-  # RENDER THE DATA
-  for visit in visit_data:
-      visit['source'] = str(visit['source'])
-  sources = list(set([x["source"] for x in visit_data]))
-  num_source_visits = {}
-  for visit in visit_data:
-      if visit["source"] in num_source_visits:
-          num_source_visits[visit["source"]] += 1
-      else:
-          num_source_visits[visit["source"]] = 1
-  source_visit_values = []
-  for source in sources:
-        source_visit_values.append(num_source_visits[source])
-  colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
-  return render_template("source_analysis.html", 
-                                            legend_sources = legend_sources, 
-                                            colors_sources = colors_sources, 
-                                            values_sources = source_visit_values, 
-                                            labels_sources = sources)
+	print source_visit_counts
+	print sources
+
+	return render_template("source_analysis.html", 
+		legend_sources = "Sources Read", 
+		colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources)))), 
+		values_sources = source_visit_counts, 
+		labels_sources = sources)
 
 
 
@@ -255,7 +235,7 @@ def stats():
   if 'weeksago' not in request.values.keys():
       return createJSONResp(error="Missing temporal field")
 
-  visits = Visit.query.all() # TODO: Filter by date
+  visits = Visit.getByUserID(current_user.socialID) # TODO: Filter by date
   totalVisits = len(visits)
   numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
   numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
@@ -270,7 +250,7 @@ def visits():
   if 'weeksago' not in request.values.keys():
       return createJSONResp(error="Missing temporal field")   
 
-  visits = Visit.query.all() #TODO: Filter by date 
+  visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 
   results = []
   for i in xrange(50):
       v = visits[i]

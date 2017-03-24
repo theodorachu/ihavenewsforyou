@@ -122,7 +122,7 @@ class NewsArticle:
 			self.source = NewsArticle.parseSource(self.url)
 			self.image = parsedArticle.top_image
 			self.keywords = parsedArticle.keywords
-			self.publishedDate = str(parsedArticle.publish_date)
+			self.publishedDate = None if (parsedArticle.publish_date is None) else str(parsedArticle.publish_date)
 			self.authors = parsedArticle.authors
 			self.title = parsedArticle.title
 			self.summary = parsedArticle.summary
