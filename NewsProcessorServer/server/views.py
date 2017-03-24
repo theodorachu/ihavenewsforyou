@@ -16,6 +16,7 @@ import datetime
 from sqlalchemy import and_
 from flask_login import login_user, logout_user, current_user, login_required
 from OAuthUtil import OAuthSignIn
+from collections import defaultdict 
 
 """
 Docs:
@@ -54,6 +55,15 @@ def index(time=4):
     read_data = {}
   return render_template("index.html", ext=ext_data, source = source_data, read = read_data)
 
+def getArticle(url):
+  article = Article.get(url)
+  if article is None:
+    article = NewsArticle(url)
+    successfulParse = article.parse()
+    if not successfulParse:
+      return None
+  return article
+
 @app.route('/friends')
 @login_required
 def friends():
@@ -76,14 +86,29 @@ def friends():
     visits = Visit.getByUserID(user.socialID)
     visit_urls = [visit.url for visit in visits]
 
+    # Get the most recently read article
+    most_recent_visit = sorted(visits, key=lambda x: x.timeOut)[-1]
+    article = getArticle(most_recent_visit.url)
+    most_recent_title = article.title if article else "N/A"
+    most_recent_url = article.url if article else "#"
+
+    # Get the top read source
+    source_count = defaultdict(int) 
+    for visit in visits:
+      article = Article.get(visit.url)
+      if not article:
+        continue
+      source_count[article.source] += 1
+
+    best_source = max(source_count, key=source_count.get)
     friends_data.append({
       "name": name, 
       "imgsrc": imgsrc,
-      "visit_urls": visit_urls
+      "most_recent_title": most_recent_title,
+      "most_recent_url": most_recent_url,
+      "best_source": best_source
     })
-
   return friends_data
-  #return render_template("friends.html", friends_data=friends_data)
 
 @app.route('/authorize/<provider>')
 def oauth_authorize(provider):
@@ -158,8 +183,7 @@ def ext_usage_chart(time=4):
                           legend_alt_art = legend_alt_art, 
                           colors_alt_art = colors_alt_art, 
                           values_alt_art = values_alt_art, 
-                          labels_alt_art = labels_alt_art,
-                          friends_data = friends_data)
+                          friends_data = friends())
   '''
 
 @app.route('/reading/<int:time>')
