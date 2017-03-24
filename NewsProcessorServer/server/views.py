@@ -49,11 +49,14 @@ def index(time=4):
     ext_data = ext_usage_chart(time)
     source_data = source_analysis(time) 
     read_data = read_analysis(time)
+    friends_data = friends()
   else:
     ext_data = {}
     source_data = {}
     read_data = {}
-  return render_template("index.html", ext=ext_data, source = source_data, read = read_data)
+    friends_data = {}
+  print friends_data
+  return render_template("index.html", ext=ext_data, source = source_data, read = read_data, friends_data = friends_data)
 
 def getArticle(url):
   article = Article.get(url)

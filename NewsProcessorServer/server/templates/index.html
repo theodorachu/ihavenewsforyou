@@ -23,7 +23,7 @@
 
     <!-- Theme CSS -->
     <link href="../static/grayscale.min.css" rel="stylesheet">
-    <link href="../static/style3.css" rel="stylesheet">
+    <link href="../static/style6.css" rel="stylesheet">
 
     <!-- Chart -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js'></script>
@@ -58,19 +58,6 @@
                 <ul class="nav navbar-nav">
                     <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
 
-<!--
-                    {% if current_user.is_authenticated %}
-                        <li>
-                            <a href= {{url_for('ext_usage_chart', time=4)}}>Extension Usage</a>
-                        </li>
-                        <li>
-                            <a href= {{url_for('source_analysis', time=4)}}>Source Analysis</a>
-                        </li>
-                        <li>
-                            <a href = {{url_for('read_analysis', time=4)}}>Reading Analysis</a>
-                        </li>
-                    {% endif %}
-!-->
                     <li class="hidden">
                         <a href="#page-top"></a>
                     </li>
@@ -87,14 +74,14 @@
                     <li>
                         <a class="page-scroll" href="#time-span">Time Span</a>
                     </li>
-                    {% endif %}
+                    {% else %}
                     <li>
                         <a class="page-scroll" href="#about">About</a>
                     </li>
                     <li>
                         <a class="page-scroll" href="#contact">Contact</a>
                     </li>
-
+                    {% endif %}
                     {% if current_user.is_authenticated %}
                         <li>
                             <a id="logout" href="{{ url_for('logout') }}">Logout</a>
@@ -111,6 +98,7 @@
         <!-- /.container -->
     </nav>
 
+    {% if not current_user.is_authenticated %}
     <!-- Intro Header -->
     <header class="intro" style="background-image: url('static/bg.jpg')">
         <div class="intro-body">
@@ -134,12 +122,14 @@
             </div>
         </div>
     </header>
+    {% endif %}
 
     {% if current_user.is_authenticated %}
+    <div class="col-md-8">
         <!-- Extension Usage -->
         <section id="ext-usage" class="container content-section text-center">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
+                <div class="col-lg-8">
                     <h2>Extension Usage</h2>
                     <div class="col-md-6">
                         <h4>{{ext['legend_ext'] | safe}}</h4>
@@ -158,7 +148,7 @@
         <!-- Source Analysis -->
         <section id="source-analysis" class="container content-section text-center">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
+                <div class="col-lg-8">
                     <h2>Source Analysis</h2>
                     <div class="row">
                         <canvas id="source-chart" width="900" height="300"></canvas>
@@ -170,7 +160,7 @@
         <!-- Reading Analysis -->
         <section id="read-analysis" class="container content-section text-center">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
+                <div class="col-lg-8">
                     <h2>Reading Habits</h2>
                     <h4>{{read['legend_article_frequency'] | safe}}</h4>
                     <div class="row">
@@ -186,17 +176,12 @@
             </div>
         </section>
 
-    {% endif %}
-
-    <!-- Time Span Selection -->
-    <section id="time-span" class="container content-section text-center">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
+        <!-- Time Span Selection -->
+        <section id="time-span" class="content-section text-center">
+            <div class="row">
                 <h2>Time Span Selection</h2>
             </div>
-        </div>
-        <div class="dropdown">
-            <div class="col-lg-6 col-lg-offset-3">
+            <div class="dropdown">
                 <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     Change Timeframe of Data
                     <span class="caret"></span>
@@ -207,12 +192,43 @@
                     <li id="week" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=1)}}#time-span data-value="last week">Last Week</a></li>
                 </ul>
             </div>
+
+        </section>
+
+    </div>
+
+    <div class="col-md-4">
+        <div id="friendfeed" class="well" style="background-color:#000">
+            <ul class="nav">
+                <li class="nav-header" style="text-align:center"><h3 id="feed" style="color: #fff">Friend Activity</h3></li>
+                <hr style="border-color: #fff;">
+                <li>
+                    {% for friend in friends_data %}
+                    <div class="row">
+                        <div class="col-md-2">
+                            </br>
+                            <img style="border-radius: 50%;" src={{friend["imgsrc"]}} height="50" width="50">
+                        </div>
+                        <div class="col-md-10">
+                            <h4> {{friend["name"]}} </h4>
+                            Most Recent Article: 
+                            <a target="_blank" href={{friend["most_recent_url"]}}>{{friend["most_recent_title"]}}</a>
+                            </br>
+                            Top Read Source: 
+                            <a href='#'>{{friend["best_source"]}}</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </li>
+            </ul>
         </div>
 
-    </section>
 
+    </div>
 
+    {% endif %}
 
+    {% if not current_user.is_authenticated %}
     <!-- About Section -->
     <section id="about" class="container content-section text-center">
         <div class="row">
@@ -247,13 +263,16 @@
             </div>
         </div>
     </section>
+    {% endif %}
 
+    {%if not current_user.is_authenticated %}
     <!-- Footer -->
     <footer>
         <div class="container text-center">
             <p>Copyright &copy; Across the Aisle 2017</p>
         </div>
     </footer>
+    {% endif %}
     
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
