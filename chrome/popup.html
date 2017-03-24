@@ -8,19 +8,20 @@
 <html>
   <head>
     <title>Across the aisle popup</title>
-<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">     <style>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+     <style>
       body {
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 100%;
         background-color: #555555;
+        overflow:hidden;
       }
       #suggested_div {
         /* avoid an excessively wide status text */
-        white-space: pre;
+        white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
         min-width: 300px;
-        margin-top: 25px;
         background-color: #ffffff;
       }
 
@@ -37,6 +38,19 @@
         left: 10px;
         color: #ffffff;
       }
+      
+      ul {
+        display: block;
+        list-style-type: disc;
+        margin-before: 1em;
+        margin-after: 1em;
+        margin-start: 0;
+        margin-end: 0;
+        padding-start: 0px; 
+        margin: 0; 
+        padding-left: 5px;
+        padding top: 10px;
+      }
     </style>
 
     <script src="helpers.js"></script>
@@ -52,7 +66,19 @@
   </div>
   <div class="suggested_container">
     <div id='suggested_div'>
-        <ul id='suggested_list' style="list-style-type:circle">
+        <ul id='suggested_list' style="list-style-type:none"">
+          <li> <img alt="no relevant articles to display"  
+          style="vertical-align:middle; padding-bottom: 10px; padding-top: 10px;" />
+          <a href="link" class='dynamicLink'  
+          style="vertical-align:middle; font-family: 'Montserrat', sans-serif; ">link</a></li>
+          
+          <li><img  style="vertical-align:middle"/>
+          <a href="link" class='dynamicLink' 
+          style="vertical-align:middle; padding-bottom: 10px; font-family: 'Montserrat', sans-serif;">link</a></li>
+          
+          <li><img  style="vertical-align:middle"/>
+          <a href="link" class='dynamicLink' 
+          style="vertical-align:middle font-family: 'Montserrat', sans-serif;">link</a></li>
         </ul>
     </div>
   </div>
