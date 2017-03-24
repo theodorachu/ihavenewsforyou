@@ -42,7 +42,13 @@ NUM_FRIENDS_TO_DISPLAY = 5
 
 @app.route('/')
 def index():
-  return render_template("index.html")
+  if current_user.is_authenticated:
+    print current_user
+    ext_data = ext_usage_chart()
+  else:
+    ext_data = {}
+  print ext_data
+  return render_template("index.html", ext=ext_data)
 
 @app.route('/friends')
 @login_required
@@ -72,7 +78,8 @@ def friends():
       "visit_urls": visit_urls
     })
 
-  return render_template("friends.html", friends_data=friends_data)
+  return friends_data
+  #return render_template("friends.html", friends_data=friends_data)
 
 @app.route('/authorize/<provider>')
 def oauth_authorize(provider):
@@ -102,7 +109,7 @@ def logout():
   return redirect(url_for('index'))
 
 @app.route('/usage/<int:time>')
-def ext_usage_chart(time):
+def ext_usage_chart(time=4):
     # how often you actually click on the extension
         # for every news site you visited in last month, what % of the time do you use extension
         # what % of the time do you navigate to an alternative article when you actually click on extension in last month
@@ -119,17 +126,25 @@ def ext_usage_chart(time):
   colors_alt_art = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_alt_art))))
   labels_alt_art = ["Did Not Read Recommended Articles", "Read at Least One Recommended Article"]
 
+
   # QUERY THE DATABASE
   visits = Visit.getByUserID(current_user.socialID) # TODO: Filter by date
   totalVisits = len(visits)
   numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
   numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
+  #friends_data = friends()
+  friends_data = []
 
     # RENDER THE DATA
   values_ext[0] = totalVisits
   values_ext[1] = numExtensionClicks
   values_alt_art[0] = totalVisits - numLinkFollows
   values_alt_art[1] = numLinkFollows         
+
+  return {'legend_ext':legend_ext, 'colors_ext': colors_ext, 'values_ext': values_ext, 'labels_ext': labels_ext,
+            'legend_alt_art': legend_alt_art, 'colors_alt_art': colors_alt_art, 'values_alt_art': values_alt_art, 'labels_alt_art': labels_alt_art,
+            'friends_data': friends_data}
+  '''
   return render_template("ext_usage.html", 
                           legend_ext=legend_ext,
                           colors_ext=colors_ext, 
@@ -138,7 +153,9 @@ def ext_usage_chart(time):
                           legend_alt_art = legend_alt_art, 
                           colors_alt_art = colors_alt_art, 
                           values_alt_art = values_alt_art, 
-                          labels_alt_art = labels_alt_art)
+                          labels_alt_art = labels_alt_art,
+                          friends_data = friends_data)
+  '''
 
 @app.route('/reading/<int:time>')
 def read_analysis(time):

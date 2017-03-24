@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" href="../../../chrome/icon.png">
+
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,6 +24,10 @@
     <!-- Theme CSS -->
     <link href="../static/grayscale.min.css" rel="stylesheet">
     <link href="../static/style.css" rel="stylesheet">
+
+    <!-- Chart -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js'></script>
+
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -66,6 +72,9 @@
                         <a href="#page-top"></a>
                     </li>
                     <li>
+                        <a class="page-scroll" href="#ext-usage">Extension Usage Trial</a>
+                    </li>
+                    <li>
                         <a class="page-scroll" href="#about">About</a>
                     </li>
                     <li>
@@ -74,11 +83,11 @@
 
                     {% if current_user.is_authenticated %}
                         <li>
-                            <a href="{{ url_for('logout') }}">Logout</a>
+                            <a id="logout" href="{{ url_for('logout') }}">Logout</a>
                         </li>
                     {% else %}
                         <li>
-                            <a href="{{ url_for('oauth_authorize', provider='facebook') }}">Login with Facebook</a>
+                            <a id="login" href="{{ url_for('oauth_authorize', provider='facebook') }}">Login with Facebook</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -87,11 +96,6 @@
         </div>
         <!-- /.container -->
     </nav>
-
-    <!-- Welcome message -->
-    {% if current_user.is_authenticated %}
-        Hi, {{current_user.name}}!
-    {% endif %}
 
     <!-- Intro Header -->
     <header class="intro">
@@ -110,6 +114,27 @@
             </div>
         </div>
     </header>
+
+    {% if current_user.is_authenticated %}
+    <!-- Extension Usage -->
+    <section id="ext-usage" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Extension Usage</h2>
+                <div class="col-md-6">
+                    <h4>{{ext['legend_ext'] | safe}}</h4>
+                    <canvas id="chart" width="500" height="300"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <h4>{{ext['legend_alt_art'] | safe}}</h4>
+                    <canvas id="chart2" width="500" height="300"></canvas>
+                </div>
+
+
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <!-- About Section -->
     <section id="about" class="container content-section text-center">
@@ -152,7 +177,7 @@
             <p>Copyright &copy; Across the Aisle 2017</p>
         </div>
     </footer>
-
+    
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
@@ -165,6 +190,53 @@
     <!-- Theme JavaScript -->
     <script src="../static/grayscale.min.js"></script>
 
-</body>
+    <script>
+        /*
+        function loggedIn()  {
+            throw 'THIS SHIT DOESNT WORK'
+            $messageCont = $('<div class="message_cont">');
+            $message = $('<div>Some Message. Wait 3 secs!</div>').hide();
+            $messageCont.append($message);
+            $('body').prepend($messageCont);
+            $message.fadeIn(400, function() {
+                setTimeout(function(){
+                    $messageCont.fadeOut();
+                }, 3000)
+            })
+        }*/
+
+        var mychart = document.getElementById("chart").getContext("2d");
+        var secondPiechart = document.getElementById("chart2").getContext("2d");
+        // draw chart
+        var data = {
+            labels: {{ext['labels_ext']|safe}},
+            datasets: [{
+                label: "Graph 1",
+                data: {{ext['values_ext']}},
+                backgroundColor: {{ext['colors_ext']|safe}},
+                hoverBackgroundColor: {{ext['colors_ext']|safe}}
+            }]
+        };
+        var data2 = {
+            labels: {{ext['labels_alt_art']|safe}},
+            datasets:[{
+                label: "Graph 2",
+                data: {{ext['values_alt_art']}},
+                backgroundColor: {{ext['colors_alt_art']|safe}},
+                hoverBackgroundColor: {{ext['colors_alt_art']|safe}}
+            }]
+        };
+        var myPiechart = new Chart(mychart, {
+            type: 'pie',
+            data: data,
+        });
+        var secondPiechart = new Chart(secondPiechart, {
+            type: 'pie',
+            data: data2,
+        });
+
+    </script>
+
+    </body>
 
 </html>
