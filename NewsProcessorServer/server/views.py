@@ -71,7 +71,9 @@ def get_best_source(visits, num_best=1):
     if not article:
       continue
     source_count[article.source] += 1
-  return sorted(source_count, key=source_count.get, reverse=True)[:num_best]  
+
+  sorted_srcs = sorted(source_count, key=source_count.get, reverse=True)[:num_best]
+  return sorted_srcs
 
 def get_most_recent_article(visits, num_recent=1):
   most_recent_visits = sorted(visits, key=lambda x: x.timeOut, reverse=True)[:num_recent]
@@ -153,16 +155,13 @@ def ext_usage_chart(time=4):
   legend_ext = "How Often Extension is Used per News Site Visit"
   
   values_ext = [1, 2]
-  # colors_ext = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_ext))))
   colors_ext = random.sample(COLOR_WHEEL, len(values_ext))
   labels_ext = ["Navigated Away Without Using Extension", "Clicked on Extension"]
       
   legend_alt_art = "How Often Extension Article Recommendations are Read"
   values_alt_art = [1, 2] #TODO: retrieve_from_db()
-  # colors_alt_art = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_alt_art))))
   colors_alt_art = random.sample(COLOR_WHEEL, len(values_alt_art))
   labels_alt_art = ["Did Not Read Recommended Articles", "Read at Least One Recommended Article"]
-
 
   # QUERY THE DATABASE
   visits = Visit.getByUserID(current_user.socialID) # TODO: Filter by date
@@ -276,8 +275,19 @@ def source_analysis(time=4):
             url=article.url
             ))
 
+    def bias_to_color(bias):
+      if bias == 0:
+        return "white"
+      elif bias > 0:
+        return "red"
+      return "blue"
+
     # Get the top sources
-    best_sources = ", ".join(get_best_source(visits, 3))
+    best_sources = get_best_source(visits, 3)
+    best_biases = []
+    for src in best_sources:
+      newsSrc = NewsSource.query.filter_by(name=src).first()
+      best_biases.append(bias_to_color(0) if newsSrc is None else bias_to_color(newsSrc.bias))
 
     # RENDER THE DATA
     sources = list(set([str(x["source"]) for x in visit_data]))
@@ -288,7 +298,7 @@ def source_analysis(time=4):
             source_visit_counts[i] += visit['source'] == source
 
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
-    source_data = {'best_sources': best_sources, 'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
+    source_data = {'best_sources': zip(best_sources, best_biases), 'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
     return source_data
 
     '''

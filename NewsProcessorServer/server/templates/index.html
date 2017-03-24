@@ -165,7 +165,11 @@
                     </div>
                     <div class="row">
                         <br>
-                        <h4>Most Read Sources: {{source['best_sources'] | safe}}</h4>
+                        <h4>Most Read Sources: 
+                            {% for src, color in source['best_sources'] %} 
+                               <font color={{color}}>{{src}} </font>
+                            {% endfor %}
+                        </h4>
                     </div>
                 </div>
             </div>
