@@ -97,15 +97,15 @@ class NewsSource(db.Model):
 class Article(db.Model):
 	__tablename__ = 'articles'
 
-	source = db.Column(db.String(128))
-	image = db.Column(db.String(128))
+	source = db.Column(db.String(256))
+	image = db.Column(db.String(256))
 	bias = db.Column(db.String(64))
 	publishedDate = db.Column(db.DateTime)
 	url = db.Column(db.String(256), primary_key=True)
 	authors = db.Column(db.String(256))
 	keywords = db.Column(db.String(256))
 	summary = db.Column(db.Text)
-	title = db.Column(db.String(128))
+	title = db.Column(db.String(256))
 	text = db.Column(db.Text)
 
 	def __init__(self, article):
@@ -113,7 +113,7 @@ class Article(db.Model):
 		self.source = article.source
 		self.image = article.image
 		self.bias = "none for now"
-		self.publish_date = dateparser.parse(article.publishedDate)
+		self.publish_date = None if (article.publishedDate is None) else dateparser.parse(article.publishedDate)
 		self.url = article.url
 		self.authors = ",".join(article.authors)
 		self.keywords = ",".join(article.keywords)

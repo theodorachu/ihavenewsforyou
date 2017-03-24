@@ -1,7 +1,27 @@
 from server import app, db #, login_manager
 from server.models import Article, User, Visit, NewsSource 
+from server.news_article import NewsArticle
 import random
 from datetime import datetime
+
+def addArticle(url):
+  article = Article.get(url)
+  if not article:
+    article = NewsArticle(url)
+    successfulParse = article.parse()
+    if not successfulParse:
+      return 0
+
+  # Add the article to database
+    try: 
+      Article.add(Article(article))
+    except ValueError as err:
+      # print "Failed to add " + url + " to article database."
+      print "Error: {0}".format(err)
+      return 0
+    print "Added article to database!"
+  print "Article already exists in database."
+  return 1
 
 def addRandomVisit(user, url):
   yearStart = random.randint(2010, 2017)
@@ -20,8 +40,17 @@ def addRandomVisit(user, url):
   secondEnd = random.randint(secondStart + 1, 60 - 1)
   endDate = datetime(yearEnd, monthEnd, dayEnd, hourEnd, secondEnd)
 
-  newVisit = Visit(url, user.id, startDate, endDate)
-  success = newVisit.add(newVisit)
+  # Calculate time spent
+  time_spent = (endDate - startDate).total_seconds()
+
+  # Calculate whether we received or clicked on the suggestions or not
+  receivedSuggestions = random.random() < 0.7
+  clickedSuggestions = False
+  if receivedSuggestions:
+    clickedSuggestions = random.random() < 0.5
+
+  newVisit = Visit(url, user.socialID, startDate, endDate, time_spent, receivedSuggestions, clickedSuggestions)
+  success = Visit.add(newVisit)
   if success:
     print("Visit added!")
     print(str(len(Visit.query.all())) + " visits added to the database.")
@@ -68,6 +97,7 @@ if autofill:
     "Nathaniel Okun": getRandomURLList(7, True)
   }
 
+  num_success_articles = 0
   for name in names_url.keys():
     user = User.query.filter_by(name=name).first()
     if not user:
@@ -76,6 +106,8 @@ if autofill:
     # Get visits
     for url in names_url[name]:
       addRandomVisit(user, url)
+      num_success_articles += addArticle(url)
+  print str(num_success_articles) + " articles added."
 
 else:
   name = raw_input("Please enter User's name: ")
@@ -88,6 +120,7 @@ else:
     # Creates a visit from the URL
     url = raw_input("Visit URL: ")
     addRandomVisit(user, url)
+    addArticle(url)
 
 
 
