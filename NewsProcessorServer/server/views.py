@@ -205,7 +205,8 @@ def read_analysis(time=4):
     average_time_spent = int(total_time_spent / len(visits) if len(visits) > 0 else 0)
     m, s = divmod(average_time_spent, 60)
     h, m = divmod(m, 60)
-    average_time_spent_str = "%d hours %02d minutes %02d seconds" % (h, m, s)
+    if h > 0: average_time_spent_str = "%d hours %02d minutes %02d seconds" % (h, m, s)
+    else: average_time_spent_str = "%02d minutes %02d seconds" % (m, s)
 
     # Set up article labels
     labels_article_frequency = [0]*size

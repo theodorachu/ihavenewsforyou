@@ -43,7 +43,11 @@ def addRandomVisit(user, url, prob_sugg=0.7, prob_clicked=0.8):
   startTime, endTime = getRandomDatetimePair(datetime.now())
 
   # Calculate time spent
-  time_spent = int((endTime - startTime).total_seconds() * random())
+  time_spent = int(random() * 20) * 60
+  delta_in_secs = int((endTime - startTime).total_seconds())
+  if time_spent > delta_in_secs:
+    time_spent = delta_in_secs
+
 
   # Calculate whether we received or clicked on the suggestions or not
   receivedSuggestions = random() < prob_sugg
