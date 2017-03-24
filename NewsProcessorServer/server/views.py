@@ -78,11 +78,14 @@ def get_best_source(visits, num_best=1):
   sorted_srcs = sorted(source_count, key=source_count.get, reverse=True)[:num_best]
   return sorted_srcs
 
+def remove_non_ascii(text):
+  return ''.join([i if ord(i) < 128 else '' for i in text])
+
 def get_most_recent_article(visits, num_recent=1):
   most_recent_visits = sorted(visits, key=lambda x: x.timeOut, reverse=True)[:num_recent]
   articles = [get_article(x.url) for x in most_recent_visits]
-  most_recent_titles = [article.title.encode('utf8') if article else "N/A") for article in articles]
-  most_recent_urls = [(article.url.encode('utf8') if article else "#") for article in articles]
+  most_recent_titles = [(remove_non_ascii(article.title.encode('utf8')) if article else "N/A") for article in articles]
+  most_recent_urls = [(remove_non_ascii(article.url.encode('utf8')) if article else "#") for article in articles]
   return most_recent_titles, most_recent_urls
 
 @app.route('/friends')
