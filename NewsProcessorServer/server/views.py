@@ -207,66 +207,32 @@ def read_analysis(time):
             values_article_frequency = values_article_frequency,
             legend_article_frequency = legend_article_frequency)
 
+@login_required
 @app.route('/sources/<int:time>')
 def source_analysis(time=4):
-	# QUERY DATABASE
-	visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 
-	visit_data = []
-	for visit in visits:
-		article = Article.get(visit.url)
-		if not article:
-			article = NewsArticle(visit.url)
-			successfulParse = article.parse()
-			if not successfulParse: continue
+    # QUERY DATABASE
+    visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 
+    visit_data = []
+    for visit in visits:
+        article = Article.get(visit.url)
+        if not article:
+            article = NewsArticle(visit.url)
+            successfulParse = article.parse()
+            if not successfulParse: continue
 
-		visit_data.append(dict(
-			source=article.source,
-			title=article.title,
-			url=article.url
-			))
+        visit_data.append(dict(
+            source=article.source,
+            title=article.title,
+            url=article.url
+            ))
 
-	# RENDER THE DATA
-	sources = list(set([str(x["source"]) for x in visit_data]))
-	source_visit_counts = []
-	for i, source in enumerate(sources):
-		source_visit_counts.append(0)
-		for visit in visit_data:
-			source_visit_counts[i] += visit['source'] == source
-
-	print source_visit_counts
-	print sources
-
-	return render_template("source_analysis.html", 
-		legend_sources = "Sources Read", 
-		colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources)))), 
-		values_sources = source_visit_counts, 
-		labels_sources = sources)
-
-@login_required
-def source_analysis(time):
-	# QUERY DATABASE
-	visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 
-	visit_data = []
-	for visit in visits:
-		article = Article.get(visit.url)
-		if not article:
-			article = NewsArticle(visit.url)
-			successfulParse = article.parse()
-			if not successfulParse: continue
-
-		visit_data.append(dict(
-			source=article.source,
-			title=article.title,
-			url=article.url
-			))
-
-	# RENDER THE DATA
-	sources = list(set([str(x["source"]) for x in visit_data]))
-	source_visit_counts = []
-	for i, source in enumerate(sources):
-		source_visit_counts.append(0)
-		for visit in visit_data:
-			source_visit_counts[i] += visit['source'] == source
+    # RENDER THE DATA
+    sources = list(set([str(x["source"]) for x in visit_data]))
+    source_visit_counts = []
+    for i, source in enumerate(sources):
+        source_visit_counts.append(0)
+        for visit in visit_data:
+            source_visit_counts[i] += visit['source'] == source
 
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
     return {'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
