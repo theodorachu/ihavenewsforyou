@@ -42,8 +42,17 @@ LAST_YEAR = 52
 NUM_FRIENDS_TO_DISPLAY = 5
 
 @app.route('/')
-def index():
-  return render_template("index.html")
+def index(time=4):
+  if current_user.is_authenticated:
+    print current_user
+    ext_data = ext_usage_chart(time)
+    source_data = source_analysis(time) 
+    read_data = read_analysis(time)
+  else:
+    ext_data = {}
+    source_data = {}
+    read_data = {}
+  return render_template("index.html", ext=ext_data, source = source_data, read = read_data)
 
 def getArticle(url):
   article = Article.get(url)
@@ -120,7 +129,7 @@ def oauth_callback(provider):
         db.session.add(user)
         db.session.commit()
     login_user(user, True)
-    return render_template('index.html')
+    return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():
@@ -129,7 +138,7 @@ def logout():
 
 @app.route('/usage/<int:time>')
 @login_required
-def ext_usage_chart(time):
+def ext_usage_chart(time=4):
     # how often you actually click on the extension
         # for every news site you visited in last month, what % of the time do you use extension
         # what % of the time do you navigate to an alternative article when you actually click on extension in last month
@@ -146,11 +155,14 @@ def ext_usage_chart(time):
   colors_alt_art = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_alt_art))))
   labels_alt_art = ["Did Not Read Recommended Articles", "Read at Least One Recommended Article"]
 
+
   # QUERY THE DATABASE
   visits = Visit.getByUserID(current_user.socialID) # TODO: Filter by date
   totalVisits = len(visits)
   numExtensionClicks = sum(int(v.receivedSuggestions) for v in visits)
   numLinkFollows = sum(int(v.clickedSuggestion) for v in visits)
+  #friends_data = friends()
+  friends_data = []
 
     # RENDER THE DATA
   values_ext[0] = totalVisits
@@ -158,6 +170,10 @@ def ext_usage_chart(time):
   values_alt_art[0] = totalVisits - numLinkFollows
   values_alt_art[1] = numLinkFollows         
 
+  return {'legend_ext':legend_ext, 'colors_ext': colors_ext, 'values_ext': values_ext, 'labels_ext': labels_ext,
+            'legend_alt_art': legend_alt_art, 'colors_alt_art': colors_alt_art, 'values_alt_art': values_alt_art, 'labels_alt_art': labels_alt_art,
+            'friends_data': friends_data}
+  '''
   return render_template("ext_usage.html", 
                           legend_ext=legend_ext,
                           colors_ext=colors_ext, 
@@ -166,93 +182,104 @@ def ext_usage_chart(time):
                           legend_alt_art = legend_alt_art, 
                           colors_alt_art = colors_alt_art, 
                           values_alt_art = values_alt_art, 
-                          labels_alt_art = labels_alt_art, 
                           friends_data = friends())
+  '''
 
 @app.route('/reading/<int:time>')
 @login_required
-def read_analysis(time):
-	if time == LAST_WEEK:   # TODO: extract this into external function
-		size = 7
-	elif time == LAST_MONTH:
-		size = 28
-	elif time == LAST_YEAR:
-		size = 364
-	else:
-		raise ValueError("unexpected value for time parameter")
-	today = datetime.datetime.today()
+def read_analysis(time=4):
+    if time == LAST_WEEK:   # TODO: extract this into external function
+        size = 7
+    elif time == LAST_MONTH:
+        size = 28
+    elif time == LAST_YEAR:
+        size = 364
+    else:
+        raise ValueError("unexpected value for time parameter")
+    today = datetime.datetime.today()
 
-	# time spent per article
-	visits = Visit.getByUserID(current_user.socialID)
-	total_time_spent = sum([visit.timeSpent for visit in visits])
-	average_time_spent = total_time_spent / len(visits) if len(visits) > 0 else 0
-	average_min = int(average_time_spent/60)
-	average_sec = int(average_time_spent % 60)
+    # time spent per article
+    visits = Visit.getByUserID(current_user.socialID)
+    total_time_spent = sum([visit.timeSpent for visit in visits])
+    average_time_spent = total_time_spent / len(visits) if len(visits) > 0 else 0
+    average_min = int(average_time_spent/60)
+    average_sec = int(average_time_spent % 60)
 
-	# Set up article labels
-	labels_article_frequency = [0]*size
-	for i in xrange(len(labels_article_frequency)): # creates the array starting from present to past
-		day = today - datetime.timedelta(days = i)
-		labels_article_frequency[i] = day.strftime("%B %d, %Y")
-	legend_article_frequency = "Num Articles Read Per Day"
-	labels_article_frequency = labels_article_frequency[::-1]
+    # Set up article labels
+    labels_article_frequency = [0]*size
+    for i in xrange(len(labels_article_frequency)): # creates the array starting from present to past
+        day = today - datetime.timedelta(days = i)
+        labels_article_frequency[i] = day.strftime("%B %d, %Y")
+    legend_article_frequency = "Num Articles Read Per Day"
+    labels_article_frequency = labels_article_frequency[::-1]
 
-	values_article_frequency = [0]*size
-	for visit in visits:
-		day = (today - visit.timeOut).days
-		values_article_frequency[size - 1 - day] += 1
+    values_article_frequency = [0]*size
+    for visit in visits:
+        day = (today - visit.timeOut).days
+        if day < size and day >= 0:
+            values_article_frequency[size - 1 - day] += 1
 
-	articles = []
-	for visit in visits:
-		article = Article.get(visit.url)
-		if article:
-			articles.append(article.title)
-		else:
-			articles.append(visit.url)
 
-	return render_template("read_analysis.html",    
-			articles = articles,
-			average_time_spent = [average_min, average_sec],
-			labels_article_frequency = labels_article_frequency,
-			values_article_frequency = values_article_frequency,
-			legend_article_frequency = legend_article_frequency)
+    articles = []
+    for visit in visits:
+        article = Article.get(visit.url)
+        if article:
+            articles.append(article.title)
+        else:
+            articles.append(visit.url)
 
-@app.route('/sources/<int:time>')
+    read_data = {'articles': articles, 'average_time_spent': [average_min, average_sec], 'labels_article_frequency': labels_article_frequency,
+                'values_article_frequency': values_article_frequency, 'legend_article_frequency': legend_article_frequency}
+    print read_data
+    return read_data
+
+    '''
+    return render_template("read_analysis.html",    
+            articles = articles,
+            average_time_spent = [average_min, average_sec],
+            labels_article_frequency = labels_article_frequency,
+            values_article_frequency = values_article_frequency,
+            legend_article_frequency = legend_article_frequency)
+    '''
+
 @login_required
-def source_analysis(time):
-	# QUERY DATABASE
-	visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 
-	visit_data = []
-	for visit in visits:
-		article = Article.get(visit.url)
-		if not article:
-			article = NewsArticle(visit.url)
-			successfulParse = article.parse()
-			if not successfulParse: continue
+@app.route('/sources/<int:time>')
+def source_analysis(time=4):
+    # QUERY DATABASE
+    visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 
+    visit_data = []
+    for visit in visits:
+        article = Article.get(visit.url)
+        if not article:
+            article = NewsArticle(visit.url)
+            successfulParse = article.parse()
+            if not successfulParse: continue
 
-		visit_data.append(dict(
-			source=article.source,
-			title=article.title,
-			url=article.url
-			))
+        visit_data.append(dict(
+            source=article.source,
+            title=article.title,
+            url=article.url
+            ))
 
-	# RENDER THE DATA
-	sources = list(set([str(x["source"]) for x in visit_data]))
-	source_visit_counts = []
-	for i, source in enumerate(sources):
-		source_visit_counts.append(0)
-		for visit in visit_data:
-			source_visit_counts[i] += visit['source'] == source
+    # RENDER THE DATA
+    sources = list(set([str(x["source"]) for x in visit_data]))
+    source_visit_counts = []
+    for i, source in enumerate(sources):
+        source_visit_counts.append(0)
+        for visit in visit_data:
+            source_visit_counts[i] += visit['source'] == source
 
-	print source_visit_counts
-	print sources
+    colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
+    source_data = {'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
+    return source_data
 
-	return render_template("source_analysis.html", 
-		legend_sources = "Sources Read", 
-		colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources)))), 
-		values_sources = source_visit_counts, 
-		labels_sources = sources)
-
+    '''
+    return render_template("source_analysis.html", 
+        legend_sources = "Sources Read", 
+        colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources)))), 
+        values_sources = source_visit_counts, 
+        labels_sources = sources)
+    '''
 
 
 ################ BACKEND ROUTES ##################################################
@@ -397,26 +424,26 @@ def storeVisitEnded():
 
 @app.route('/suggestion_clicked', methods=['POST'])
 def suggestionClicked():
-		fields = ['url', 'id']
-		if areFieldsMissing(request, fields):
-				return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+        fields = ['url', 'id']
+        if areFieldsMissing(request, fields):
+                return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
 
-		visit = Visit.getVisit(request.form['id'], request.form['url'])
-		success = Visit.update(visit, {'clickedSuggestion': True})
-		if not success:
-				return createJSONResp('Failed to update visit')
-		return createJSONResp(success=True)
+        visit = Visit.getVisit(request.form['id'], request.form['url'])
+        success = Visit.update(visit, {'clickedSuggestion': True})
+        if not success:
+                return createJSONResp('Failed to update visit')
+        return createJSONResp(success=True)
 
 @app.route('/suggestions_received', methods=['POST'])
 def suggestionsReceived():
-	fields = ['url', 'id']
-	if areFieldsMissing(request, fields):
-			return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
-	visit = Visit.getVisit(request.form['id'], request.form['url'])
-	success = Visit.update(visit, {'receivedSuggestions': True})
-	if not success:
-			return createJSONResp('Failed to update visit')
-	return createJSONResp(success=True)
+    fields = ['url', 'id']
+    if areFieldsMissing(request, fields):
+            return createJSONResp(error="missing field(s). fields are %s" % ','.join(fields))
+    visit = Visit.getVisit(request.form['id'], request.form['url'])
+    success = Visit.update(visit, {'receivedSuggestions': True})
+    if not success:
+            return createJSONResp('Failed to update visit')
+    return createJSONResp(success=True)
 
 ############## HELPER METHODS #####################
 def areFieldsMissing(request, fields):

@@ -61,6 +61,13 @@ autofill = raw_input("Autofill database? [y/n]")
 
 if autofill:
   left_urls = [
+    "http://www.latimes.com/local/lanow/la-me-ln-producer-sentenced-oscars-20170323-story.html",
+    "http://www.latimes.com/local/lanow/la-me-ln-shooting-south-la-20170323-story.html",
+    "http://www.latimes.com/politics/washington/la-na-essential-washington-updates-1490289183-htmlstory.html",
+    "http://www.latimes.com/politics/la-na-pol-house-obamacare-20170323-story.html",
+    "http://www.sfchronicle.com/business/article/California-passes-nation-s-toughest-methane-11024492.php",
+    "http://www.sfchronicle.com/news/medical/article/The-Latest-Trump-makes-last-minute-health-care-11022490.php",
+    "http://www.sfchronicle.com/nation/article/Without-enough-votes-GOP-leaders-delay-vote-on-11024056.php",
     "http://www.cnn.com/2017/03/23/politics/house-health-care-vote/index.html",
     "http://www.cnn.com/2017/03/14/politics/wiretapping-congressional-investigation/index.html",
     "http://www.newyorker.com/news/benjamin-wallace-wells/how-the-house-freedom-caucus-dominated-trump-on-health-care",
@@ -71,17 +78,47 @@ if autofill:
     "https://www.nytimes.com/2017/03/23/us/election-fraud-voter-ids.html?ribbon-ad-idx=4&rref=homepage&module=Ribbon&version=origin&region=Header&action=click&contentCollection=Home%20Page&pgtype=article",
     "http://www.nbcnews.com/politics/congress/scheduled-health-care-vote-looms-house-gop-remains-short-support-n737491",
     "http://www.nbcnews.com/politics/white-house/white-house-comey-testimony-countering-trump-s-wiretap-claim-nothing-n735871",
-    "http://www.nbcnews.com/politics/congress/these-are-republicans-opposing-trump-s-health-care-bill-n737116"
+    "http://www.nbcnews.com/politics/congress/these-are-republicans-opposing-trump-s-health-care-bill-n737116",
+    "http://www.cnn.com/2017/02/13/politics/michael-flynn-white-house-national-security-adviser/index.html",
+    "http://www.cnn.com/2017/03/23/politics/trump-health-care/index.html",
+    "http://www.cnn.com/2017/03/14/politics/wiretapping-congressional-investigation/index.html",
+    "http://www.cnn.com/2017/03/10/politics/counterintelligence-division-fbi-spy-catchers/index.html",
+    "http://www.cnn.com/2017/03/09/politics/fbi-investigation-continues-into-odd-computer-link-between-russian-bank-and-trump-organization/index.html",
+    "http://www.cnn.com/2017/03/09/politics/fbi-director-james-comey-meets-with-congress-gang-of-eight/index.html",
+    "http://www.cnn.com/2017/03/07/politics/graham-russia-ukraine-poland-hearing/index.html",
+    "http://www.cnn.com/2017/03/09/politics/general-votel-seal-raid-yemen-hearing/index.html",
+    "http://www.cnn.com/2017/03/08/politics/marines-raqqa-assault-syria/index.html",
+    "http://www.cnn.com/2017/03/23/politics/trump-health-care/index.html?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+rss%2Fcnn_allpolitics+%28RSS%3A+CNN+-+Politics%29",
+    "http://www.cnn.com/2017/03/23/politics/house-health-care-vote/index.html?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+rss%2Fcnn_allpolitics+%28RSS%3A+CNN+-+Politics%29",
+    "http://www.cnn.com/2017/03/23/politics/moderate-ryan-health-care/index.html?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+rss%2Fcnn_allpolitics+%28RSS%3A+CNN+-+Politics%29",
+    "http://www.cnn.com/2017/03/23/politics/adam-schiff-trump-russia-grand-jury/index.html?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+rss%2Fcnn_allpolitics+%28RSS%3A+CNN+-+Politics%29"
   ]
 
   right_urls = [
+    "https://www.wsj.com/articles/u-k-police-arrest-seven-in-response-to-attack-near-london-parliament-1490258307?mod=trending_now_3",
+    "https://www.wsj.com/articles/a-presidents-credibility-1490138920?mod=trending_now_2",
+    "https://www.wsj.com/articles/death-rates-rise-for-wide-swath-of-white-adults-1490240740?mod=trending_now_1",
+    "https://www.wsj.com/articles/gop-lawmakers-say-no-deal-yet-on-health-bill-1490291998",
+    "http://nypost.com/2017/03/23/time-for-us-to-stop-funding-horrific-un-peacekeepers/",
+    "http://nypost.com/2017/03/23/this-federal-medicaid-fix-rights-a-decades-old-new-york-wrong/",
+    "http://nypost.com/2017/03/23/republicans-delay-health-care-repeal-vote/",
+    "http://nypost.com/2017/03/23/trumps-ultimatum-pass-health-care-bill-or-obamacare-stays/",
     "http://www.foxnews.com/politics/2017/03/23/gop-leaders-delay-obamacare-replacement-vote-amid-opposition.html",
     "http://www.foxnews.com/politics/2017/03/23/potential-smoking-gun-showing-obama-administration-spied-on-trump-team-source-says.html",
     "http://www.foxnews.com/opinion/2017/03/23/karl-rove-first-real-test-new-republican-government.html",    
     "http://www.foxnews.com/politics/2017/03/23/senate-democrats-may-seek-deal-with-gop-to-confirm-gorsuch-stave-off-nuclear-option.html",
+    "http://www.foxnews.com/politics/2017/03/23/potential-smoking-gun-showing-obama-administration-spied-on-trump-team-source-says.html",
     "http://www.breitbart.com/big-government/2017/03/23/chaos-inside-gop-house-conference-forces-speaker-ryan-to-cancel-thursdays-ryancare-vote/",
     "http://www.breitbart.com/big-government/2017/03/23/polls-ryancare-even-unpopular-obamacare-hillarycare/",
-    "http://www.breitbart.com/big-government/2017/03/23/koch-network-says-will-defend-republicans-vote-against-ahca/"
+    "http://www.breitbart.com/big-government/2017/03/23/koch-network-says-will-defend-republicans-vote-against-ahca/",
+    "http://www.foxnews.com/world/2017/03/23/london-rampage-8-detained-on-suspicion-preparing-terror-attacks.html",
+    "http://www.foxnews.com/world/2017/03/23/starving-venezuelans-dying-for-eating-poisonous-yuca-sold-in-black-market.html",
+    "https://heatst.com/politics/ny-man-charged-with-faking-swastika-hate-crime-against-himself/",
+    "http://www.foxnews.com/us/2017/03/23/authorities-find-veterans-decomposed-body-charge-3-family-members-with-collecting-his-benefits.html",
+    "https://www.aol.com/article/finance/2017/03/22/20-hidden-sources-of-income-lying-around-your-house/21918888/?ncid=txtlnkusaolp00000058&",
+    "http://www.foxnews.com/us/2017/03/23/wwii-vet-wins-300000-lottery-for-94th-birthday.html",
+    "http://www.foxnews.com/us/2017/03/23/chiropractor-conned-medicare-private-insurers-in-10-million-scheme-feds-say.html",
+    "http://insider.foxnews.com/2017/03/23/companies-bidding-contracts-build-donald-trumps-mexico-border-wall",
   ]
 
   def getRandomURLList(numUrls, left=True):

@@ -23,15 +23,3 @@ button#dropdownMenu1    {
 #moveright  {
     right: 2px;
 }
-
-.message_cont {
-    position: fixed;
-    width:100%;
-}
-
-.message_cont div {
-    padding: 10px;
-    background: #00aa00;
-    color: #fff;
-    font-size: 16px;
-}
