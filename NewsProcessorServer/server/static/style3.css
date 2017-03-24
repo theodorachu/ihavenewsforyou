@@ -3,9 +3,8 @@ button#dropdownMenu1    {
 }
 
 ul#dropdownlist {
-    display:block;
+    display:auto;
     margin-left: 160px;
-    padding: 10%;
     padding-top: inherit;
     padding-bottom: inherit;
 }
