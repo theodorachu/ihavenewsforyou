@@ -65,7 +65,7 @@ def addRandomVisit(user, url, prob_sugg=0.7, prob_clicked=0.8):
 
 ############################## SCRIPT CODE ############################
 def getURLsFromFile():
-  filename = '../ScraperDraftScripts/allSidesArticles.json'
+  filename = 'allSidesArticles.json'
   right_urls = []
   left_urls = []
   center_urls = []
