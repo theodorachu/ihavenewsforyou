@@ -81,8 +81,8 @@ def get_best_source(visits, num_best=1):
 def get_most_recent_article(visits, num_recent=1):
   most_recent_visits = sorted(visits, key=lambda x: x.timeOut, reverse=True)[:num_recent]
   articles = [get_article(x.url) for x in most_recent_visits]
-  most_recent_titles = [(article.title if article else "N/A") for article in articles]
-  most_recent_urls = [(article.url if article else "#") for article in articles]
+  most_recent_titles = [(str(article.title) if article else "N/A") for article in articles]
+  most_recent_urls = [(str(article.url) if article else "#") for article in articles]
   return most_recent_titles, most_recent_urls
 
 @app.route('/friends')

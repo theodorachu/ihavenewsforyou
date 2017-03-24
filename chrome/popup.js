@@ -69,19 +69,20 @@ function getArticleSuggestions(article_url, callback, errorCallback) {
 
 function displayArticles(suggestedArticles) {
 	var ul = document.getElementById('suggested_list');
-  var li_arr = ul.getElementsByTagName('li');
-  var count = 0;
+  	var li_arr = ul.getElementsByTagName('li');
+  	var count = 0;
 	suggestedArticles.forEach(function(article){
-		var li = li_arr[count];
+	var li = li_arr[count];
     var _img = li.children[0];
     _img.src = getSiteFavicon(article['url']);
     _img.height = "50";
     _img.width = "50";
     var a = li.children[1];
-		a.href = article['url'];
-		a.addEventListener("click", getCurrentTabUrl(sendArticleWasClicked));
-		a.target = "_blank";
-    a.innerHTML = article['url'].replace('http://',"");
+	a.href = article['url'];
+	a.addEventListener("click", getCurrentTabUrl(sendArticleWasClicked));
+	a.target = "_blank";
+	a.textDecoration = "none";
+    a.innerHTML = article['title'];
     count++;
 	});
 }
