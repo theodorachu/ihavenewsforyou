@@ -84,8 +84,8 @@ def remove_non_ascii(text):
 def get_most_recent_article(visits, num_recent=1):
   most_recent_visits = sorted(visits, key=lambda x: x.timeOut, reverse=True)[:num_recent]
   articles = [get_article(x.url) for x in most_recent_visits]
-  most_recent_titles = [(remove_non_ascii(article.title.encode('utf8')) if article else "N/A") for article in articles]
-  most_recent_urls = [(remove_non_ascii(article.url.encode('utf8')) if article else "#") for article in articles]
+  most_recent_titles = [(remove_non_ascii(article.title) if article else "N/A") for article in articles]
+  most_recent_urls = [(remove_non_ascii(article.url) if article else "#") for article in articles]
   return most_recent_titles, most_recent_urls
 
 @app.route('/friends')
