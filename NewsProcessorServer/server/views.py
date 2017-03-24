@@ -142,7 +142,6 @@ def ext_usage_chart(time=4):
   values_ext[1] = numExtensionClicks
   values_alt_art[0] = totalVisits - numLinkFollows
   values_alt_art[1] = numLinkFollows         
-<<<<<<< HEAD
 
   return {'legend_ext':legend_ext, 'colors_ext': colors_ext, 'values_ext': values_ext, 'labels_ext': labels_ext,
             'legend_alt_art': legend_alt_art, 'colors_alt_art': colors_alt_art, 'values_alt_art': values_alt_art, 'labels_alt_art': labels_alt_art,
