@@ -71,9 +71,6 @@
                     <li>
                         <a class="page-scroll" href="#read-analysis">Reading Habits</a>
                     </li>
-                    <li>
-                        <a class="page-scroll" href="#time-span">Time Span</a>
-                    </li>
                     {% else %}
                     <li>
                         <a class="page-scroll" href="#about">About</a>
@@ -126,6 +123,26 @@
 
     {% if current_user.is_authenticated %}
     <div class="col-md-8">
+
+        <!-- Time Span Selection -->
+        <section id="time-span" class="content-section text-center">
+            <div class="row">
+                <h2>Time Span Selection</h2>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Change Timeframe of Data
+                    <span class="caret"></span>
+                </button>
+                <ul id="dropdownlist" class="btn btn-default dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li id="year" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=52)}}#ext-usage data-value="last year">Last Year</a></li>
+                    <li id="month" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=4)}}#ext-usage data-value="last month">Last Month</a></li>
+                    <li id="week" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=1)}}#ext-usage data-value="last week">Last Week</a></li>
+                </ul>
+            </div>
+
+        </section>
+
         <!-- Extension Usage -->
         <section id="ext-usage" class="container content-section text-center">
             <div class="row">
@@ -185,25 +202,6 @@
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- Time Span Selection -->
-        <section id="time-span" class="content-section text-center">
-            <div class="row">
-                <h2>Time Span Selection</h2>
-            </div>
-            <div class="dropdown">
-                <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    Change Timeframe of Data
-                    <span class="caret"></span>
-                </button>
-                <ul id="dropdownlist" class="btn btn-default dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li id="year" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=52)}}#time-span data-value="last year">Last Year</a></li>
-                    <li id="month" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=4)}}#time-span data-value="last month">Last Month</a></li>
-                    <li id="week" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=1)}}#time-span data-value="last week">Last Week</a></li>
-                </ul>
-            </div>
-
         </section>
 
     </div>
