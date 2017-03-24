@@ -177,6 +177,11 @@
                                <font color={{color}}>{{src}} </font>
                             {% endfor %}
                         </h4>
+                        <h4>Bias Score: 
+                            <font color={{source['bias_score'][1]}}> 
+                                {{source['bias_score'][0]}}
+                            </font>
+                        </h4>
                     </div>
                 </div>
             </div>
@@ -218,18 +223,18 @@
                 <li>
                     {% for friend in friends_data %}
                     <div class="row">
+                        <br>
                         <div class="col-md-2">
-                            </br>
                             <img style="border-radius: 50%;" src={{friend["imgsrc"]}} height="50" width="50">
                         </div>
                         <div class="col-md-10">
-                            <h4> {{friend["name"]}} </h4>
+                            <h4 style="display:inline"> {{friend["name"] | safe}} </h4>
+                            <br>
                             Most Recent Article: 
                             <a target="_blank" href={{friend["most_recent_url"]}}>{{friend["most_recent_title"]}}</a>
-                            </br>
+                            <br>
                             Top Read Source: 
                             <a href='#'>{{friend["best_source"]}}</a>
-                            </br>
                         </div>
                     </div>
                     {% endfor %}

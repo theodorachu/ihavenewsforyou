@@ -91,7 +91,7 @@ if True:
   names_url = {
     "Theodora Chu": getRandomURLList(5, left_urls + center_urls),
     "Brandon Solis": getRandomURLList(5, center_urls + right_urls), 
-    "Kenneth Xu": getRandomURLList(25, right_urls),
+    "Kenneth Xu": getRandomURLList(25, left_urls + right_urls),
     "Nathaniel Okun": getRandomURLList(5, left_urls)
   }
 

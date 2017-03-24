@@ -264,6 +264,8 @@ def source_analysis(time=4):
     # QUERY DATABASE
     visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 
     visit_data = []
+    total_bias = 0
+    num_with_source = 0
     for visit in visits:
         article = Article.get(visit.url)
         if not article:
@@ -277,19 +279,29 @@ def source_analysis(time=4):
             url=article.url
             ))
 
-    def bias_to_color(bias):
-      if bias == 0:
-        return "white"
-      elif bias > 0:
-        return "red"
-      return "blue"
+        # For calculating the bias score 
+        source = NewsSource.getSourceByURL(visit.url)
+        if source:
+          total_bias += source.bias
+          num_with_source += 1
+
+    def bias_to_options(bias_score, options):
+      if bias_score < 0.5 and bias_score > -0.5:
+        return options[0]
+      elif bias_score > 0.5:
+        return options[1]
+      return options[2]
+
+    # Calculate the bias score
+    bias_score = float(total_bias / num_with_source) if num_with_source > 0 else 0
+    bias = str(bias_score) + ' ' + bias_to_options(bias_score, ['(Center)', '(Right-Leaning)', '(Left-leaning)'])
 
     # Get the top sources
     best_sources = get_best_source(visits, 3)
-    best_biases = []
-    for src in best_sources:
-      newsSrc = NewsSource.query.filter_by(name=src).first()
-      best_biases.append(bias_to_color(0) if newsSrc is None else bias_to_color(newsSrc.bias))
+    bias_colors = ['white', 'white', 'white']
+    # for src in best_sources:
+      # newsSrc = NewsSource.query.filter_by(name=src).first()
+      # best_biases.append(bias_to_color(0) if newsSrc is None else bias_to_color(newsSrc.bias))
 
     # RENDER THE DATA
     sources = list(set([str(x["source"]) for x in visit_data]))
@@ -300,7 +312,12 @@ def source_analysis(time=4):
             source_visit_counts[i] += visit['source'] == source
 
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
-    source_data = {'best_sources': zip(best_sources, best_biases), 'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
+    source_data = {'bias_score': [bias, bias_to_options(bias_score, ["white", "red", "blue"])], 
+                  'best_sources': zip(best_sources, bias_colors), 
+                  'legend_sources': 'Sources Read', 
+                  'colors_sources': colors_sources, 
+                  'values_sources': source_visit_counts, 
+                  'labels_sources': sources}
     return source_data
 
     '''
