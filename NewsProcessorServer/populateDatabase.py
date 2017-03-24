@@ -43,7 +43,7 @@ def addRandomVisit(user, url, prob_sugg=0.7, prob_clicked=0.8):
   startTime, endTime = getRandomDatetimePair(datetime.now())
 
   # Calculate time spent
-  time_spent = int(random() * 20) * 60
+  time_spent = int(random() * 25 * 60)
   delta_in_secs = int((endTime - startTime).total_seconds())
   if time_spent > delta_in_secs:
     time_spent = delta_in_secs
@@ -81,7 +81,7 @@ def getURLsFromFile():
         center_urls.append(article["url"])
   return left_urls, center_urls, right_urls
 
-if autofill:
+if True:
   left_urls, center_urls, right_urls = getURLsFromFile()
 
   def getRandomURLList(numUrls, left=True):
@@ -89,10 +89,10 @@ if autofill:
     return [url_list[i] for i in sample(range(0, len(url_list)), numUrls)]
 
   names_url = {
-    "Theodora Chu": getRandomURLList(6, False),
-    "Brandon Solis": getRandomURLList(8, True), 
-    "Kenneth Xu": getRandomURLList(4, False),
-    "Nathaniel Okun": getRandomURLList(7, True)
+    "Theodora Chu": getRandomURLList(5, left_urls + center_urls),
+    "Brandon Solis": getRandomURLList(5, center_urls + right_urls), 
+    "Kenneth Xu": getRandomURLList(25, right_urls),
+    "Nathaniel Okun": getRandomURLList(5, left_urls)
   }
 
   num_success_articles = 0

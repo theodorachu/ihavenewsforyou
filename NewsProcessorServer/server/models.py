@@ -128,9 +128,9 @@ class Article(db.Model):
 	@staticmethod
 	def get(url):
 		article = db.session.query(Article).filter_by(url=url).first()
-		if article:
-			article.keywords = article.keywords.split(',')
-			article.authors = article.authors.split(',')
+		# if article:
+			# article.keywords = article.keywords.split(',')
+			# article.authors = article.authors.split(',')
 		return article
 
 	def __repr__(self):

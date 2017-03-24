@@ -64,14 +64,14 @@ def get_article(url):
       return None
   return article
 
-def get_best_source(visits):
+def get_best_source(visits, num_best=1):
   source_count = defaultdict(int) 
   for visit in visits:
     article = Article.get(visit.url)
     if not article:
       continue
     source_count[article.source] += 1
-  return max(source_count, key=source_count.get)
+  return sorted(source_count, key=source_count.get, reverse=True)[:num_best]  
 
 @app.route('/friends')
 @login_required
@@ -272,6 +272,9 @@ def source_analysis(time=4):
             url=article.url
             ))
 
+    # Get the top sources
+    best_sources = ", ".join(get_best_source(visits, 3))
+
     # RENDER THE DATA
     sources = list(set([str(x["source"]) for x in visit_data]))
     source_visit_counts = []
@@ -281,7 +284,7 @@ def source_analysis(time=4):
             source_visit_counts[i] += visit['source'] == source
 
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
-    source_data = {'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
+    source_data = {'best_sources': best_sources, 'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
     return source_data
 
     '''
