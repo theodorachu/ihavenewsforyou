@@ -1,8 +1,8 @@
 from server import app, db #, login_manager
 from server.models import Article, User, Visit, NewsSource 
 from server.news_article import NewsArticle
-import random
-from datetime import datetime
+from random import randint, random, sample
+from datetime import datetime, timedelta
 
 def addArticle(url):
   article = Article.get(url)
@@ -23,33 +23,31 @@ def addArticle(url):
   print "Article already exists in database."
   return 1
 
-def addRandomVisit(user, url):
-  yearStart = random.randint(2010, 2017)
-  monthStart = random.randint(1, 12) 
-  dayStart = random.randint(1, 28)
-  hourStart = random.randint(0, 24 - 1) # inclusive
-  secondStart = random.randint(0, 60 - 10)
-  startDate = datetime(yearStart, monthStart, dayStart, hourStart, secondStart)
+def addRandomVisit(user, url, prob_sugg=0.7, prob_clicked=0.8):
 
-  yearEnd = random.randint(yearStart, 2017)
-  monthEnd = random.randint(monthStart, 12)
-  dayEnd = random.randint(dayStart, 28)
-  hourEnd = random.randint(hourStart, 24 - 1)
-  if (yearEnd == yearStart) and (monthEnd == monthStart) and (dayEnd == dayStart):
-    secondStart = 0
-  secondEnd = random.randint(secondStart + 1, 60 - 1)
-  endDate = datetime(yearEnd, monthEnd, dayEnd, hourEnd, secondEnd)
+  def getRandomDatetime(current):
+    return current - timedelta(days=randint(0, 100), 
+                               hours=randint(0, 24),
+                               minutes=randint(0, 60),
+                               seconds=randint(0, 60))
+
+  # Get start and end times
+  current = datetime.now()
+  startTime = getRandomDatetime(current)
+  endTime = getRandomDatetime(current)
+  if (startTime - endTime).total_seconds() < 0:
+    startTime, endTime = endTime, startTime
 
   # Calculate time spent
-  time_spent = (endDate - startDate).total_seconds()
+  time_spent = int((startTime - endTime).total_seconds() * random())
 
   # Calculate whether we received or clicked on the suggestions or not
-  receivedSuggestions = random.random() < 0.7
+  receivedSuggestions = random() < prob_sugg
   clickedSuggestions = False
   if receivedSuggestions:
-    clickedSuggestions = random.random() < 0.5
+    clickedSuggestions = random() < prob_clicked
 
-  newVisit = Visit(url, user.socialID, startDate, endDate, time_spent, receivedSuggestions, clickedSuggestions)
+  newVisit = Visit(url, user.socialID, startTime, endTime, time_spent, receivedSuggestions, clickedSuggestions)
   success = Visit.add(newVisit)
   if success:
     print("Visit added!")
@@ -88,10 +86,10 @@ if autofill:
 
   def getRandomURLList(numUrls, left=True):
     url_list = left_urls if left else right_urls
-    return [url_list[i] for i in random.sample(range(0, len(url_list)), numUrls)]
+    return [url_list[i] for i in sample(range(0, len(url_list)), numUrls)]
 
   names_url = {
-    "Theodora Chu": getRandomURLList(6, True),
+    "Theodora Chu": getRandomURLList(6, False),
     "Brandon Solis": getRandomURLList(8, True), 
     "Kenneth Xu": getRandomURLList(4, False),
     "Nathaniel Okun": getRandomURLList(7, True)
