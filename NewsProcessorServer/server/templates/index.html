@@ -204,15 +204,17 @@
             </div>
         </div>
         <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                Change Timeframe of Data
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li id="year"><a href = {{url_for('index', time=52)}} data-value="last year">Last Year</a></li>
-                <li id="month"><a href = {{url_for('index', time=4)}} data-value="last month">Last Month</a></li>
-                <li id="week"><a href = {{url_for('index', time=1)}} data-value="last week">Last Week</a></li>
-            </ul>
+            <div class="col-lg-6 col-lg-offset-3">
+                <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Change Timeframe of Data
+                    <span class="caret"></span>
+                </button>
+                <ul id="dropdownlist" class="btn btn-default dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li id="year"><a href = {{url_for('index', time=52)}}#time-span data-value="last year">Last Year</a></li>
+                    <li id="month"><a href = {{url_for('index', time=4)}}#time-span data-value="last month">Last Month</a></li>
+                    <li id="week"><a href = {{url_for('index', time=1)}}#time-span data-value="last week">Last Week</a></li>
+                </ul>
+            </div>
         </div>
 
     </section>

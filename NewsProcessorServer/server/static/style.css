@@ -2,6 +2,14 @@ button#dropdownMenu1    {
     margin-top: 25px;
 }
 
+ul#dropdownlist {
+    display:block;
+    margin-left: 160px;
+    padding: 10%;
+    padding-top: inherit;
+    padding-bottom: inherit;
+}
+
 #title  {
     text-align: center;
     font-size: 80px;
