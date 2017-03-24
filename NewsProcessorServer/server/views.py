@@ -63,7 +63,7 @@ def friends():
     user = User.query.filter_by(socialID=social_id).first()
     if user is None:
       continue 
-    visits = Visit.getByUserID(str(user.id))
+    visits = Visit.getByUserID(user.socialID)
     visit_urls = [visit.url for visit in visits]
 
     friends_data.append({
@@ -102,6 +102,7 @@ def logout():
   return redirect(url_for('index'))
 
 @app.route('/usage/<int:time>')
+@login_required
 def ext_usage_chart(time):
     # how often you actually click on the extension
         # for every news site you visited in last month, what % of the time do you use extension
@@ -130,6 +131,7 @@ def ext_usage_chart(time):
   values_ext[1] = numExtensionClicks
   values_alt_art[0] = totalVisits - numLinkFollows
   values_alt_art[1] = numLinkFollows         
+
   return render_template("ext_usage.html", 
                           legend_ext=legend_ext,
                           colors_ext=colors_ext, 
@@ -141,6 +143,7 @@ def ext_usage_chart(time):
                           labels_alt_art = labels_alt_art)
 
 @app.route('/reading/<int:time>')
+@login_required
 def read_analysis(time):
 	if time == LAST_WEEK:   # TODO: extract this into external function
 		size = 7
@@ -188,6 +191,7 @@ def read_analysis(time):
 			legend_article_frequency = legend_article_frequency)
 
 @app.route('/sources/<int:time>')
+@login_required
 def source_analysis(time):
 	# QUERY DATABASE
 	visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 

@@ -13,13 +13,14 @@ def addArticle(url):
       return 0
 
   # Add the article to database
-  try: 
-    Article.add(Article(article))
-  except ValueError as err:
-    # print "Failed to add " + url + " to article database."
-    print "Error: {0}".format(err)
-    return 0
-  print "Added article to database!"
+    try: 
+      Article.add(Article(article))
+    except ValueError as err:
+      # print "Failed to add " + url + " to article database."
+      print "Error: {0}".format(err)
+      return 0
+    print "Added article to database!"
+  print "Article already exists in database."
   return 1
 
 def addRandomVisit(user, url):
@@ -39,8 +40,17 @@ def addRandomVisit(user, url):
   secondEnd = random.randint(secondStart + 1, 60 - 1)
   endDate = datetime(yearEnd, monthEnd, dayEnd, hourEnd, secondEnd)
 
-  newVisit = Visit(url, user.id, startDate, endDate)
-  success = newVisit.add(newVisit)
+  # Calculate time spent
+  time_spent = (endDate - startDate).total_seconds()
+
+  # Calculate whether we received or clicked on the suggestions or not
+  receivedSuggestions = random.random() < 0.7
+  clickedSuggestions = False
+  if receivedSuggestions:
+    clickedSuggestions = random.random() < 0.5
+
+  newVisit = Visit(url, user.socialID, startDate, endDate, time_spent, receivedSuggestions, clickedSuggestions)
+  success = Visit.add(newVisit)
   if success:
     print("Visit added!")
     print(str(len(Visit.query.all())) + " visits added to the database.")
