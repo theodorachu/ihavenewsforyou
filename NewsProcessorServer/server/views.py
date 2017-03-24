@@ -55,7 +55,7 @@ def index(time=4):
     read_data = {}
   return render_template("index.html", ext=ext_data, source = source_data, read = read_data)
 
-def getArticle(url):
+def get_article(url):
   article = Article.get(url)
   if article is None:
     article = NewsArticle(url)
@@ -63,6 +63,15 @@ def getArticle(url):
     if not successfulParse:
       return None
   return article
+
+def get_best_source(visits):
+  source_count = defaultdict(int) 
+  for visit in visits:
+    article = Article.get(visit.url)
+    if not article:
+      continue
+    source_count[article.source] += 1
+  return max(source_count, key=source_count.get)
 
 @app.route('/friends')
 @login_required
@@ -88,7 +97,7 @@ def friends():
 
     # Get the most recently read article
     most_recent_visit = sorted(visits, key=lambda x: x.timeOut)[-1]
-    article = getArticle(most_recent_visit.url)
+    article = get_article(most_recent_visit.url)
     most_recent_title = article.title if article else "N/A"
     most_recent_url = article.url if article else "#"
 
@@ -100,7 +109,7 @@ def friends():
         continue
       source_count[article.source] += 1
 
-    best_source = max(source_count, key=source_count.get)
+    best_source = get_best_source(visits)
     friends_data.append({
       "name": name, 
       "imgsrc": imgsrc,
