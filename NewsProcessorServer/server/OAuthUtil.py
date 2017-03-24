@@ -71,13 +71,16 @@ class FacebookSignIn(OAuthSignIn):
         )
 
     def getFriends(self):
-        r = self.oauth_session.get('me/friends', params={'metadata': 1})
-        return r.json()
+        if self.oauth_session:
+            r = self.oauth_session.get('me/friends', params={'metadata': 1})
+            return r.json()
+        return []
 
     def getProfilePic(self, user_id, height=250, width=250):
-        r = self.oauth_session.get(user_id + '/picture', params={'height': 250, 'width': 250, 'redirect': False})
-        return r.json()
-
+        if self.oauth_session:
+            r = self.oauth_session.get(user_id + '/picture', params={'height': 250, 'width': 250, 'redirect': False})
+            return r.json()
+        return None
 
 
 # class Tester(object):
