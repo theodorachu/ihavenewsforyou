@@ -34,9 +34,9 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li id="year"><a href = {{url_for('read_analysis', time=52)}} data-value="last year">Last Year</a></li>
-                        <li id="month"><a href = {{url_for('read_analysis', time=4)}} data-value="last month">Last Month</a></li>
-                        <li id="week"><a href = {{url_for('read_analysis', time=1)}} data-value="last week">Last Week</a></li>
+                        <li id="year"><a href = {{url_for('source_analysis', time=52)}} data-value="last year">Last Year</a></li>
+                        <li id="month"><a href = {{url_for('source_analysis', time=4)}} data-value="last month">Last Month</a></li>
+                        <li id="week"><a href = {{url_for('source_analysis', time=1)}} data-value="last week">Last Week</a></li>
                     </ul>
                 </div>
                 <canvas id="chart" width="900" height="300"></canvas>

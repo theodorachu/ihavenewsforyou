@@ -5,7 +5,6 @@ function main() {
 	if (isKeyInLocalStorage("USER_ID")) {
 		USER_ID = getObjectFromLocalStorage("USER_ID");
 	}
-]
 	chrome.tabs.onUpdated.addListener(extractAccessToken);
 	logIn();
 
