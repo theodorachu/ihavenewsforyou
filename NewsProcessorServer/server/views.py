@@ -41,15 +41,17 @@ LAST_YEAR = 52
 NUM_FRIENDS_TO_DISPLAY = 5
 
 @app.route('/')
-def index():
+def index(time=4):
   if current_user.is_authenticated:
     print current_user
-    ext_data = ext_usage_chart()
-    source_data = source_analysis() 
+    ext_data = ext_usage_chart(time)
+    source_data = source_analysis(time) 
+    read_data = read_analysis(time)
   else:
     ext_data = {}
     source_data = {}
-  return render_template("index.html", ext=ext_data, source = source_data)
+    read_data = {}
+  return render_template("index.html", ext=ext_data, source = source_data, read = read_data)
 
 @app.route('/friends')
 @login_required
@@ -102,7 +104,7 @@ def oauth_callback(provider):
         db.session.add(user)
         db.session.commit()
     login_user(user, True)
-    return render_template('index.html')
+    return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():
@@ -161,7 +163,7 @@ def ext_usage_chart(time=4):
 
 @app.route('/reading/<int:time>')
 @login_required
-def read_analysis(time):
+def read_analysis(time=4):
     if time == LAST_WEEK:   # TODO: extract this into external function
         size = 7
     elif time == LAST_MONTH:
@@ -190,7 +192,9 @@ def read_analysis(time):
     values_article_frequency = [0]*size
     for visit in visits:
         day = (today - visit.timeOut).days
-        values_article_frequency[size - 1 - day] += 1
+        if day < size and day >= 0:
+            values_article_frequency[size - 1 - day] += 1
+
 
     articles = []
     for visit in visits:
@@ -200,12 +204,19 @@ def read_analysis(time):
         else:
             articles.append(visit.url)
 
+    read_data = {'articles': articles, 'average_time_spent': [average_min, average_sec], 'labels_article_frequency': labels_article_frequency,
+                'values_article_frequency': values_article_frequency, 'legend_article_frequency': legend_article_frequency}
+    print read_data
+    return read_data
+
+    '''
     return render_template("read_analysis.html",    
             articles = articles,
             average_time_spent = [average_min, average_sec],
             labels_article_frequency = labels_article_frequency,
             values_article_frequency = values_article_frequency,
             legend_article_frequency = legend_article_frequency)
+    '''
 
 @login_required
 @app.route('/sources/<int:time>')
@@ -235,7 +246,8 @@ def source_analysis(time=4):
             source_visit_counts[i] += visit['source'] == source
 
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
-    return {'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
+    source_data = {'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
+    return source_data
 
     '''
     return render_template("source_analysis.html", 

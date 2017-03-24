@@ -82,7 +82,10 @@
                         <a class="page-scroll" href="#source-analysis">Source Analysis</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#read-analysis">Reading Analysis</a>
+                        <a class="page-scroll" href="#read-analysis">Reading Habits</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#time-span">Time Span</a>
                     </li>
                     {% endif %}
                     <li>
@@ -109,7 +112,7 @@
     </nav>
 
     <!-- Intro Header -->
-    <header class="intro">
+    <header class="intro" style="background-image: url('static/bg.jpg')">
         <div class="intro-body">
             <div class="container">
                 <div class="row">
@@ -117,9 +120,15 @@
                         <h1 class="brand-heading">Across the Aisle</h1>
                         <p class="intro-text">A Chrome extension and dashboard for news diversification.
                             <br>Challenge your opinions. Diversify your news.</p>
+                        {% if current_user.is_authenticated %}
+                        <a href="#ext-usage" class="btn btn-circle page-scroll">
+                            <span id="moveright" class="glyphicon glyphicon-menu-down"></span>
+                        </a>
+                        {% else %}
                         <a href="#about" class="btn btn-circle page-scroll">
                             <span id="moveright" class="glyphicon glyphicon-menu-down"></span>
                         </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -127,47 +136,88 @@
     </header>
 
     {% if current_user.is_authenticated %}
-    <!-- Extension Usage -->
-    <section id="ext-usage" class="container content-section text-center">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-                <h2>Extension Usage</h2>
-                <div class="col-md-6">
-                    <h4>{{ext['legend_ext'] | safe}}</h4>
-                    <canvas id="chart" width="500" height="300"></canvas>
-                </div>
-                <div class="col-md-6">
-                    <h4>{{ext['legend_alt_art'] | safe}}</h4>
-                    <canvas id="chart2" width="500" height="300"></canvas>
-                </div>
+        <!-- Extension Usage -->
+        <section id="ext-usage" class="container content-section text-center">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2>Extension Usage</h2>
+                    <div class="col-md-6">
+                        <h4>{{ext['legend_ext'] | safe}}</h4>
+                        <canvas id="chart" width="500" height="300"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>{{ext['legend_alt_art'] | safe}}</h4>
+                        <canvas id="chart2" width="500" height="300"></canvas>
+                    </div>
 
 
-            </div>
-        </div>
-    </section>
-
-    <!-- Source Analysis -->
-    <section id="source-analysis" class="container content-section text-center">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-                <h2>Source Analysis</h2>
-                <div class="row">
-                    <canvas id="source-chart" width="900" height="300"></canvas>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Reading Analysis -->
-    <section id="read-analysis" class="container content-section text-center">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-                <h2>Reading Analysis</h2>
+        <!-- Source Analysis -->
+        <section id="source-analysis" class="container content-section text-center">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2>Source Analysis</h2>
+                    <div class="row">
+                        <canvas id="source-chart" width="900" height="300"></canvas>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- Reading Analysis -->
+        <section id="read-analysis" class="container content-section text-center">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2>Reading Habits</h2>
+                    <h4>{{read['legend_article_frequency'] | safe}}</h4>
+                    <div class="row">
+                        <canvas id="read-chart" width="900" height="300"</canvas>
+                    </div>
+                    <div class="row">
+                        <h4>Average time spent per article: {{read['average_time_spent'][0] | safe}} minutes {{read['average_time_spent'][1] | safe}} seconds</h4>
+                    </div>
+                    <div class="row">
+                        <h4>Articles Read over Selected Time Span:</h4>
+                            <ul>
+                                {% for article in articles %}
+                                <li>{{ article }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% if articles|length == 0 %}
+                                <h5>No articles read over selected time span</h5>
+                            {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
 
     {% endif %}
+
+    <!-- Time Span Selection -->
+    <section id="time-span" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Time Span Selection</h2>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle pad-top" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                Change Timeframe of Data
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li id="year"><a href = {{url_for('index', time=52)}} data-value="last year">Last Year</a></li>
+                <li id="month"><a href = {{url_for('index', time=4)}} data-value="last month">Last Month</a></li>
+                <li id="week"><a href = {{url_for('index', time=1)}} data-value="last week">Last Week</a></li>
+            </ul>
+        </div>
+
+    </section>
+
+
 
     <!-- About Section -->
     <section id="about" class="container content-section text-center">
@@ -270,7 +320,7 @@
 
         var sourcechart = document.getElementById("source-chart").getContext("2d");
         // draw chart
-        var source-data = {
+        var data3 = {
             labels: {{source['labels_sources']|safe}},
             datasets: [{
                 data: {{source['values_sources']}},
@@ -278,15 +328,36 @@
                 hoverBackgroundColor: {{source['colors_sources']|safe}}
             }]
         };
-        var source-chart = new Chart(source-chart, {
+        var sourcechart = new Chart(sourcechart, {
             type: 'bar',
-            data: source-data,
+            data: data3,
             options: {
                 legend: {
                     display: false
                 }
             }
         });
+
+
+
+        var readchart = document.getElementById("read-chart").getContext("2d");
+        // draw chart
+        var data4 = {
+            labels: {{read['labels_article_frequency']|safe}},
+            datasets: [{
+                data: {{read['values_article_frequency']}},
+            }]
+        };
+        var readchart = new Chart(readchart, {
+            type: 'line',
+            data: data4,
+            options: {
+                legend: {
+                    display: false
+                }
+            }
+        });
+
 
 
     </script>
