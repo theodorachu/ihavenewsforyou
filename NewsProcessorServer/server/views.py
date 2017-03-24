@@ -41,6 +41,7 @@ LAST_YEAR = 52
 NUM_FRIENDS_TO_DISPLAY = 5
 
 @app.route('/')
+@app.route('/<int:time>')
 def index(time=4):
   if current_user.is_authenticated:
     print current_user
