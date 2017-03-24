@@ -203,7 +203,7 @@
                         <h4>{{read['num_articles']}} Articles Read In Time Span</h4>
                     </div>
                     <div class="row">
-                        <h4> Most Recently Read: </h4>
+                        <h4 style="display:inline"> Most Recently Read: </h4>
                         {% for title, url in read['most_recent'] %}
                             <a href={{url}} target="_blank"> {{title}}</a>                                
                             <br>
