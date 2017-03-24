@@ -116,7 +116,7 @@ def friends():
       "imgsrc": imgsrc,
       "most_recent_title": most_recent_titles[0],
       "most_recent_url": most_recent_urls[0],
-      "best_source": best_source
+      "best_source": best_source[0]
     })
   return friends_data
 
@@ -232,8 +232,7 @@ def read_analysis(time=4):
       day = (today - visit.timeOut).days
       if day < size and day >= 0:
           values_article_frequency[size - 1 - day] += 1
-
-      url_dict[visit.url] += 1
+          url_dict[visit.url] += 1
     # # Articles
     # article = Article.get(visit.url)
     # if article:
