@@ -114,8 +114,8 @@ def friends():
     friends_data.append({
       "name": name, 
       "imgsrc": imgsrc,
-      "most_recent_title": most_recent_titles[0],
-      "most_recent_url": most_recent_urls[0],
+      "most_recent_title": most_recent_titles[0] if len(most_recent_titles) > 0 else "",
+      "most_recent_url": most_recent_urls[0] if len(most_recent_urls) > 0 else "",
       "best_source": best_source[0]
     })
   return friends_data
