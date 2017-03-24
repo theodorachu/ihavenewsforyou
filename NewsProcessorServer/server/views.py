@@ -27,7 +27,7 @@ Docs:
 
 """
 ################ FRONTEND ROUTES ##################################################
-COLOR_WHEEL = ['#000000', '#00FF00', '#0000FF', '#FF0000', '#01FFFE', '#FFA6FE', '#FFDB66', '#006401', \
+COLOR_WHEEL = ['#00FF00', '#0000FF', '#FF0000', '#01FFFE', '#FFA6FE', '#FFDB66', '#006401', \
 '#010067', '#95003A', '#007DB5', '#FF00F6', '#FFEEE8', '#774D00', '#90FB92', '#0076FF', '#D5FF00',\
 '#FF937E', '#6A826C', '#FF029D', '#FE8900', '#7A4782', '#7E2DD2', '#85A900', '#FF0056', '#A42400',\
 '#00AE7E', '#683D3B', '#BDC6FF', '#263400', '#BDD393', '#00B917', '#9E008E', '#001544', '#C28C9F',\
@@ -261,8 +261,21 @@ def read_analysis(time=4):
 @login_required
 @app.route('/sources/<int:time>')
 def source_analysis(time=4):
+
+    def bias_to_options(bias_score, options):
+      if bias_score < 0.5 and bias_score > -0.5:
+        return options[0]
+      elif bias_score > 0.5:
+        return options[1]
+      return options[2]
+
     # QUERY DATABASE
     visits = Visit.getByUserID(current_user.socialID) #TODO: Filter by date 
+
+    # Get the top sources
+    best_sources = get_best_source(visits, 3)
+    bias_colors = [None, None, None]
+
     visit_data = []
     total_bias = 0
     num_with_source = 0
@@ -279,29 +292,23 @@ def source_analysis(time=4):
             url=article.url
             ))
 
+        # For getting the color for the best sources
+        try: 
+          idx = best_sources.index(article.source)
+          if bias_colors[idx] is None:
+            news_src = NewsSource.getSourceByURL(visit.url)
+            bias_colors[idx] = bias_to_options(news_src.bias if news_src else 0, ["white", "red", "blue"])
+        except ValueError: pass
+
         # For calculating the bias score 
         source = NewsSource.getSourceByURL(visit.url)
         if source:
           total_bias += source.bias
           num_with_source += 1
 
-    def bias_to_options(bias_score, options):
-      if bias_score < 0.5 and bias_score > -0.5:
-        return options[0]
-      elif bias_score > 0.5:
-        return options[1]
-      return options[2]
-
     # Calculate the bias score
     bias_score = float(total_bias / num_with_source) if num_with_source > 0 else 0
     bias = str(bias_score) + ' ' + bias_to_options(bias_score, ['(Center)', '(Right-Leaning)', '(Left-leaning)'])
-
-    # Get the top sources
-    best_sources = get_best_source(visits, 3)
-    bias_colors = ['white', 'white', 'white']
-    # for src in best_sources:
-      # newsSrc = NewsSource.query.filter_by(name=src).first()
-      # best_biases.append(bias_to_color(0) if newsSrc is None else bias_to_color(newsSrc.bias))
 
     # RENDER THE DATA
     sources = list(set([str(x["source"]) for x in visit_data]))
@@ -311,7 +318,8 @@ def source_analysis(time=4):
         for visit in visit_data:
             source_visit_counts[i] += visit['source'] == source
 
-    colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
+    # colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
+    colors_sources = random.sample(COLOR_WHEEL, len(sources))
     source_data = {'bias_score': [bias, bias_to_options(bias_score, ["white", "red", "blue"])], 
                   'best_sources': zip(best_sources, bias_colors), 
                   'legend_sources': 'Sources Read', 
