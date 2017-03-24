@@ -23,7 +23,7 @@
 
     <!-- Theme CSS -->
     <link href="../static/grayscale.min.css" rel="stylesheet">
-    <link href="../static/style.css" rel="stylesheet">
+    <link href="../static/style3.css" rel="stylesheet">
 
     <!-- Chart -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js'></script>
@@ -202,9 +202,9 @@
                     <span class="caret"></span>
                 </button>
                 <ul id="dropdownlist" class="btn btn-default dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li id="year"><a href = {{url_for('index', time=52)}}#time-span data-value="last year">Last Year</a></li>
-                    <li id="month"><a href = {{url_for('index', time=4)}}#time-span data-value="last month">Last Month</a></li>
-                    <li id="week"><a href = {{url_for('index', time=1)}}#time-span data-value="last week">Last Week</a></li>
+                    <li id="year" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=52)}}#time-span data-value="last year">Last Year</a></li>
+                    <li id="month" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=4)}}#time-span data-value="last month">Last Month</a></li>
+                    <li id="week" style="width: 250px; display: block; text-align: center;"><a href = {{url_for('index', time=1)}}#time-span data-value="last week">Last Week</a></li>
                 </ul>
             </div>
         </div>
