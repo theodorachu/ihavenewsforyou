@@ -68,8 +68,7 @@ function getArticleSuggestions(article_url, callback, errorCallback) {
 }
 
 function displayArticles(suggestedArticles) {
-	var popupDiv = document.getElementById('suggested_div');
-	var ol = popupDiv.appendChild(document.createElement('ol'));
+	var ol = document.getElementById('suggested_list');
 	suggestedArticles.forEach(function(article){
 		var li = ol.appendChild(document.createElement('li'));
     var _img = document.createElement('img');

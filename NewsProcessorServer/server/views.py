@@ -111,7 +111,7 @@ def ext_usage_chart(time):
 
   legend_ext = "How Often Extension is Used per News Site Visit"
   
-  values_ext = [1, 2] #TODO: retrieve_from_db()
+  values_ext = [1, 2]
   colors_ext = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_ext))))
   labels_ext = ["Navigated Away Without Using Extension", "Clicked on Extension"]
       
