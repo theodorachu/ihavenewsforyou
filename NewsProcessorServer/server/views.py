@@ -203,7 +203,7 @@ def read_analysis(time=4):
     visits = Visit.getByUserID(current_user.socialID)
     total_time_spent = sum([visit.timeSpent for visit in visits])
     average_time_spent = total_time_spent / len(visits) if len(visits) > 0 else 0
-    average_min = int(average_time_spent/60)
+    average_min = int(average_time_spent / 60)
     average_sec = int(average_time_spent % 60)
 
     # Set up article labels
@@ -220,6 +220,8 @@ def read_analysis(time=4):
         if day < size and day >= 0:
             values_article_frequency[size - 1 - day] += 1
 
+    # TODO: remove
+    print values_article_frequency
 
     articles = []
     for visit in visits:
@@ -231,7 +233,6 @@ def read_analysis(time=4):
 
     read_data = {'articles': articles, 'average_time_spent': [average_min, average_sec], 'labels_article_frequency': labels_article_frequency,
                 'values_article_frequency': values_article_frequency, 'legend_article_frequency': legend_article_frequency}
-    print read_data
     return read_data
 
     '''

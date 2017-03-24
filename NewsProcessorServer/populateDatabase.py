@@ -26,7 +26,7 @@ def addArticle(url):
 def addRandomVisit(user, url, prob_sugg=0.7, prob_clicked=0.8):
 
   def getRandomDatetime(current):
-    return current - timedelta(days=randint(0, 100), 
+    return current - timedelta(days=randint(0, 30), 
                                hours=randint(0, 24),
                                minutes=randint(0, 60),
                                seconds=randint(0, 60))
