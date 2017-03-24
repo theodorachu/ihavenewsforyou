@@ -24,6 +24,8 @@
     ],
     "persistent": true
   },
+    
+    "web_accessible_resources": ["logo.png"],
   
   "externally_connectable": {
     "matches": ["http://127.0.0.1:5000/", "https://across-the-aisle.herokuapp.com/*"]

@@ -69,7 +69,7 @@ def friends():
     friends_data.append({
       "name": name, 
       "imgsrc": imgsrc,
-      "visit_urls": []
+      "visit_urls": visit_urls
     })
 
   return render_template("friends.html", friends_data=friends_data)
