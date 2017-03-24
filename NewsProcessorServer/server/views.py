@@ -20,7 +20,7 @@ from OAuthUtil import OAuthSignIn
 """
 Docs:
 1) Flask Login: 
-    - https://flask-login.readthedocs.io/en/latest/
+    - https://flask-login.readthedocs.io/en/latest  /
     - https://blog.miguelgrinberg.com/post/oauth-authentication-with-flask
     - https://pythonhosted.org/Flask-Social/
 
