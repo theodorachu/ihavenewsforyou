@@ -116,7 +116,7 @@ def friends():
       "imgsrc": imgsrc,
       "most_recent_title": most_recent_titles[0] if len(most_recent_titles) > 0 else "",
       "most_recent_url": most_recent_urls[0] if len(most_recent_urls) > 0 else "",
-      "best_source": best_source[0]
+      "best_source": best_source[0] if len(best_source) > 0 else ""
     })
   return friends_data
 
