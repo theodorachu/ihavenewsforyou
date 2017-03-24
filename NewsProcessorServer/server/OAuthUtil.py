@@ -74,7 +74,7 @@ class FacebookSignIn(OAuthSignIn):
         if self.oauth_session:
             r = self.oauth_session.get('me/friends', params={'metadata': 1})
             return r.json()
-        return []
+        return {'data': []}
 
     def getProfilePic(self, user_id, height=250, width=250):
         if self.oauth_session:
