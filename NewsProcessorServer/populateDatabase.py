@@ -13,13 +13,14 @@ def addArticle(url):
       return 0
 
   # Add the article to database
-  try: 
-    Article.add(Article(article))
-  except ValueError as err:
-    # print "Failed to add " + url + " to article database."
-    print "Error: {0}".format(err)
-    return 0
-  print "Added article to database!"
+    try: 
+      Article.add(Article(article))
+    except ValueError as err:
+      # print "Failed to add " + url + " to article database."
+      print "Error: {0}".format(err)
+      return 0
+    print "Added article to database!"
+  print "Article already exists in database."
   return 1
 
 def addRandomVisit(user, url):
@@ -39,8 +40,17 @@ def addRandomVisit(user, url):
   secondEnd = random.randint(secondStart + 1, 60 - 1)
   endDate = datetime(yearEnd, monthEnd, dayEnd, hourEnd, secondEnd)
 
-  newVisit = Visit(url, user.id, startDate, endDate)
-  success = newVisit.add(newVisit)
+  # Calculate time spent
+  time_spent = (endDate - startDate).total_seconds()
+
+  # Calculate whether we received or clicked on the suggestions or not
+  receivedSuggestions = random.random() < 0.7
+  clickedSuggestions = False
+  if receivedSuggestions:
+    clickedSuggestions = random.random() < 0.5
+
+  newVisit = Visit(url, user.socialID, startDate, endDate, time_spent, receivedSuggestions, clickedSuggestions)
+  success = Visit.add(newVisit)
   if success:
     print("Visit added!")
     print(str(len(Visit.query.all())) + " visits added to the database.")
@@ -53,6 +63,13 @@ autofill = raw_input("Autofill database? [y/n]")
 
 if autofill:
   left_urls = [
+    "http://www.latimes.com/local/lanow/la-me-ln-producer-sentenced-oscars-20170323-story.html",
+    "http://www.latimes.com/local/lanow/la-me-ln-shooting-south-la-20170323-story.html",
+    "http://www.latimes.com/politics/washington/la-na-essential-washington-updates-1490289183-htmlstory.html",
+    "http://www.latimes.com/politics/la-na-pol-house-obamacare-20170323-story.html",
+    "http://www.sfchronicle.com/business/article/California-passes-nation-s-toughest-methane-11024492.php",
+    "http://www.sfchronicle.com/news/medical/article/The-Latest-Trump-makes-last-minute-health-care-11022490.php",
+    "http://www.sfchronicle.com/nation/article/Without-enough-votes-GOP-leaders-delay-vote-on-11024056.php",
     "http://www.cnn.com/2017/03/23/politics/house-health-care-vote/index.html",
     "http://www.cnn.com/2017/03/14/politics/wiretapping-congressional-investigation/index.html",
     "http://www.newyorker.com/news/benjamin-wallace-wells/how-the-house-freedom-caucus-dominated-trump-on-health-care",
@@ -80,10 +97,19 @@ if autofill:
   ]
 
   right_urls = [
+    "https://www.wsj.com/articles/u-k-police-arrest-seven-in-response-to-attack-near-london-parliament-1490258307?mod=trending_now_3",
+    "https://www.wsj.com/articles/a-presidents-credibility-1490138920?mod=trending_now_2",
+    "https://www.wsj.com/articles/death-rates-rise-for-wide-swath-of-white-adults-1490240740?mod=trending_now_1",
+    "https://www.wsj.com/articles/gop-lawmakers-say-no-deal-yet-on-health-bill-1490291998",
+    "http://nypost.com/2017/03/23/time-for-us-to-stop-funding-horrific-un-peacekeepers/",
+    "http://nypost.com/2017/03/23/this-federal-medicaid-fix-rights-a-decades-old-new-york-wrong/",
+    "http://nypost.com/2017/03/23/republicans-delay-health-care-repeal-vote/",
+    "http://nypost.com/2017/03/23/trumps-ultimatum-pass-health-care-bill-or-obamacare-stays/",
     "http://www.foxnews.com/politics/2017/03/23/gop-leaders-delay-obamacare-replacement-vote-amid-opposition.html",
     "http://www.foxnews.com/politics/2017/03/23/potential-smoking-gun-showing-obama-administration-spied-on-trump-team-source-says.html",
     "http://www.foxnews.com/opinion/2017/03/23/karl-rove-first-real-test-new-republican-government.html",    
     "http://www.foxnews.com/politics/2017/03/23/senate-democrats-may-seek-deal-with-gop-to-confirm-gorsuch-stave-off-nuclear-option.html",
+    "http://www.foxnews.com/politics/2017/03/23/potential-smoking-gun-showing-obama-administration-spied-on-trump-team-source-says.html",
     "http://www.breitbart.com/big-government/2017/03/23/chaos-inside-gop-house-conference-forces-speaker-ryan-to-cancel-thursdays-ryancare-vote/",
     "http://www.breitbart.com/big-government/2017/03/23/polls-ryancare-even-unpopular-obamacare-hillarycare/",
     "http://www.breitbart.com/big-government/2017/03/23/koch-network-says-will-defend-republicans-vote-against-ahca/",
