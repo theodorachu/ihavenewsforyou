@@ -57,6 +57,7 @@
                 <ul class="nav navbar-nav">
                     <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
 
+<!--
                     {% if current_user.is_authenticated %}
                         <li>
                             <a href= {{url_for('ext_usage_chart', time=4)}}>Extension Usage</a>
@@ -68,12 +69,21 @@
                             <a href = {{url_for('read_analysis', time=4)}}>Reading Analysis</a>
                         </li>
                     {% endif %}
+!-->
                     <li class="hidden">
                         <a href="#page-top"></a>
                     </li>
+                    {% if current_user.is_authenticated %}
                     <li>
-                        <a class="page-scroll" href="#ext-usage">Extension Usage Trial</a>
+                        <a class="page-scroll" href="#ext-usage">Extension Usage</a>
                     </li>
+                    <li>
+                        <a class="page-scroll" href="#source-analysis">Source Analysis</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#read-analysis">Reading Analysis</a>
+                    </li>
+                    {% endif %}
                     <li>
                         <a class="page-scroll" href="#about">About</a>
                     </li>
@@ -134,6 +144,28 @@
             </div>
         </div>
     </section>
+
+    <!-- Source Analysis -->
+    <section id="source-analysis" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Source Analysis</h2>
+                <div class="row">
+                    <canvas id="source-chart" width="900" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reading Analysis -->
+    <section id="read-analysis" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Reading Analysis</h2>
+            </div>
+        </div>
+    </section>
+
     {% endif %}
 
     <!-- About Section -->
@@ -234,6 +266,27 @@
             type: 'pie',
             data: data2,
         });
+
+        var sourcechart = document.getElementById("source-chart").getContext("2d");
+        // draw chart
+        var source-data = {
+            labels: {{source['labels_sources']|safe}},
+            datasets: [{
+                data: {{source['values_sources']}},
+                backgroundColor: {{source['colors_sources']|safe}},
+                hoverBackgroundColor: {{source['colors_sources']|safe}}
+            }]
+        };
+        var source-chart = new Chart(source-chart, {
+            type: 'bar',
+            data: source-data,
+            options: {
+                legend: {
+                    display: false
+                }
+            }
+        });
+
 
     </script>
 
