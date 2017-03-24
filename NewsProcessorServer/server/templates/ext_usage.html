@@ -62,18 +62,22 @@
                 <div class="sidebar-nav-fixed pull-right affix">
                     <div class="well">
                         <ul class="nav">
-                            <li class="nav-header">Friend Feed</li>
+                            <li class="nav-header"><h2 id="feed">Friend Activity</h2></li>
+                            <hr style="border-color: #000000;">
                             <li>
+                                {% for friend in friends_data %}
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <img src="http://ghostlypixels.com/wp-content/themes/illustrate-ghostly/images/profile-pic.png" height="50" width="50">  
+                                        <img style="border-radius: 50%;" src={{friend["imgsrc"]}} height="50" width="50">
                                     </div>
                                     <div class="col-md-8">
-                                        <h3> Name </h3>
-                                        <a href="www.google.com">Most recently read article</a>
+                                        <h4> {{friend["name"]}} </h4>
+                                        <a href={{friend["visit_urls"][0]}}>Most recently read article</a>
                                         </br>
                                         <a href="www.google.com">Top read source</a>
                                     </div>
+                                </div>
+                                {% endfor %}
                             </li>
                         </ul>
                     </div>
