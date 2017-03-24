@@ -153,6 +153,10 @@
                     <div class="row">
                         <canvas id="source-chart" width="900" height="300"></canvas>
                     </div>
+                    <div class="row">
+                        <br>
+                        <h4>Most Read Sources: {{source['best_sources'] | safe}}</h4>
+                    </div>
                 </div>
             </div>
         </section>
@@ -171,6 +175,13 @@
                     </div>
                     <div class="row">
                         <h4>{{read['num_articles']}} Articles Read In Time Span</h4>
+                    </div>
+                    <div class="row">
+                        <h4> Most Recently Read: </h4>
+                        {% for title, url in read['most_recent'] %}
+                            <a href={{url}} target="_blank"> {{title}}</a>                                
+                            <br>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -347,6 +358,15 @@
             options: {
                 legend: {
                     display: false
+                },
+                scales: {
+                    yAxes: [{
+                        display: true,
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }],
                 }
             }
         });
@@ -368,6 +388,15 @@
             options: {
                 legend: {
                     display: false
+                },
+                scales: {
+                    yAxes: [{
+                        display: true,
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }],
                 }
             }
         });

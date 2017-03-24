@@ -17,7 +17,7 @@ We scrape it using the following method:
 # those stories. 
 # Note that only one story gets added everday, so we really only need to scrape them once.
 def getTopicURLs():
-	jq = pq(url='http://www.allsides.com/story-list')
+	jq = pq(url='https://www.allsides.com/story-list')
 	topicStories = jq('.story-list-row')
 	topicURLs = [] 
 	for story in topicStories:

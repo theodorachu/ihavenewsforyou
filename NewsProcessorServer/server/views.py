@@ -58,7 +58,7 @@ def index(time=4):
   print friends_data
   return render_template("index.html", ext=ext_data, source = source_data, read = read_data, friends_data = friends_data)
 
-def getArticle(url):
+def get_article(url):
   article = Article.get(url)
   if article is None:
     article = NewsArticle(url)
@@ -66,6 +66,22 @@ def getArticle(url):
     if not successfulParse:
       return None
   return article
+
+def get_best_source(visits, num_best=1):
+  source_count = defaultdict(int) 
+  for visit in visits:
+    article = Article.get(visit.url)
+    if not article:
+      continue
+    source_count[article.source] += 1
+  return sorted(source_count, key=source_count.get, reverse=True)[:num_best]  
+
+def get_most_recent_article(visits, num_recent=1):
+  most_recent_visits = sorted(visits, key=lambda x: x.timeOut, reverse=True)[:num_recent]
+  articles = [get_article(x.url) for x in most_recent_visits]
+  most_recent_titles = [(article.title if article else "N/A") for article in articles]
+  most_recent_urls = [(article.url if article else "#") for article in articles]
+  return most_recent_titles, most_recent_urls
 
 @app.route('/friends')
 @login_required
@@ -90,25 +106,14 @@ def friends():
     visit_urls = [visit.url for visit in visits]
 
     # Get the most recently read article
-    most_recent_visit = sorted(visits, key=lambda x: x.timeOut)[-1]
-    article = getArticle(most_recent_visit.url)
-    most_recent_title = article.title if article else "N/A"
-    most_recent_url = article.url if article else "#"
+    most_recent_titles, most_recent_urls = get_most_recent_article(visits)
 
-    # Get the top read source
-    source_count = defaultdict(int) 
-    for visit in visits:
-      article = Article.get(visit.url)
-      if not article:
-        continue
-      source_count[article.source] += 1
-
-    best_source = max(source_count, key=source_count.get)
+    best_source = get_best_source(visits)
     friends_data.append({
       "name": name, 
       "imgsrc": imgsrc,
-      "most_recent_title": most_recent_title,
-      "most_recent_url": most_recent_url,
+      "most_recent_title": most_recent_titles[0],
+      "most_recent_url": most_recent_urls[0],
       "best_source": best_source
     })
   return friends_data
@@ -151,12 +156,14 @@ def ext_usage_chart(time=4):
   legend_ext = "How Often Extension is Used per News Site Visit"
   
   values_ext = [1, 2]
-  colors_ext = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_ext))))
+  # colors_ext = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_ext))))
+  colors_ext = random.sample(COLOR_WHEEL, len(values_ext))
   labels_ext = ["Navigated Away Without Using Extension", "Clicked on Extension"]
       
   legend_alt_art = "How Often Extension Article Recommendations are Read"
   values_alt_art = [1, 2] #TODO: retrieve_from_db()
-  colors_alt_art = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_alt_art))))
+  # colors_alt_art = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(values_alt_art))))
+  colors_alt_art = random.sample(COLOR_WHEEL, len(values_alt_art))
   labels_alt_art = ["Did Not Read Recommended Articles", "Read at Least One Recommended Article"]
 
 
@@ -208,7 +215,8 @@ def read_analysis(time=4):
     average_time_spent = int(total_time_spent / len(visits) if len(visits) > 0 else 0)
     m, s = divmod(average_time_spent, 60)
     h, m = divmod(m, 60)
-    average_time_spent_str = "%d hours %02d minutes %02d seconds" % (h, m, s)
+    if h > 0: average_time_spent_str = "%d hours %02d minutes %02d seconds" % (h, m, s)
+    else: average_time_spent_str = "%02d minutes %02d seconds" % (m, s)
 
     # Set up article labels
     labels_article_frequency = [0]*size
@@ -233,8 +241,14 @@ def read_analysis(time=4):
     #     articles.append(article.title)
     # else:
     #     articles.append(visit.url)
-    read_data = {'num_articles': len(url_dict.keys()), 'average_time_spent_str': average_time_spent_str, 'labels_article_frequency': labels_article_frequency,
-                'values_article_frequency': values_article_frequency, 'legend_article_frequency': legend_article_frequency}
+    most_recent_titles, most_recent_urls = get_most_recent_article(visits, 5)
+
+    read_data = {'num_articles': len(url_dict.keys()), 
+                'most_recent': zip(most_recent_titles, most_recent_urls),
+                'average_time_spent_str': average_time_spent_str, 
+                'labels_article_frequency': labels_article_frequency,
+                'values_article_frequency': values_article_frequency, 
+                'legend_article_frequency': legend_article_frequency}
     return read_data
 
     '''
@@ -265,6 +279,9 @@ def source_analysis(time=4):
             url=article.url
             ))
 
+    # Get the top sources
+    best_sources = ", ".join(get_best_source(visits, 3))
+
     # RENDER THE DATA
     sources = list(set([str(x["source"]) for x in visit_data]))
     source_visit_counts = []
@@ -274,7 +291,7 @@ def source_analysis(time=4):
             source_visit_counts[i] += visit['source'] == source
 
     colors_sources = list(map(lambda _: random.choice(COLOR_WHEEL), range(len(sources))))
-    source_data = {'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
+    source_data = {'best_sources': best_sources, 'legend_sources': 'Sources Read', 'colors_sources': colors_sources, 'values_sources': source_visit_counts, 'labels_sources': sources}
     return source_data
 
     '''
