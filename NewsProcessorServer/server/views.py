@@ -202,9 +202,10 @@ def read_analysis(time=4):
     # time spent per article
     visits = Visit.getByUserID(current_user.socialID)
     total_time_spent = sum([visit.timeSpent for visit in visits])
-    average_time_spent = total_time_spent / len(visits) if len(visits) > 0 else 0
-    average_min = int(average_time_spent / 60)
-    average_sec = int(average_time_spent % 60)
+    average_time_spent = int(total_time_spent / len(visits) if len(visits) > 0 else 0)
+    m, s = divmod(average_time_spent, 60)
+    h, m = divmod(m, 60)
+    average_time_spent_str = "%d hours %02d minutes %02d seconds" % (h, m, s)
 
     # Set up article labels
     labels_article_frequency = [0]*size
@@ -215,23 +216,21 @@ def read_analysis(time=4):
     labels_article_frequency = labels_article_frequency[::-1]
 
     values_article_frequency = [0]*size
+    url_dict = defaultdict(int)
     for visit in visits:
-        day = (today - visit.timeOut).days
-        if day < size and day >= 0:
-            values_article_frequency[size - 1 - day] += 1
+      # y-axis
+      day = (today - visit.timeOut).days
+      if day < size and day >= 0:
+          values_article_frequency[size - 1 - day] += 1
 
-    # TODO: remove
-    print values_article_frequency
-
-    articles = []
-    for visit in visits:
-        article = Article.get(visit.url)
-        if article:
-            articles.append(article.title)
-        else:
-            articles.append(visit.url)
-
-    read_data = {'articles': articles, 'average_time_spent': [average_min, average_sec], 'labels_article_frequency': labels_article_frequency,
+      url_dict[visit.url] += 1
+    # # Articles
+    # article = Article.get(visit.url)
+    # if article:
+    #     articles.append(article.title)
+    # else:
+    #     articles.append(visit.url)
+    read_data = {'num_articles': len(url_dict.keys()), 'average_time_spent_str': average_time_spent_str, 'labels_article_frequency': labels_article_frequency,
                 'values_article_frequency': values_article_frequency, 'legend_article_frequency': legend_article_frequency}
     return read_data
 

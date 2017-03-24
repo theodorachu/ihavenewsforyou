@@ -20,26 +20,29 @@ def addArticle(url):
       print "Error: {0}".format(err)
       return 0
     print "Added article to database!"
-  print "Article already exists in database."
+  else:
+    print "Article already exists in database."
   return 1
 
 def addRandomVisit(user, url, prob_sugg=0.7, prob_clicked=0.8):
 
-  def getRandomDatetime(current):
-    return current - timedelta(days=randint(0, 30), 
+  def getRandomDatetimePair(current):
+    endDate = current - timedelta(days=randint(0, 30), 
                                hours=randint(0, 24),
                                minutes=randint(0, 60),
                                seconds=randint(0, 60))
 
+    startDate = endDate - timedelta(days=randint(0, 2),
+                                      hours=randint(0, 24),
+                                      minutes=randint(0, 60),
+                                      seconds=randint(0, 60))
+    return startDate, endDate
+
   # Get start and end times
-  current = datetime.now()
-  startTime = getRandomDatetime(current)
-  endTime = getRandomDatetime(current)
-  if (startTime - endTime).total_seconds() < 0:
-    startTime, endTime = endTime, startTime
+  startTime, endTime = getRandomDatetimePair(datetime.now())
 
   # Calculate time spent
-  time_spent = int((startTime - endTime).total_seconds() * random())
+  time_spent = int((endTime - startTime).total_seconds() * random())
 
   # Calculate whether we received or clicked on the suggestions or not
   receivedSuggestions = random() < prob_sugg

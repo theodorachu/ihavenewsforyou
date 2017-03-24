@@ -177,18 +177,10 @@
                         <canvas id="read-chart" width="900" height="300"</canvas>
                     </div>
                     <div class="row">
-                        <h4>Average time spent per article: {{read['average_time_spent'][0] | safe}} minutes {{read['average_time_spent'][1] | safe}} seconds</h4>
+                        <h4>Average time spent per article: {{read['average_time_spent_str']}}</h4>
                     </div>
                     <div class="row">
-                        <h4>Articles Read over Selected Time Span:</h4>
-                            <ul>
-                                {% for article in articles %}
-                                <li>{{ article }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% if articles|length == 0 %}
-                                <h5>No articles read over selected time span</h5>
-                            {% endif %}
+                        <h4>{{read['num_articles']}} Articles Read In Time Span</h4>
                     </div>
                 </div>
             </div>
